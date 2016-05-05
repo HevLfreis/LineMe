@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{{ project_name }} | Home</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
+    <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
+
+    <style>
+      td {
+        width: 20%;
+      }
+    </style>
+
+  </head>
+
+  <body class="hold-transition skin-black sidebar-mini">
+    <div class="wrapper">
+
+      <!-- Main Header -->
+      <header class="main-header">
+
+        <!-- Logo -->
+        <a href="/cnc/home" class="logo">
+          <span class="logo-mini"><b></b></span>
+          <span class="logo-lg"><b>{{ project_name }}</b></span>
+        </a>
+
+        <!-- Header Navbar -->
+        <nav class="navbar navbar-static-top" role="navigation">
+          <!-- Navbar Right Menu -->
+          <div class="navbar-custom-menu">
+            <ul class="nav navbar-nav">
+              <!-- Messages: style can be found in dropdown.less-->
+              <li class="dropdown messages-menu">
+                <!-- Menu toggle button -->
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                  <i class="fa fa-envelope-o"></i>
+                  <span class="label label-success">4</span>
+                </a>
+                <ul class="dropdown-menu">
+                  <li class="header">You have 10 messages</li>
+                  <li>
+                    <!-- inner menu: contains the actual data -->
+                    <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 100px;"><ul class="menu" style="overflow: hidden; width: 100%; height: 200px;">
+                      <li>
+                        <a href="#">
+                          <i class="fa fa-users text-aqua"></i> 5 new members joined today
+                        </a>
+                      </li>
+                    </ul><div class="slimScrollBar" style="width: 3px; position: absolute; top: 0px; opacity: 0.4; display: none; border-radius: 7px; z-index: 99; right: 1px; height: 195.122px; background: rgb(0, 0, 0);"></div><div class="slimScrollRail" style="width: 3px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; opacity: 0.2; z-index: 90; right: 1px; background: rgb(51, 51, 51);"></div></div>
+                  </li>
+                  <li class="footer"><a href="/cnc/home">View all</a></li>
+                </ul>
+              </li><!-- /.messages-menu -->
+
+
+              <!-- User Account Menu -->
+              <li class="dropdown user user-menu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <img src="/static/pic/avatar/{{ user.id }}.png" class="user-image" alt="User Image">
+                    <!-- hidden-xs hides the username on small devices so only the image appears. -->
+                    <span class="hidden-xs">{{ user.username }}</span>
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu" role="menu">
+                  <li><a href="/cnc/ego">My Network</a></li>
+                  <li><a href="/cnc/global">Global Network</a></li>
+                  <li><a href="/cnc/profile">My Profile</a></li>
+                  <li><a href="/cnc/settins">Settings</a></li>
+                  <li class="divider"></li>
+                  <li><a href="/cnc/logout">Sign Out</a></li>
+
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </header>
+      <!-- Left side column. contains the logo and sidebar -->
+      <aside class="main-sidebar">
+
+        <!-- sidebar: style can be found in sidebar.less -->
+        <section class="sidebar">
+
+          <!-- Sidebar user panel (optional) -->
+          <div class="user-panel">
+            <div class="pull-left image">
+              <img onclick="window.location.href='/cnc/avatar'" src="/static/pic/avatar/{{ user.id }}.png" class="img-circle" alt="User Image" style="cursor:pointer">
+            </div>
+            <div class="pull-left info">
+              <p>{{ user.username }}</p>
+              <!-- Status -->
+              <a><i class="fa fa-circle text-success"></i> Online</a>
+            </div>
+          </div>
+
+          <!-- search form (Optional) -->
+          <form action="#" method="get" class="sidebar-form">
+            <div class="input-group">
+              <input type="text" name="q" class="form-control" placeholder="Search...">
+              <span class="input-group-btn">
+                <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i></button>
+              </span>
+            </div>
+          </form>
+          <!-- /.search form -->
+
+          <ul class="sidebar-menu">
+            <li class="header">My Profile</li>
+          </ul>
+          <ul class="control-sidebar-menu" style="margin-left: 0px">
+            <li>
+              <a href="#">
+                {% if user.extra.sex  %}
+                  <i class="menu-icon fa fa-venus bg-yellow"></i>
+                  <div class="menu-info">
+                    <h3 class="control-sidebar-subheading">Female</h3>
+                  </div>
+
+                {% else %}
+                  <i class="menu-icon fa fa-mars bg-yellow"></i>
+                  <div class="menu-info">
+                    <h3 class="control-sidebar-subheading">Male</h3>
+                  </div>
+
+                {% endif %}
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <i class="menu-icon fa fa-birthday-cake bg-red"></i>
+                <div class="menu-info">
+                  <h2 id="profile-birth" class="control-sidebar-subheading">{{ user.extra.birth }}</h2>
+                </div>
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <i class="menu-icon fa fa-envelope-o bg-light-blue"></i>
+                <div class="menu-info">
+                  <h4 id="profile-email1" class="control-sidebar-subheading"></h4>
+                  <p id="profile-email2"></p>
+                </div>
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <i class="menu-icon fa fa-location-arrow bg-green"></i>
+                <div class="menu-info">
+                  <h4 id="profile-location1" class="control-sidebar-subheading"></h4>
+                  <p id="profile-location2"></p>
+                </div>
+              </a>
+            </li>
+            <li>
+            <li>
+              <a href="#">
+                <i class="menu-icon fa fa-institution bg-maroon"></i>
+                <div class="menu-info">
+                  <h3 id="profile-institution1" class="control-sidebar-subheading"></h3>
+                  <p id="profile-institution2"></p>
+                </div>
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <i class="menu-icon fa fa-star bg-teal"></i>
+                <div class="menu-info">
+                  <h4 class="control-sidebar-subheading">{{ user.extra.credits }}</h4>
+                </div>
+              </a>
+            </li>
+          </ul>
+        </section>
+        <!-- /.sidebar -->
+      </aside>
+
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+          <h1>
+            Home
+{#            <small>Optional description</small>#}
+          </h1>
+          <ol class="breadcrumb">
+            <li><a href="/cnc/home"><i class="fa fa-home"></i>{{ project_name }}</a></li>
+            <li class="active">Home</li>
+          </ol>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+
+              <div class="col-md-3 col-sm-6 col-xs-12">
+                  <div class="info-box">
+                      <a href="/cnc/ego" class="info-box-icon bg-red"><i class="ion ion-ios-color-filter-outline"></i></a>
+                      <div class="info-box-content">
+                          <span class="info-box-text">My Network</span>
+                          <span class="info-box-number">Create a friend network</span>
+                      </div><!-- /.info-box-content -->
+                  </div><!-- /.info-box -->
+              </div><!-- /.col -->
+
+              <!-- fix for small devices only -->
+              <div class="clearfix visible-sm-block"></div>
+
+              <div class="col-md-3 col-sm-6 col-xs-12">
+                  <div class="info-box">
+                      <a href="/cnc/global" class="info-box-icon bg-green"><i class="ion ion-ios-people-outline"></i></a>
+                      <div class="info-box-content">
+                          <span class="info-box-text">Global Network</span>
+                          <span class="info-box-number">See the global network of you</span>
+                      </div><!-- /.info-box-content -->
+                  </div><!-- /.info-box -->
+              </div><!-- /.col -->
+              <div class="col-md-3 col-sm-6 col-xs-12">
+                  <div class="info-box">
+                      <a href="/cnc/profile" class="info-box-icon bg-yellow"><i class="ion ion-ios-albums-outline"></i></a>
+                      <div class="info-box-content">
+                          <span class="info-box-text">My Profile</span>
+                          <span class="info-box-number">Edit your personal infomation</span>
+                      </div><!-- /.info-box-content -->
+                  </div><!-- /.info-box -->
+              </div><!-- /.col -->
+              <div class="col-md-3 col-sm-6 col-xs-12">
+                  <div class="info-box">
+                      <a href="/cnc/settings" class="info-box-icon bg-aqua"><i class="ion ion-ios-gear-outline"></i></a>
+                      <div class="info-box-content">
+                          <span class="info-box-text">Settings</span>
+                          <span class="info-box-number">Change settings of {{ project_name }}</span>
+                      </div><!-- /.info-box-content -->
+                  </div><!-- /.info-box -->
+              </div><!-- /.col -->
+          </div>
+          <div class="row" style="margin-top: 10px">
+            <div class="col-xs-7">
+              <div class="box box-primary">
+                <div class="box-header">
+                  <i class="ion ion-clipboard"></i>
+                  <h3 class="box-title">Link Request Messages</h3>
+                  <div class="box-tools pull-right">
+                    <ul class="pagination pagination-sm inline">
+                      <li><a href="#">«</a></li>
+                      <li><a href="#">1</a></li>
+                      <li><a href="#">2</a></li>
+                      <li><a href="#">3</a></li>
+                      <li><a href="#">»</a></li>
+                    </ul>
+                  </div>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                  <ul class="todo-list ui-sortable">
+                    <li>
+                      <!-- checkbox -->
+                      <input type="checkbox" value="" name="">
+                      <!-- todo text -->
+                      <span class="text">He invites you to confirm the friend link to <a href="pages/examples/invoice.html">She</a></span>
+                      <!-- Emphasis label -->
+                      <small class="label label-danger">Unconfirmed</small>
+
+                      <!-- General tools such as edit or delete-->
+                      <div class="tools">
+                        <i class="fa fa-check-circle-o"></i>
+                        <i class="fa fa-ban"></i>
+                      </div>
+                    </li>
+                  </ul>
+                </div><!-- /.box-body -->
+                <div class="box-footer clearfix no-border">
+                  <button class="btn btn-default pull-right"><i class="fa fa-plus"></i> Add item</button>
+                </div>
+
+              </div>
+
+              <div class="box box-success">
+                <div class="box-header">
+                  <i class="ion ion-clipboard"></i>
+                  <h3 class="box-title">Manage Groups</h3>
+                  <div class="box-tools pull-right" title="">
+                    <div class="btn-group" data-toggle="btn-toggle">
+                      <button id="btn-my-group" type="button" class="btn btn-default btn-sm active"><i class="fa fa-square text-aqua"></i></button>
+                      <button id="btn-in-group" type="button" class="btn btn-default btn-sm"><i class="fa fa-square text-green"></i></button>
+                    </div>
+                  </div>
+
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                  <div class="table-responsive" id="table-my-group">
+                    <table class="table no-margin">
+                      <thead>
+                      <tr>
+                        <th>Group Name</th>
+                        <th>Created Time</th>
+                        <th>Type</th>
+                        <th>Identifier</th>
+                        <th>Members</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      {% for group, v in my_groups.items %}
+                        <tr>
+                          <td><a href="/cnc/group?groupid={{ group.id }}">{{ group.group_name }}</a></td>
+                          <td>{{ group.created_time|date:'M d, Y' }}</td>
+
+                          <td>
+                            {% if group.type == 0 %}
+                              Normal
+                            {% else %}
+                              RealTime
+                            {% endif %}
+                          </td>
+                          <td>
+                            {% if group.identifier == 0 %}
+                              Email
+                            {% elif group.identifier == 1 %}
+                              Institution
+                            {% elif group.identifier == 2 %}
+                              Special Code
+                            {% endif %}</td>
+                          <td><span class="label label-info">{{ v }}</span></td>
+
+                        </tr>
+                      {% endfor %}
+                      </tbody>
+                    </table>
+                  </div><!-- /.table-responsive -->
+                  <div class="table-responsive" id="table-in-group" hidden>
+                    <table class="table no-margin">
+                      <thead>
+                      <tr>
+                        <th>Group Name</th>
+                        <th>Created Time</th>
+                        <th>Type</th>
+                        <th>Identifier</th>
+                        <th>Members</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      {% for group, v in in_groups.items %}
+                        <tr>
+                          <td><a href="/cnc/group?groupid={{ group.id }}">{{ group.group_name }}</a></td>
+                          <td>{{ group.created_time|date:'M d, Y' }}</td>
+
+                          <td>
+                            {% if group.type == 0 %}
+                              Normal
+                            {% else %}
+                              RealTime
+                            {% endif %}
+                          </td>
+                          <td>
+                            {% if group.identifier == 0 %}
+                              Email
+                            {% elif group.identifier == 1 %}
+                              Institution
+                            {% elif group.identifier == 2 %}
+                              Special Code
+                            {% endif %}</td>
+                          <td><span class="label label-success">{{ v }}</span></td>
+
+                        </tr>
+                      {% endfor %}
+                      </tbody>
+                    </table>
+                  </div><!-- /.table-responsive -->
+                </div><!-- /.box-body -->
+                <div class="box-footer clearfix no-border">
+                  <div class="box-tools pull-right">
+                    <ul class="pagination pagination-sm inline">
+                      <li><a href="#">«</a></li>
+                      <li><a href="#">1</a></li>
+                      <li><a href="#">2</a></li>
+                      <li><a href="#">3</a></li>
+                      <li><a href="#">»</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+
+            </div>
+            <div class="col-xs-5">
+              <div class="box box-info">
+                <div class="box-header with-border">
+                  <h3 class="box-title">My Link Invitations</h3>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                  <div class="table-responsive">
+                    <table class="table no-margin">
+                      <thead>
+                      <tr>
+                        <th>Created Time</th>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Group</th>
+                        <th>Status</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <tr>
+                        <td>Today</td>
+                        <td>Me</td>
+                        <td><a href="pages/examples/invoice.html">He</a></td>
+                        <td>CNC</td>
+                        <td><span class="label label-success">Confirmed</span></td>
+
+                      </tr>
+                      </tbody>
+                    </table>
+                  </div><!-- /.table-responsive -->
+                </div><!-- /.box-body -->
+                <div class="box-footer clearfix">
+                  <a href="" class="btn btn-sm btn-default btn-flat pull-left">Send Emails</a>
+                </div><!-- /.box-footer -->
+              </div>
+
+
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-7">
+
+            </div>
+          </div>
+
+        </section><!-- /.content -->
+      </div><!-- /.content-wrapper -->
+
+      <!-- Main Footer -->
+      <footer class="main-footer">
+          <!-- To the right -->
+          <div class="pull-right hidden-xs">
+              POWERED BY HT
+          </div>
+          <!-- Default to the left -->
+          <strong>Copyright &copy; 2016 <a href="http://cnc.sjtu.edu.cn" target="_black">CNC</a>.</strong> All rights reserved.
+      </footer>
+      <div class="control-sidebar-bg"></div>
+    </div><!-- ./wrapper -->
+
+    <!-- jQuery 2.1.4 -->
+    <script src="/static/plugins/jQuery/jQuery-2.1.4.min.js"></script>
+    <!-- Bootstrap 3.3.5 -->
+    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="/static/dist/js/app.min.js"></script>
+
+    <script type="text/javascript">
+
+      var emails = "{{ user.email }}".split("@");
+      var births = "{{ user.extra.birth }}".split(",");
+      var locations = "{{ user.extra.location }}".split(" ");
+      var institutions = "{{ user.extra.institution }}".split(" ");
+      $('#profile-email1').text(emails[0]);
+      $('#profile-email2').text('@'+emails[1]);
+      $('#profile-birth').text(births[0]);
+      $('#profile-location1').text(locations[0]);
+      $('#profile-location2').text(locations[1]);
+      $('#profile-institution1').text(institutions[0]);
+      $('#profile-institution2').text(institutions[1]);
+
+      $('#btn-my-group').click(function() {
+        $('#table-my-group').show();
+        $('#table-in-group').hide();
+      });
+      $('#btn-in-group').click(function() {
+        $('#table-in-group').show();
+        $('#table-my-group').hide();
+      });
+    </script>
+  </body>
+</html>

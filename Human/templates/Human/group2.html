@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{{ project_name }} | Group</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/plugins/iCheck/all.css">
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
+    <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
+
+
+    <style>
+      .form-group {
+        width: 250px;
+      }
+      blockquote {
+        margin: 0 0 10px;
+
+      }
+    </style>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body class="hold-transition skin-black sidebar-mini">
+    <div class="wrapper">
+
+
+      <div class="modal fade" id="member-join-modal">
+        <div class="modal-dialog">
+          <form method="post" action="/cnc/join/" class="modal-content" id="modal-content-wrong">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+              <h4 class="modal-title">Identifier Wrong</h4>
+            </div>
+            <div class="modal-body">
+
+              <div class="form-group has-feedback">
+                <label for="member-identifier">Identifier</label>
+                <input type="hidden" value="{{ group.id }}" class="form-control" name="groupid">
+                {% if group.identifier == 2 %}
+                  <input type="text" class="form-control" name="identifier" placeholder="Enter identifier for this member">
+                {% elif group.identifier == 1 %}
+                  <input type="text" value="Institution" class="form-control" name="identifier">
+                {% elif group.identifier == 0 %}
+                  <input type="text" class="form-control" name="identifier" placeholder="Re-enter the identifier of email">
+                {% endif %}
+
+                <span class="glyphicon glyphicon-info-sign form-control-feedback"></span>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button  type="submit" class="btn btn-primary">Re-Follow</button>
+            </div>
+          </form><!-- /.modal-content -->
+          <form method="post" class="modal-content" id="modal-content-notexist">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+              <h4 class="modal-title">Attention</h4>
+            </div>
+            <div class="modal-body">
+              <blockquote>
+                <h4>You are not in this group yet.</h4>
+                <h4>You can send a request to the group creator.</h4>
+              </blockquote>
+
+
+
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Send Request</button>
+            </div>
+          </form><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      </div>
+
+
+
+      <!-- Main Header -->
+      <header class="main-header">
+
+        <!-- Logo -->
+        <a href="/cnc/home" class="logo">
+          <span class="logo-mini"><b>A</b>LT</span>
+          <span class="logo-lg"><b>{{ project_name }}</b></span>
+        </a>
+
+        <!-- Header Navbar -->
+        <nav class="navbar navbar-static-top" role="navigation">
+          <!-- Navbar Right Menu -->
+          <div class="navbar-custom-menu">
+            <ul class="nav navbar-nav">
+              <!-- Messages: style can be found in dropdown.less-->
+              <li class="dropdown messages-menu">
+                <!-- Menu toggle button -->
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                  <i class="fa fa-envelope-o"></i>
+                  <span class="label label-success">4</span>
+                </a>
+                <ul class="dropdown-menu">
+                  <li class="header">You have 10 messages</li>
+                  <li>
+                    <!-- inner menu: contains the actual data -->
+                    <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 100px;"><ul class="menu" style="overflow: hidden; width: 100%; height: 200px;">
+                      <li>
+                        <a href="#">
+                          <i class="fa fa-users text-aqua"></i> 5 new members joined today
+                        </a>
+                      </li>
+                    </ul><div class="slimScrollBar" style="width: 3px; position: absolute; top: 0px; opacity: 0.4; display: none; border-radius: 7px; z-index: 99; right: 1px; height: 195.122px; background: rgb(0, 0, 0);"></div><div class="slimScrollRail" style="width: 3px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; opacity: 0.2; z-index: 90; right: 1px; background: rgb(51, 51, 51);"></div></div>
+                  </li>
+                  <li class="footer"><a href="/cnc/home">View all</a></li>
+                </ul>
+              </li><!-- /.messages-menu -->
+
+
+              <!-- User Account Menu -->
+              <li class="dropdown user user-menu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <img src="/static/pic/avatar/{{ user.id }}.png" class="user-image" alt="User Image">
+                    <!-- hidden-xs hides the username on small devices so only the image appears. -->
+                    <span class="hidden-xs">{{ user.username }}</span>
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu" role="menu">
+                  <li><a href="/cnc/ego">My Network</a></li>
+                  <li><a href="/cnc/global">Global Network</a></li>
+                  <li><a href="/cnc/profile">My Profile</a></li>
+                  <li><a href="/cnc/settins">Settings</a></li>
+                  <li class="divider"></li>
+                  <li><a href="/cnc/logout">Sign Out</a></li>
+
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </header>
+      <!-- Left side column. contains the logo and sidebar -->
+      <aside class="main-sidebar">
+
+        <!-- sidebar: style can be found in sidebar.less -->
+        <section class="sidebar">
+
+          <!-- Sidebar user panel (optional) -->
+          <div class="user-panel">
+            <div class="pull-left image">
+              <img onclick="window.location.href='/cnc/avatar'" src="/static/pic/avatar/{{ user.id }}.png" class="img-circle" alt="User Image" style="cursor:pointer">
+            </div>
+            <div class="pull-left info">
+              <p>{{ user.username }}</p>
+              <!-- Status -->
+              <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
+            </div>
+          </div>
+
+          <!-- search form (Optional) -->
+          <form action="#" method="get" class="sidebar-form">
+            <div class="input-group">
+              <input type="text" name="q" class="form-control" placeholder="Search...">
+              <span class="input-group-btn">
+                <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i></button>
+              </span>
+            </div>
+          </form>
+          <!-- /.search form -->
+
+          <ul class="sidebar-menu" style="margin-left: 0px">
+            <li class="header">My Groups</li>
+            {% for k, v in sug.items %}
+              <li>
+                <a href="/cnc/group?groupid={{ k }}">
+                  <i class="fa fa-circle-o text-yellow"></i>
+                  <span>{{ v }}</span>
+
+                </a>
+              </li>
+            {% endfor %}
+            {% for group in groups %}
+
+              <li>
+                <a href="/cnc/group?groupid={{ group.id }}">
+                  {% if group.creator == user %}
+
+                    <i class="fa fa-circle-o text-aqua"></i>
+                  {% else %}
+                    <i class="fa fa-circle-o text-green"></i>
+                  {% endif %}
+
+                  <span>{{ group.group_name }}</span>
+
+                </a>
+              </li>
+            {% endfor %}
+
+          </ul>
+        </section>
+        <!-- /.sidebar -->
+      </aside>
+
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+          <h1>
+            Group {{ group.group_name }}
+{#            <small>Optional description</small>#}
+          </h1>
+          <ol class="breadcrumb">
+            <li><a href="/cnc/home"><i class="fa fa-home"></i>{{ project_name }}</a></li>
+            <li class="active">Group</li>
+          </ol>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+
+
+          <div class="row">
+            <div class="col-md-3">
+
+              <!-- Profile Image -->
+              <div class="box box-primary">
+                <div class="box-body box-profile">
+                  <img class="profile-user-img img-responsive img-circle" src="/static/pic/avatar/{{ creator.id }}.png" alt="User profile picture">
+                  <h3 class="profile-username text-center">{{ group.group_name }}</h3>
+                  <p class="text-muted text-center">Created by {{ creator.username }}</p>
+
+                  <ul class="list-group list-group-unbordered" style="padding-bottom: 50px">
+                    <li class="list-group-item">
+                      <b>Members</b> <a class="pull-right">{{ members_count }}</a>
+                    </li>
+                    <li class="list-group-item">
+                      <b>Created Time</b> <a class="pull-right">{{ group.created_time }}</a>
+                    </li>
+                    <li class="list-group-item">
+                      <b>Identifier</b> <a class="pull-right">
+                      {% if group.identifier == 0 %}
+                        Email
+                      {% elif group.identifier == 1 %}
+                        Institution
+                      {% else %}
+                        Special Code
+                      {% endif %}
+                    </a>
+                    </li>
+                  </ul>
+                  {% if is_member %}
+                    <button class="btn btn-success btn-block" disabled><b>Already in Group</b></button>
+                  {% elif joined == 1 %}
+                    <button id="follow" class="btn btn-danger btn-block"><b>Follow Failed</b></button>
+                  {% else %}
+                    <button id="follow" class="btn btn-primary btn-block"><b>Follow</b></button>
+                  {% endif %}
+
+                </div><!-- /.box-body -->
+              </div><!-- /.box -->
+            </div>
+          </div>
+
+        </section><!-- /.content -->
+      </div><!-- /.content-wrapper -->
+
+      <!-- Main Footer -->
+      <footer class="main-footer">
+          <!-- To the right -->
+          <div class="pull-right hidden-xs">
+              POWERED BY HT
+          </div>
+          <!-- Default to the left -->
+          <strong>Copyright &copy; 2016 <a href="http://cnc.sjtu.edu.cn" target="_black">CNC</a>.</strong> All rights reserved.
+      </footer>
+
+
+      <!-- Add the sidebar's background. This div must be placed
+           immediately after the control sidebar -->
+      <div class="control-sidebar-bg"></div>
+    </div><!-- ./wrapper -->
+
+    <!-- REQUIRED JS SCRIPTS -->
+
+    <!-- jQuery 2.1.4 -->
+    <script src="/static/plugins/jQuery/jQuery-2.1.4.min.js"></script>
+    <!-- Bootstrap 3.3.5 -->
+    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="/static/dist/js/app.min.js"></script>
+    <!-- iCheck 1.0.1 -->
+    <script src="/static/plugins/iCheck/icheck.min.js"></script>
+
+  <script type="text/javascript">
+
+    var emails = "{{ user.email }}".split("@");
+    var births = "{{ user.extra.birth }}".split(",");
+    var locations = "{{ user.extra.location }}".split(" ");
+    var institutions = "{{ user.extra.institution }}".split(" ");
+    $('#profile-email1').text(emails[0]);
+    $('#profile-email2').text('@'+emails[1]);
+    $('#profile-birth').text(births[0]);
+    $('#profile-location1').text(locations[0]);
+    $('#profile-location2').text(locations[1]);
+    $('#profile-institution1').text(institutions[0]);
+    $('#profile-institution2').text(institutions[1]);
+
+    $('.modal').on('show.bs.modal', function (e) {
+      $(this).find('.modal-dialog').css({
+        'margin-top': function () {
+          var modalHeight = $('#member-join-modal').find('.modal-dialog').height();
+          return ($(window).height() / 6 - (modalHeight / 2));
+        }
+      });
+
+    });
+
+
+    $('input[type="checkbox"].flat-red, input[type="radio"].minimal').iCheck({
+      checkboxClass: 'icheckbox_flat-green',
+      radioClass: 'iradio_flat-green'
+    });
+
+    function join(identifier) {
+
+      $.ajax({
+        type: "POST",
+        url: "/cnc/join/",
+        data: {
+          groupid: '{{ group.id }}',
+          identifier: identifier
+        },
+        cache: false
+      }).done(function(result) {
+
+        switch (result) {
+
+
+          case '0':
+            alert('Follow success !');
+            window.location.replace("/cnc/ego?groupid={{ group.id }}");
+            break;
+          case '-1':
+            $('#modal-content-wrong').show();
+            $('#modal-content-notexist').hide();
+
+            $('#member-join-modal').modal('show');
+            break;
+          case '-2':
+            $('#modal-content-wrong').hide();
+            $('#modal-content-notexist').show();
+
+            $('#member-join-modal').modal('show');
+            break;
+          default :
+            break;
+        }
+      });
+    }
+
+    $('#follow').click(function() {
+      join('')
+    });
+
+
+  </script>
+  </body>
+</html>

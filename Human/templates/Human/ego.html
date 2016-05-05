@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{{ project_name }} | My Network</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/plugins/iCheck/all.css">
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
+    <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
+    <link rel="stylesheet" href="/static/cnc/css/borderMenu.css">
+
+    <style>
+
+{#      .node {#}
+{#        stroke: #fff;#}
+{#        stroke-width: 1.5px;#}
+{#      }#}
+      a {
+        cursor: pointer;
+      }
+      g {
+        cursor: pointer;
+      }
+      circle {
+        stroke-width: 10px;
+
+      }
+
+      .pull-left {
+        margin-top: 0;
+      }
+
+      .link {
+
+        fill: none;
+        stroke-width: 3px;
+        stroke-opacity: 0.5;
+        stroke: #38363a;
+        cursor: pointer;
+      }
+
+
+
+
+      .link-unconfirmed {
+        stroke-width: 3px;
+        stroke-opacity: 0.1;
+
+
+      }
+
+      .link-selected {
+        stroke-width: 5px;
+        stroke-opacity: 0.8;
+
+
+      }
+
+      .box .box-widget {
+        margin-bottom: 10px;
+        cursor: pointer;
+      }
+
+      .box-success {
+        min-height: 650px;
+        margin: 0 auto -25px;
+
+      }
+
+
+      .box-footer {
+        margin-top: 30px;
+        height: 50px; /* .push must be the same height as .footer */
+
+      }
+
+
+
+    </style>
+  </head>
+
+  <body class="hold-transition skin-black sidebar-mini">
+    <div class="wrapper">
+
+      <!-- Group Create Modal -->
+      <div class="modal fade" id="group-create-modal">
+        <div class="modal-dialog">
+          <form method="post" class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+              <h4 class="modal-title">Create a New Group</h4>
+            </div>
+            <div class="modal-body">
+              <div class="form-group has-feedback">
+                <label for="group-name">Group name</label>
+                <input type="text" class="form-control" name="name" placeholder="Enter group name">
+                <span class="glyphicon glyphicon-tags form-control-feedback"></span>
+              </div>
+              <div class="form-group has-feedback">
+                <label for="group-maxsize">Group Max Size</label>
+                <input type="number" class="form-control" name="maxsize" placeholder="Enter max group size, less than 5000">
+                <span class="glyphicon glyphicon-asterisk form-control-feedback"></span>
+              </div>
+
+              <div class="form-group">
+                <label>Group Identifier</label>
+                <select class="form-control select2" name="identifier">
+                  <option value="0" selected="selected">Email</option>
+                  <option value="1">Institution</option>
+                  <option value="2">Special Code</option>
+                </select>
+              </div><!-- /.form-group -->
+              <label>Group Type</label>
+              <div class="form-group">
+
+                <label style="padding-right: 10px">
+                  <input type="radio" name="r1" class="minimal" checked>
+                  Normal
+                </label>
+                <label>
+                  <input type="radio" name="r1" class="minimal">
+                  RealTime
+                </label>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Create</button>
+            </div>
+          </form><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      </div>
+
+      <!-- Main Header -->
+      <header class="main-header">
+
+        <!-- Logo -->
+        <a href="/cnc/home" class="logo">
+{#          <span class="logo-mini"><b>A</b>LT</span>#}
+          <span class="logo-lg"><b>{{ project_name }}</b></span>
+        </a>
+
+        <!-- Header Navbar -->
+        <nav class="navbar navbar-static-top" role="navigation">
+          <!-- Navbar Right Menu -->
+          <div class="navbar-custom-menu">
+            <ul class="nav navbar-nav">
+              <li class="dropdown messages-menu">
+                <!-- Menu toggle button -->
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                  <i class="fa fa-envelope-o"></i>
+                  <span class="label label-success">4</span>
+                </a>
+                <ul class="dropdown-menu">
+                  <li class="header">You have 10 messages</li>
+                  <li>
+                    <!-- inner menu: contains the actual data -->
+                    <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 100px;"><ul class="menu" style="overflow: hidden; width: 100%; height: 200px;">
+                      <li>
+                        <a href="#">
+                          <i class="fa fa-users text-aqua"></i> 5 new members joined today
+                        </a>
+                      </li>
+                    </ul><div class="slimScrollBar" style="width: 3px; position: absolute; top: 0px; opacity: 0.4; display: none; border-radius: 7px; z-index: 99; right: 1px; height: 195.122px; background: rgb(0, 0, 0);"></div><div class="slimScrollRail" style="width: 3px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; opacity: 0.2; z-index: 90; right: 1px; background: rgb(51, 51, 51);"></div></div>
+                  </li>
+                  <li class="footer"><a href="/cnc/home">View all</a></li>
+                </ul>
+              </li><!-- /.messages-menu -->
+
+
+
+              <!-- User Account Menu -->
+              <li class="dropdown user user-menu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <img src="/static/pic/avatar/{{ user.id }}.png" class="user-image" alt="User Image">
+                    <!-- hidden-xs hides the username on small devices so only the image appears. -->
+                    <span class="hidden-xs">{{ user.username }}</span>
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu" role="menu">
+                  <li><a href="#">My Network</a></li>
+                  <li><a href="#">Global Network</a></li>
+                  <li><a href="#">My Profile</a></li>
+                  <li><a href="#">Settings</a></li>
+                  <li class="divider"></li>
+                  <li><a href="/cnc/logout">Sign Out</a></li>
+
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </header>
+      <!-- Left side column. contains the logo and sidebar -->
+      <aside class="main-sidebar">
+
+        <!-- sidebar: style can be found in sidebar.less -->
+        <section class="sidebar">
+
+          <!-- Sidebar user panel (optional) -->
+          <div class="user-panel">
+            <div class="pull-left image">
+              <img onclick="window.location.href='/cnc/avatar'" src="/static/pic/avatar/{{ user.id }}.png" class="img-circle" alt="User Image" style="cursor:pointer">
+            </div>
+            <div class="pull-left info">
+              <p>{{ user.username }}</p>
+              <!-- Status -->
+              <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
+            </div>
+          </div>
+
+          <!-- search form (Optional) -->
+          <form action="#" method="get" class="sidebar-form">
+            <div class="input-group">
+              <input type="text" name="q" class="form-control" placeholder="Search...">
+              <span class="input-group-btn">
+                <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i></button>
+              </span>
+            </div>
+          </form>
+          <!-- /.search form -->
+
+
+          <ul class="sidebar-menu" style="margin-left: 0px">
+            <li class="header">My Groups</li>
+            {% for group in sug_group %}
+              <li>
+                <a href="/cnc/group?groupid={{ group.id }}">
+                  <i class="fa fa-circle-o text-yellow"></i>
+                  <span>{{ group.group_name }}</span>
+
+                </a>
+              </li>
+            {% endfor %}
+            {% for group in groups %}
+
+              <li>
+                <a href="/cnc/ego?groupid={{ group.id }}">
+                  {% if group.creator == user %}
+
+                    <i class="fa fa-circle-o text-aqua"></i>
+                  {% else %}
+                    <i class="fa fa-circle-o text-green"></i>
+                  {% endif %}
+
+                  <span>{{ group.group_name }}</span>
+
+                </a>
+              </li>
+            {% endfor %}
+
+
+          </ul>
+        </section>
+        {% if status == 0 %}
+        <a  class="btn bg-olive btn-flat margin" data-toggle="modal" data-target="#group-create-modal" style="width:90%;"><i class="fa fa-plus pull-left"></i>Create a New Group</a>
+        {% else %}
+          <a  class="btn bg-yellow btn-flat margin" data-toggle="modal" data-target="#group-create-modal" style="width:90%;"><i class="fa fa-info pull-left"></i>Try Again</a>
+        {% endif %}
+        <!-- /.sidebar -->
+      </aside>
+
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+          <h1>
+            My Network
+            <small>create your social networks here</small>
+          </h1>
+          <ol class="breadcrumb">
+            <li><a href="/cnc/home"><i class="fa fa-home"></i>{{ project_name }}</a></li>
+            <li class="active">My Network</li>
+          </ol>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+
+          <div class="row">
+            <div class="col-md-9 col-sm-12">
+              <div class="box box-primary">
+                <div class="box-header">
+                  <h3 class="box-title"></h3>
+                </div>
+
+                  <div id="main-panel" class="bg-gray-light" style="height: 750px;">
+                    <div id="network" style="position: absolute">
+
+                    </div>
+                    <div id="bt-menu" class="bt-menu">
+                      <a href="#" class="bt-menu-trigger"><span>Menu</span></a>
+                      <ul>
+                        <li><a id="lineme">Lineme</a></li>
+                        <li><a id="submit">Submit</a></li>
+                        <li><a id="reset">Reset</a></li>
+                        <li><a id="clear">Clear</a></li>
+                        <li><a id="info">Info</a></li>
+                        <li><a id="howto">Howto</a></li>
+                      </ul>
+                    </div>
+                  </div>
+              </div>
+            </div>
+            <div class="col-md-3 col-sm-12" id="sug-panel">
+              <div class="box box-success">
+                <div class="box-header with-border">
+
+                  <h3 class="box-title">Suggestions</h3>
+                </div><!-- /.box-header -->
+              </div>
+
+            </div>
+          </div>
+
+        </section><!-- /.content -->
+      </div><!-- /.content-wrapper -->
+
+      <!-- Main Footer -->
+      <footer class="main-footer">
+          <!-- To the right -->
+          <div class="pull-right hidden-xs">
+              POWERED BY HT
+          </div>
+          <!-- Default to the left -->
+          <strong>Copyright &copy; 2016 <a href="http://cnc.sjtu.edu.cn" target="_black">CNC</a>.</strong> All rights reserved.
+      </footer>
+
+      <div class="control-sidebar-bg"></div>
+    </div><!-- ./wrapper -->
+
+    <!-- REQUIRED JS SCRIPTS -->
+
+    <!-- jQuery 2.1.4 -->
+    <script src="/static/plugins/jQuery/jQuery-2.1.4.min.js"></script>
+    <!-- Bootstrap 3.3.5 -->
+    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="/static/dist/js/app.min.js"></script>
+    <script src="/static/cnc/js/classie.js"></script>
+    <script src="/static/cnc/js/borderMenu.js"></script>
+    <script src="/static/plugins/iCheck/icheck.min.js"></script>
+
+    <script src="/static/d3/js/d3.js"></script>
+    <script src="/static/d3/js/d3-tip.js"></script>
+
+    {% if groupid != 0 %}
+      <script type="text/javascript">
+        var groupid = 0;
+        groupid = {{ groupid }};
+      </script>
+      <script src="/static/cnc/js/lineme.js"></script>
+    {% endif %}
+
+    <script type="text/javascript">
+
+      $('#group-create-modal').on('show.bs.modal', function (e) {
+        $(this).find('.modal-dialog').css({
+          'margin-top': function () {
+            var modalHeight = $('#search').find('.modal-dialog').height();
+            return ($(window).height() / 6 - (modalHeight / 2));
+          }
+        });
+
+      });
+
+      $('input[type="checkbox"].flat-red, input[type="radio"].minimal').iCheck({
+        checkboxClass: 'icheckbox_flat-green',
+        radioClass: 'iradio_flat-green'
+      });
+
+
+
+    </script>
+
+
+  </body>
+</html>
