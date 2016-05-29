@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
     <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
-    <link rel="stylesheet" href="/static/cnc/css/borderMenu.css">
+    <link rel="stylesheet" href="/static/lineme/css/borderMenu.css">
 
     <style>
 
@@ -109,20 +109,24 @@
               <div class="form-group">
                 <label>Group Identifier</label>
                 <select class="form-control select2" name="identifier">
-                  <option value="0" selected="selected">Email</option>
-                  <option value="1">Institution</option>
-                  <option value="2">Special Code</option>
+                  {% for k, v in identifier.items %}
+                    {% if k == 0 %}
+                      <option value="{{ k }}" selected="selected">{{ v }}</option>
+                    {% else %}
+                      <option value="{{ k }}">{{ v }}</option>
+                    {% endif %}
+                  {% endfor %}
                 </select>
               </div><!-- /.form-group -->
               <label>Group Type</label>
               <div class="form-group">
 
                 <label style="padding-right: 10px">
-                  <input type="radio" name="r1" class="minimal" checked>
+                  <input type="radio" name="type" class="minimal" value="0" checked>
                   Normal
                 </label>
                 <label>
-                  <input type="radio" name="r1" class="minimal">
+                  <input type="radio" name="type" class="minimal" value="1">
                   RealTime
                 </label>
               </div>
@@ -138,8 +142,7 @@
       <header class="main-header">
 
         <!-- Logo -->
-        <a href="/cnc/home" class="logo">
-{#          <span class="logo-mini"><b>A</b>LT</span>#}
+        <a href="{% url 'home' %}" class="logo">
           <span class="logo-lg"><b>{{ project_name }}</b></span>
         </a>
 
@@ -166,7 +169,7 @@
                       </li>
                     </ul><div class="slimScrollBar" style="width: 3px; position: absolute; top: 0px; opacity: 0.4; display: none; border-radius: 7px; z-index: 99; right: 1px; height: 195.122px; background: rgb(0, 0, 0);"></div><div class="slimScrollRail" style="width: 3px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; opacity: 0.2; z-index: 90; right: 1px; background: rgb(51, 51, 51);"></div></div>
                   </li>
-                  <li class="footer"><a href="/cnc/home">View all</a></li>
+                  <li class="footer"><a href="{% url 'home' %}">View all</a></li>
                 </ul>
               </li><!-- /.messages-menu -->
 
@@ -175,18 +178,18 @@
               <!-- User Account Menu -->
               <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                    <img src="/static/pic/avatar/{{ user.id }}.png" class="user-image" alt="User Image">
+                    <img src="/static/images/user_avatars/{{ user.id }}.png" class="user-image" alt="User Image">
                     <!-- hidden-xs hides the username on small devices so only the image appears. -->
                     <span class="hidden-xs">{{ user.username }}</span>
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu" role="menu">
-                  <li><a href="#">My Network</a></li>
-                  <li><a href="#">Global Network</a></li>
-                  <li><a href="#">My Profile</a></li>
-                  <li><a href="#">Settings</a></li>
+                  <li><a href={% url 'ego' %}>My Network</a></li>
+                  <li><a href={% url 'global' %}>Global Network</a></li>
+                  <li><a href={% url 'profile' %}>My Profile</a></li>
+                  <li><a href={% url 'settings' %}>Settings</a></li>
                   <li class="divider"></li>
-                  <li><a href="/cnc/logout">Sign Out</a></li>
+                  <li><a href={% url 'logout' %}>Sign Out</a></li>
 
                 </ul>
               </li>
@@ -203,7 +206,7 @@
           <!-- Sidebar user panel (optional) -->
           <div class="user-panel">
             <div class="pull-left image">
-              <img onclick="window.location.href='/cnc/avatar'" src="/static/pic/avatar/{{ user.id }}.png" class="img-circle" alt="User Image" style="cursor:pointer">
+              <img onclick="window.location.href='{% url 'avatar' %}'" src="/static/images/user_avatars/{{ user.id }}.png" class="img-circle" alt="User Image" style="cursor:pointer">
             </div>
             <div class="pull-left info">
               <p>{{ user.username }}</p>
@@ -226,9 +229,9 @@
 
           <ul class="sidebar-menu" style="margin-left: 0px">
             <li class="header">My Groups</li>
-            {% for group in sug_group %}
+            {% for group in rcmd_groups %}
               <li>
-                <a href="/cnc/group?groupid={{ group.id }}">
+                <a href="{% url 'group' %}?groupid={{ group.id }}">
                   <i class="fa fa-circle-o text-yellow"></i>
                   <span>{{ group.group_name }}</span>
 
@@ -236,9 +239,8 @@
               </li>
             {% endfor %}
             {% for group in groups %}
-
               <li>
-                <a href="/cnc/ego?groupid={{ group.id }}">
+                <a href="{% url 'ego' %}?groupid={{ group.id }}">
                   {% if group.creator == user %}
 
                     <i class="fa fa-circle-o text-aqua"></i>
@@ -251,12 +253,10 @@
                 </a>
               </li>
             {% endfor %}
-
-
           </ul>
         </section>
         {% if status == 0 %}
-        <a  class="btn bg-olive btn-flat margin" data-toggle="modal" data-target="#group-create-modal" style="width:90%;"><i class="fa fa-plus pull-left"></i>Create a New Group</a>
+          <a  class="btn bg-olive btn-flat margin" data-toggle="modal" data-target="#group-create-modal" style="width:90%;"><i class="fa fa-plus pull-left"></i>Create a New Group</a>
         {% else %}
           <a  class="btn bg-yellow btn-flat margin" data-toggle="modal" data-target="#group-create-modal" style="width:90%;"><i class="fa fa-info pull-left"></i>Try Again</a>
         {% endif %}
@@ -267,12 +267,19 @@
       <div class="content-wrapper">
         <!-- Content Header (Page header) -->
         <section class="content-header">
+          {% if group %}
           <h1>
-            My Network
-            <small>create your social networks here</small>
+            Group: {{ group.group_name }}
+            <small>modify your social networks here</small>
           </h1>
+          {% else %}
+            <h1>
+              My Network
+              <small>create your social networks here</small>
+            </h1>
+          {% endif %}
           <ol class="breadcrumb">
-            <li><a href="/cnc/home"><i class="fa fa-home"></i>{{ project_name }}</a></li>
+            <li><a href="{% url 'home' %}"><i class="fa fa-home"></i>{{ project_name }}</a></li>
             <li class="active">My Network</li>
           </ol>
         </section>
@@ -340,19 +347,19 @@
     <script src="/static/bootstrap/js/bootstrap.min.js"></script>
     <!-- AdminLTE App -->
     <script src="/static/dist/js/app.min.js"></script>
-    <script src="/static/cnc/js/classie.js"></script>
-    <script src="/static/cnc/js/borderMenu.js"></script>
+    <script src="/static/lineme/js/classie.js"></script>
+    <script src="/static/lineme/js/borderMenu.js"></script>
     <script src="/static/plugins/iCheck/icheck.min.js"></script>
 
     <script src="/static/d3/js/d3.js"></script>
     <script src="/static/d3/js/d3-tip.js"></script>
 
-    {% if groupid != 0 %}
+    {% if group %}
       <script type="text/javascript">
         var groupid = 0;
-        groupid = {{ groupid }};
+        groupid = {{ group.id }};
       </script>
-      <script src="/static/cnc/js/lineme.js"></script>
+      <script src="/static/lineme/js/ego.js"></script>
     {% endif %}
 
     <script type="text/javascript">
@@ -375,7 +382,5 @@
 
 
     </script>
-
-
   </body>
 </html>

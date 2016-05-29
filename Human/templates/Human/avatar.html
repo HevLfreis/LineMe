@@ -18,6 +18,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
     <style>
 
+      .pull-left {
+        margin-top: 3px;
+      }
+
       .btn.btn-primary, .btn.btn-success{
         margin-left: auto;
         margin-right: auto;
@@ -61,7 +65,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
       <header class="main-header">
 
         <!-- Logo -->
-        <a href="/cnc/home" class="logo">
+        <a href="{% url 'home' %}" class="logo">
           <!-- mini logo for sidebar mini 50x50 pixels -->
           <span class="logo-mini"><b></b></span>
           <!-- logo for regular state and mobile devices -->
@@ -92,7 +96,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                       </li>
                     </ul><div class="slimScrollBar" style="width: 3px; position: absolute; top: 0px; opacity: 0.4; display: none; border-radius: 7px; z-index: 99; right: 1px; height: 195.122px; background: rgb(0, 0, 0);"></div><div class="slimScrollRail" style="width: 3px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; opacity: 0.2; z-index: 90; right: 1px; background: rgb(51, 51, 51);"></div></div>
                   </li>
-                  <li class="footer"><a href="/cnc/home">View all</a></li>
+                  <li class="footer"><a href="{% url 'home' %}">View all</a></li>
                 </ul>
               </li><!-- /.messages-menu -->
 
@@ -100,18 +104,18 @@ scratch. This page gets rid of all links and provides the needed markup only.
               <!-- User Account Menu -->
               <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                    <img src="/static/pic/avatar/{{ user.id }}.png" class="user-image" alt="User Image">
+                    <img src="/static/images/user_avatars/{{ user.id }}.png" class="user-image" alt="User Image">
                     <!-- hidden-xs hides the username on small devices so only the image appears. -->
                     <span class="hidden-xs">{{ user.username }}</span>
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu" role="menu">
-                  <li><a href="#">My Network</a></li>
-                  <li><a href="#">Global Network</a></li>
-                  <li><a href="#">My Profile</a></li>
-                  <li><a href="#">Settings</a></li>
+                  <li><a href={% url 'ego' %}>My Network</a></li>
+                  <li><a href={% url 'global' %}>Global Network</a></li>
+                  <li><a href={% url 'profile' %}>My Profile</a></li>
+                  <li><a href={% url 'settings' %}>Settings</a></li>
                   <li class="divider"></li>
-                  <li><a href="/cnc/logout">Sign Out</a></li>
+                  <li><a href={% url 'logout' %}>Sign Out</a></li>
 
                 </ul>
               </li>
@@ -128,7 +132,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
           <!-- Sidebar user panel (optional) -->
           <div class="user-panel">
             <div class="pull-left image">
-              <img onclick="window.location.href='/cnc/avatar'" src="/static/pic/avatar/{{ user.id }}.png" class="img-circle" alt="User Image" style="cursor:pointer">
+              <img onclick="window.location.href='{% url 'avatar' %}'" src="/static/images/user_avatars/{{ user.id }}.png" class="img-circle" alt="User Image" style="cursor:pointer">
             </div>
             <div class="pull-left info">
               <p>{{ user.username }}</p>
@@ -226,7 +230,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 {#            <small>Optional description</small>#}
           </h1>
           <ol class="breadcrumb">
-            <li><a href="/cnc/home"><i class="fa fa-home"></i>{{ project_name }}</a></li>
+            <li><a href="{% url 'home' %}"><i class="fa fa-home"></i>{{ project_name }}</a></li>
             <li class="active">Upload Avatar</li>
           </ol>
         </section>
@@ -247,8 +251,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
                           <li class="fa fa-rotate-right fa-lg rotate-cw" style="cursor: pointer"></li>
                           <input type="range" class="cropit-image-zoom-input" style=""/>
                         </div>
-
-
 
                     </div>
                     <div class="col-md-5 col-xs-12 text-center" style="margin-top: 25%">
@@ -319,7 +321,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
       $('.cropit-preview').height($('.cropit-preview').width());
       $('#image-cropper').cropit({
         imageState: {
-          src: '/static/pic/avatar/{{ user.id }}.png'
+          src: '/static/images/user_avatars/{{ user.id }}.png'
         },
         smallImage: 'stretch',
         onFileChange: function() {
@@ -346,7 +348,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
         $.ajax({
           type: "POST",
-          url: "/cnc/imghandle/",
+          url: {% url 'imgHandle' %},
           data: {
             imgBase64:imageData
           }
@@ -359,9 +361,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
           alert("Upload failed");
         });
       });
-
-
-
 
     </script>
 

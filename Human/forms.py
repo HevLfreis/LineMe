@@ -5,6 +5,7 @@
 # Time: 21:26
 #
 from django import forms
+from Human.constants import IDENTIFIER, GROUP_TYPE
 
 
 class LoginForm(forms.Form):
@@ -13,7 +14,7 @@ class LoginForm(forms.Form):
 
 
 class RegisterForm(forms.Form):
-    name = forms.CharField(label='Acount name', max_length=40)
+    name = forms.CharField(label='Account name', max_length=40)
     email = forms.EmailField()
     password = forms.CharField(widget=forms.PasswordInput)
     password2 = forms.CharField(widget=forms.PasswordInput)
@@ -22,12 +23,10 @@ class RegisterForm(forms.Form):
 class GroupCreateForm(forms.Form):
     name = forms.CharField()
     maxsize = forms.IntegerField()
-    CHOICES = (
-        ('0', 'Email'),
-        ('1', 'Institution'),
-        ('2', 'Special Code'),
-    )
-    identifier = forms.CharField(widget=forms.Select(choices=CHOICES))
+    CHOICES1 = tuple(IDENTIFIER.items())
+    CHOICES2 = tuple(GROUP_TYPE.items())
+    identifier = forms.CharField(widget=forms.Select(choices=CHOICES1))
+    type = forms.ChoiceField(widget=forms.RadioSelect, choices=CHOICES2)
 
 
 class GroupMemberCreateForm(forms.Form):
@@ -38,3 +37,7 @@ class GroupMemberCreateForm(forms.Form):
 class ReJoinIdentifierForm(forms.Form):
     groupid = forms.CharField()
     identifier = forms.CharField(required=True)
+
+
+class FileUploadForm(forms.Form):
+    members = forms.FileField()

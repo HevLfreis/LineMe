@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://F:/Python Projects/LineMe/.idea/LineMe.iml" filepath="F:/Python Projects/LineMe/.idea/LineMe.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/LineMe.iml" filepath="$PROJECT_DIR$/.idea/LineMe.iml" />
     </modules>
   </component>
 </project>

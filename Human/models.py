@@ -5,7 +5,7 @@ from django.db import models
 
 
 class Privacy(models.Model):
-
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     # -----
     link_me = models.BooleanField()
     see_my_global = models.BooleanField()
@@ -46,11 +46,9 @@ class GroupMember(models.Model):
 
 class Link(models.Model):
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
-    from_member = models.ForeignKey(GroupMember, related_name='from_member')
-    to_member = models.ForeignKey(GroupMember, related_name='to_member')
 
-    # source_member = models.ForeignKey(GroupMember, related_name='source_member')
-    # target_member = models.ForeignKey(GroupMember, related_name='target_member')
+    source_member = models.ForeignKey(GroupMember, related_name='source_member')
+    target_member = models.ForeignKey(GroupMember, related_name='target_member')
 
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
     status = models.IntegerField()

@@ -54,11 +54,11 @@
               {% endif %}
               <div class="form-group has-feedback">
                 <label for="member-identifier">Identifier</label>
-                {% if group.identifier == 2 %}
+                {% if group.identifier == 0 %}
                   <input type="text" class="form-control" name="identifier" placeholder="Enter identifier for this member">
-                {% elif group.identifier == 1 %}
+                {% elif group.identifier == 2 %}
                   <input type="text" class="form-control" name="identifier" placeholder="Enter institution for this member">
-                {% elif group.identifier == 0 %}
+                {% elif group.identifier == 1 %}
                   <input type="text" class="form-control" name="identifier" placeholder="Enter email for this member">
                 {% endif %}
 
@@ -77,7 +77,7 @@
       <header class="main-header">
 
         <!-- Logo -->
-        <a href="/cnc/home" class="logo">
+        <a href="{% url 'home' %}" class="logo">
           <span class="logo-mini"><b></b></span>
           <span class="logo-lg"><b>{{ project_name }}</b></span>
         </a>
@@ -106,7 +106,7 @@
                       </li>
                     </ul><div class="slimScrollBar" style="width: 3px; position: absolute; top: 0px; opacity: 0.4; display: none; border-radius: 7px; z-index: 99; right: 1px; height: 195.122px; background: rgb(0, 0, 0);"></div><div class="slimScrollRail" style="width: 3px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; opacity: 0.2; z-index: 90; right: 1px; background: rgb(51, 51, 51);"></div></div>
                   </li>
-                  <li class="footer"><a href="/cnc/home">View all</a></li>
+                  <li class="footer"><a href="{% url 'home' %}">View all</a></li>
                 </ul>
               </li><!-- /.messages-menu -->
 
@@ -114,19 +114,18 @@
               <!-- User Account Menu -->
               <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                    <img src="/static/pic/avatar/{{ user.id }}.png" class="user-image" alt="User Image">
+                    <img src="/static/images/user_avatars/{{ user.id }}.png" class="user-image" alt="User Image">
                     <!-- hidden-xs hides the username on small devices so only the image appears. -->
                     <span class="hidden-xs">{{ user.username }}</span>
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu" role="menu">
-                  <li><a href="/cnc/ego">My Network</a></li>
-                  <li><a href="/cnc/global">Global Network</a></li>
-                  <li><a href="/cnc/profile">My Profile</a></li>
-                  <li><a href="/cnc/settins">Settings</a></li>
+                  <li><a href={% url 'ego' %}>My Network</a></li>
+                  <li><a href={% url 'global' %}>Global Network</a></li>
+                  <li><a href={% url 'profile' %}>My Profile</a></li>
+                  <li><a href={% url 'settings' %}>Settings</a></li>
                   <li class="divider"></li>
-                  <li><a href="/cnc/logout">Sign Out</a></li>
-
+                  <li><a href={% url 'logout' %}>Sign Out</a></li>
                 </ul>
               </li>
             </ul>
@@ -142,7 +141,7 @@
           <!-- Sidebar user panel (optional) -->
           <div class="user-panel">
             <div class="pull-left image">
-              <img onclick="window.location.href='/cnc/avatar'" src="/static/pic/avatar/{{ user.id }}.png" class="img-circle" alt="User Image" style="cursor:pointer">
+              <img onclick="window.location.href='{% url 'avatar' %}'" src="/static/images/user_avatars/{{ user.id }}.png" class="img-circle" alt="User Image" style="cursor:pointer">
             </div>
             <div class="pull-left info">
               <p>{{ user.username }}</p>
@@ -166,7 +165,7 @@
             <li class="header">My Groups</li>
             {% for k, v in sug.items %}
               <li>
-                <a href="/cnc/group?groupid={{ k }}">
+                <a href="{% url 'group' %}?groupid={{ k }}">
                   <i class="fa fa-circle-o text-yellow"></i>
                   <span>{{ v }}</span>
 
@@ -176,7 +175,7 @@
             {% for group in groups %}
 
               <li>
-                <a href="/cnc/group?groupid={{ group.id }}">
+                <a href="{% url 'group' %}?groupid={{ group.id }}">
                   {% if group.creator == user %}
 
                     <i class="fa fa-circle-o text-aqua"></i>
@@ -201,11 +200,11 @@
         <!-- Content Header (Page header) -->
         <section class="content-header">
           <h1>
-            My Group {{ group.group_name }}
+            My Group: {{ group.group_name }}
 {#            <small>Optional description</small>#}
           </h1>
           <ol class="breadcrumb">
-            <li><a href="/cnc/home"><i class="fa fa-home"></i>{{ project_name }}</a></li>
+            <li><a href="{% url 'home' %}"><i class="fa fa-home"></i>{{ project_name }}</a></li>
             <li class="active">Group</li>
           </ol>
         </section>
@@ -240,20 +239,20 @@
                     <div class="form-group">
                       <label>Group Identifier</label>
                       <select class="form-control select2" name="identifier" disabled>
-                        <option value="0" {% if group.identifier == 0 %}selected="selected"{% endif %}>Email</option>
-                        <option value="1" {% if group.identifier == 1 %}selected="selected"{% endif %}>Institution</option>
-                        <option value="2" {% if group.identifier == 2 %}selected="selected"{% endif %}>Special Code</option>
+                        <option value="0" {% if group.identifier == 1 %}selected="selected"{% endif %}>Email</option>
+                        <option value="1" {% if group.identifier == 2 %}selected="selected"{% endif %}>Institution</option>
+                        <option value="2" {% if group.identifier == 0 %}selected="selected"{% endif %}>Special Code</option>
                       </select>
                     </div><!-- /.form-group -->
                     <label>Group Type</label>
                     <div class="form-group">
 
                       <label style="padding-right: 10px">
-                        <input type="radio" name="r1" class="minimal" checked>
+                        <input type="radio" name="r1" class="minimal" {% if group.type == 0 %}checked{% endif %}>
                         Normal
                       </label>
                       <label>
-                        <input type="radio" name="r1" class="minimal">
+                        <input type="radio" name="r1" class="minimal" {% if group.type == 1 %}checked{% endif %}>
                         RealTime
                       </label>
                     </div>
@@ -261,9 +260,21 @@
                       <label>Create New Members</label>
                       <div class="btn-group">
                         <button type="button" class="btn bg-navy btn-flat" data-toggle="modal" data-target="#member-create-modal">Add One</button>
-                        <button type="button" class="btn bg-purple btn-flat" disabled>From File</button>
+                        <button type="button" class="btn bg-purple btn-flat" onclick="chooseFile();">From File</button>
+                        <form id="from-file" method="post" action="{% url 'uploadMembers' group.id %}" enctype="multipart/form-data" hidden>
+                          <input type="file" name="members"/>
+                        </form>
+
                       </div>
+                      {% if up != None %}
+                        {% if up == '0' %}
+                          <p class="text-center bg-red" style="margin-top: 5px">Update failed</p>
+                        {% else %}
+                          <p class="text-center bg-green" style="margin-top: 5px">Update members successfully</p>
+                        {% endif %}
+                      {% endif %}
                     </div>
+
                   </div>
                   <div class="col-md-7">
                     <table class="table no-margin">
@@ -301,20 +312,30 @@
 
                       </tbody>
                     </table>
-
-
-
                   </div>
                 </div>
 
                 <div class="box-footer clearfix">
+                  <div class="box-tools pull-left">
+                    <button type="button" class="btn bg-red">DELETE THIS GROUP</button>
+                  </div>
                   <div class="box-tools pull-right">
                     <ul class="pagination pagination-sm inline">
-                      <li><a href="#">«</a></li>
-                      <li><a href="#">1</a></li>
-                      <li><a href="#">2</a></li>
-                      <li><a href="#">3</a></li>
-                      <li><a href="#">»</a></li>
+                      {% if members.has_previous %}
+                        <li><a href="{% url 'group' %}?groupid={{ group.id }}&page={{ members.previous_page_number }}">«</a></li>
+                      {% else %}
+                        <li class="disabled"><a href="#">«</a></li>
+                      {% endif %}
+                      {#      {% for i in "012" %}#}
+                      <li><a>{{ members.number }}/{{ members.paginator.num_pages }}</a></li>
+                      {#      {% endfor %}#}
+
+                      {% if members.has_next %}
+                        <li><a href="{% url 'group' %}?groupid={{ group.id }}&page={{ members.next_page_number }}">»</a></li>
+                      {% else %}
+                        <li class="disabled"><a href="#">»</a></li>
+                      {% endif %}
+
                     </ul>
                   </div>
                 </div><!-- /.box-footer -->
@@ -336,10 +357,6 @@
           <!-- Default to the left -->
           <strong>Copyright &copy; 2016 <a href="http://cnc.sjtu.edu.cn" target="_black">CNC</a>.</strong> All rights reserved.
       </footer>
-
-
-      <!-- Add the sidebar's background. This div must be placed
-           immediately after the control sidebar -->
       <div class="control-sidebar-bg"></div>
     </div><!-- ./wrapper -->
 
@@ -354,36 +371,46 @@
     <!-- iCheck 1.0.1 -->
     <script src="/static/plugins/iCheck/icheck.min.js"></script>
 
-  <script type="text/javascript">
+    <script type="text/javascript">
 
-    var emails = "{{ user.email }}".split("@");
-    var births = "{{ user.extra.birth }}".split(",");
-    var locations = "{{ user.extra.location }}".split(" ");
-    var institutions = "{{ user.extra.institution }}".split(" ");
-    $('#profile-email1').text(emails[0]);
-    $('#profile-email2').text('@'+emails[1]);
-    $('#profile-birth').text(births[0]);
-    $('#profile-location1').text(locations[0]);
-    $('#profile-location2').text(locations[1]);
-    $('#profile-institution1').text(institutions[0]);
-    $('#profile-institution2').text(institutions[1]);
+      var emails = "{{ user.email }}".split("@");
+      var births = "{{ user.extra.birth }}".split(",");
+      var locations = "{{ user.extra.location }}".split(" ");
+      var institutions = "{{ user.extra.institution }}".split(" ");
+      $('#profile-email1').text(emails[0]);
+      $('#profile-email2').text('@'+emails[1]);
+      $('#profile-birth').text(births[0]);
+      $('#profile-location1').text(locations[0]);
+      $('#profile-location2').text(locations[1]);
+      $('#profile-institution1').text(institutions[0]);
+      $('#profile-institution2').text(institutions[1]);
 
-    $('.modal').on('show.bs.modal', function (e) {
-      $(this).find('.modal-dialog').css({
-        'margin-top': function () {
-          var modalHeight = $('#search').find('.modal-dialog').height();
-          return ($(window).height() / 6 - (modalHeight / 2));
-        }
+      $('.modal').on('show.bs.modal', function (e) {
+        $(this).find('.modal-dialog').css({
+          'margin-top': function () {
+            var modalHeight = $('#search').find('.modal-dialog').height();
+            return ($(window).height() / 6 - (modalHeight / 2));
+          }
+        });
+
       });
 
-    });
+
+      $('input[type="checkbox"].flat-red, input[type="radio"].minimal').iCheck({
+        checkboxClass: 'icheckbox_flat-green',
+        radioClass: 'iradio_flat-green'
+      });
+
+      function chooseFile() {
+        $('input').click()
+      }
+
+      $('input').change(function() {
+        console.log('hi');
+        $('#from-file').submit();
+      });
 
 
-    $('input[type="checkbox"].flat-red, input[type="radio"].minimal').iCheck({
-      checkboxClass: 'icheckbox_flat-green',
-      radioClass: 'iradio_flat-green'
-    });
-
-  </script>
+    </script>
   </body>
 </html>

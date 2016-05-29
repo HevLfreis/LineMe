@@ -1,24 +1,22 @@
 /**
-* Created with PyCharm.
-* User: Freeeeeeeee
 * Date: 2016/5/4
 * Time: 14:29
 */
 
 var sugNodeAdded = {};
 
-function updateSugPanel(page) {
+function updateRcmdPanel(page) {
 
-    $.get("/cnc/sugmember/"+groupid+"/"+page, function(data) {
+    $.get("/rcmd/"+groupid+"/"+page, function(data) {
         $('#sug-panel').html(data);
 
         $('#refresh').click(function() {
-            updateSugPanel(1);
+            updateRcmdPanel(1);
         });
 
         $('.widget-user-2')
             .addClass(function(){
-                if (sugNodeAdded[sugId2Node($(this).attr("id")).id]) return "bg-gray";
+                if (sugNodeAdded[rcmdId2Node($(this).attr("id")).id]) return "bg-gray";
                 else return "bg-gray-light";
             });
         $('.widget-user-2.bg-gray-light')
@@ -32,31 +30,30 @@ function updateSugPanel(page) {
 
                 //后台一定要检测新node的正确性！！！！！！！！！！！！！！！
 
-                var newNode = sugId2Node($(this).attr("id"));
+                var newNode = rcmdId2Node($(this).attr("id"));
 
                 if (!sugNodeAdded[newNode.id]) {
                     nodes.push(newNode);
                     sugNodeAdded[newNode.id] = true;
-                    $(this).removeClass("bg-gray-light").addClass("bg-gray").off('mouseout').off('mouseover');
+                    $(this).removeClass("bg-gray-light").addClass("bg-gray").off('mouseout').off('mouseover').off('click');
                     start();
                 }
-
 
             });
 
     });
 }
 
-function sugId2Node(id) {
+function rcmdId2Node(id) {
     var ids = id.split('-');
     return {group: Math.floor(Math.random() * 10) + 1, name: ids[3], userid: ids[2] == ''? -1: parseInt(ids[2]), id: ids[1], creator: false}
 }
 
-updateSugPanel(1);
+updateRcmdPanel(1);
 
-
-var width = $("#main-panel").width(),
-    height = $("#main-panel").height();
+var mp = $("#main-panel");
+var width = mp.width(),
+    height = mp.height();
 
 var xScale = d3.scale.linear()
     .domain([0,width]).range([0,width]);
@@ -117,7 +114,7 @@ var linkedIndex = {};
 
 var defs = vis.append("defs").attr("id", "imgdefs");
 //d3.json("/static/data/miserables.json", function(error, graph) {
-d3.json("/cnc/graph/"+groupid+"/", function(error, graph) {
+d3.json("/graph/"+groupid+"/", function(error, graph) {
     if (error) {
         alert("Network error");
         throw error;
@@ -149,7 +146,6 @@ d3.json("/cnc/graph/"+groupid+"/", function(error, graph) {
     links.forEach(function(d) {
         linkedIndex[d.source.id + "," + d.target.id] = true;
     });
-
 
 
     //console.log(graph.nodes);
@@ -220,7 +216,7 @@ function start(){
         .attr('height', 50)
         .attr("xlink:href", function(d) {
             if (d.userid != -1)
-                return "/static/pic/avatar/"+ d.userid+".png"
+                return "/static/images/user_avatars/"+ d.userid+".png"
         })
         .attr("clip-path", "url(#clip-circle)");
 
@@ -318,7 +314,6 @@ function nodeMouseout(d, i) {
 }
 
 
-
 function linkMouseover(d) {
     if (selected) return;
     d3.select(this).classed("link-selected", true);
@@ -358,41 +353,38 @@ $('#submit').click(function() {
     $.ajax({
         type: "POST",
         data: { links: data },
-        url: "/cnc/links/"+groupid+"/",
+        url: "/update/"+groupid+"/",
         success: function(msg){
             nodesCopy = nodes.slice(0);
             linksCopy = links.slice(0);
             alert(msg);
-            updateSugPanel(1);
+            updateRcmdPanel(1);
             resetMenu();
         }
     });
 });
 
-$('#lineme').click(function() {
-
-    nodes.forEach(function(node) {
-        if (node != self  && (!linkedIndex[self.id + "," + node.id]
-            && !linkedIndex[node.id + "," + self.id])) {
-            links.push({"source" : self, "target": node, "value": 1});
-            linkedIndex[self.id + "," + node.id] = true;
-        }
-    });
-
-    start();
-    resetMenu();
-});
+//$('#lineme').click(function() {
+//
+//    nodes.forEach(function(node) {
+//        if (node != self  && (!linkedIndex[self.id + "," + node.id]
+//            && !linkedIndex[node.id + "," + self.id])) {
+//            links.push({"source" : self, "target": node, "value": 1});
+//            linkedIndex[self.id + "," + node.id] = true;
+//        }
+//    });
+//
+//    start();
+//    resetMenu();
+//});
 
 $('#reset').click(function() {
-
 
     nodes = nodesCopy.slice(0);
     links = linksCopy.slice(0);
 
     start();
     sugNodeAdded = {};
-    updateSugPanel(1);
+    updateRcmdPanel(1);
     resetMenu();
 });
-
-//}
