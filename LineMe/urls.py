@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^register/$', views.lm_register, name='register'),
 
     url(r'^home/$', views.home, name='home'),
+    url(r'^mesg/(?P<type>[0-1])/(?P<linkid>[0-9]+)/$', views.mesg_handle, name='mesgHandle'),
     #
     url(r'^ego/$', views.ego, name='ego'),
     url(r'^global/$', views.ego, name='global'),

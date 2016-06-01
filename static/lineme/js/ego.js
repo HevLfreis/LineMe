@@ -3,12 +3,12 @@
 * Time: 14:29
 */
 
-var sugNodeAdded = {};
+var rcmdAddedNode = {};
 
 function updateRcmdPanel(page) {
 
     $.get("/rcmd/"+groupid+"/"+page, function(data) {
-        $('#sug-panel').html(data);
+        $('#rcmd-panel').html(data);
 
         $('#refresh').click(function() {
             updateRcmdPanel(1);
@@ -16,7 +16,7 @@ function updateRcmdPanel(page) {
 
         $('.widget-user-2')
             .addClass(function(){
-                if (sugNodeAdded[rcmdId2Node($(this).attr("id")).id]) return "bg-gray";
+                if (rcmdAddedNode[rcmdId2Node($(this).attr("id")).id]) return "bg-gray";
                 else return "bg-gray-light";
             });
         $('.widget-user-2.bg-gray-light')
@@ -32,9 +32,9 @@ function updateRcmdPanel(page) {
 
                 var newNode = rcmdId2Node($(this).attr("id"));
 
-                if (!sugNodeAdded[newNode.id]) {
+                if (!rcmdAddedNode[newNode.id]) {
                     nodes.push(newNode);
-                    sugNodeAdded[newNode.id] = true;
+                    rcmdAddedNode[newNode.id] = true;
                     $(this).removeClass("bg-gray-light").addClass("bg-gray").off('mouseout').off('mouseover').off('click');
                     start();
                 }
@@ -50,6 +50,14 @@ function rcmdId2Node(id) {
 }
 
 updateRcmdPanel(1);
+
+var tip = d3.tip()
+    .attr({'class': 'd3-tip'})
+    .html(function(d) {
+        if(d.self) return '<span> Me </span>';
+        else return '<span>' + d.name + '</span>';
+    })
+    .direction('e').offset([0, -20]);
 
 var mp = $("#main-panel");
 var width = mp.width(),
@@ -74,7 +82,6 @@ var zoomer = d3.behavior.zoom()
 var force = d3.layout.force()
     .charge(charge)
     .linkDistance(200)
-
     .size([width, height]);
 
 var drag = force.drag()
@@ -87,17 +94,34 @@ var drag = force.drag()
 var svg = d3.select("#network").append("svg")
     .attr("width", width)
     .attr("height", height)
-    .call(zoomer)
+    .on("mouseover", function(d){
+        return d3.select(this).call(zoomer);
+    })
+    .on("mouseout", function(d){
+        return d3.select(this).on(".zoom", null);
+    })
+    //.call(zoomer)
     .on("dblclick.zoom", null);
 
 
 function redraw() {
-    if (d3.event.scale > 1)
-        force.charge(charge* d3.event.scale*3).start();
+    var scale = d3.event.scale;
+    if (scale > 1)
+        force.charge(charge* scale*3).start();
     else
-        force.charge(charge* d3.event.scale).start();
+        force.charge(charge* scale).start();
+
     vis.attr("transform",
-        "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");
+        "translate(" + d3.event.translate + ")" + " scale(" + scale + ")");
+
+    tip.style({
+        "height": 50*scale+'px',
+        "font-size": 20*scale+'px',
+        "padding": 14*scale+'px '+15*scale+'px '+15*scale+'px '+30*scale+'px'
+    });
+    tip.offset([0, -20*scale]);
+
+
 }
 
 
@@ -106,11 +130,12 @@ var vis = svg.append("svg:g");
 vis.attr('fill', 'red')
     .attr('stroke', 'black')
     .attr('stroke-width', 1)
-    .attr('id', 'vis');
+    .attr('id', 'vis')
+    .call(tip);
 
 
 var node, link, nodes, links, self, nodesCopy, linksCopy;
-var linkedIndex = {};
+var linkedIndex = {}, linkedIndexCopy = {};
 
 var defs = vis.append("defs").attr("id", "imgdefs");
 //d3.json("/static/data/miserables.json", function(error, graph) {
@@ -146,6 +171,8 @@ d3.json("/graph/"+groupid+"/", function(error, graph) {
     links.forEach(function(d) {
         linkedIndex[d.source.id + "," + d.target.id] = true;
     });
+
+    linkedIndexCopy = $.extend({}, linkedIndex);
 
 
     //console.log(graph.nodes);
@@ -183,7 +210,12 @@ function start(){
 
     link = link.data(links, function(d){return d.source.id + "," + d.target.id;});
     link.enter().insert("line", ".node")
-        .attr("class",  function(d) { return d.status == 3 ? "link":"link link-unconfirmed";})
+        .attr("class",  function(d) {
+            if(d.status == 3) return "link";
+            else if(d.status == 4) return "link link-created";
+            else if(d.status >= 0) return "link link-unconfirmed";
+            else if(d.status < 0) return "link link-rejected";
+        })
         .on("click", linkClick)
         .on("mouseout", linkMouseout).on("mouseover", linkMouseover);
     link.exit().remove();
@@ -220,8 +252,8 @@ function start(){
         })
         .attr("clip-path", "url(#clip-circle)");
 
-    updateNodes.append("title")
-        .text(function(d) { return d.name; });
+    //updateNodes.append("title")
+    //    .text(function(d) { return d.name; });
 
     force.start();
 
@@ -231,7 +263,7 @@ function start(){
 function linkClick(d){
     if (selected) return;
     linkedIndex[d.source.id + "," + d.target.id] = false;
-    console.log(links);
+    //console.log(links);
     links = links.filter(function(a) { return a.source.id + "," + a.target.id !== d.source.id + "," + d.target.id; });
     start();
 }
@@ -240,7 +272,7 @@ var selected;
 function nodeClick(d){
 
     if (d3.event.defaultPrevented) return;
-    console.log('Node click: ', d.name);
+    //console.log('Node click: ', d.name);
     if(!selected){
         selected = d;
         d3.select(this).style('stroke', '#cd3b23');
@@ -253,9 +285,9 @@ function nodeClick(d){
     else {
 
         if (!linkedIndex[selected.id + "," + d.id]&&!linkedIndex[d.id + "," + selected.id]&&selected!= d) {
-            console.log('New link:', selected, d);
+            //console.log('New link:', selected, d);
             linkedIndex[selected.id + "," + d.id] = true;
-            links.push({"source": selected, "target": d, "value": 1});
+            links.push({"source": selected, "target": d, "value": 1, "status": 4});
             start();
         }
 
@@ -266,9 +298,9 @@ function nodeClick(d){
 }
 
 function nodeDbclick(d, i){
-    console.log('Node dbclick: ', d.name, i);
+    //console.log('Node dbclick: ', d.name, i);
     if (d == self) return;
-    console.log(nodes);
+    //console.log(nodes);
     links = links.filter(function(a){
         if (d === a.source||d === a.target)
             linkedIndex[a.source.id + "," + a.target.id] = false;
@@ -277,18 +309,18 @@ function nodeDbclick(d, i){
 
     nodes = nodes.filter(function(a) { return a !== d ;});
 
-    sugNodeAdded[d.id] = false;
+    rcmdAddedNode[d.id] = false;
 
-    console.log(nodes);
+    //console.log(nodes);
     selected = null;
     start();
 }
 
 
-
 function nodeMouseover(d, i) {
     if (selected) return;
-
+    //console.log(d);
+    tip.attr('class', 'd3-tip animate').show(d);
     node.style("stroke", function(n) {
 
         if (linkedIndex[d.id + "," + n.id]||linkedIndex[n.id + "," + d.id])
@@ -307,7 +339,9 @@ function nodeMouseover(d, i) {
 
 function nodeMouseout(d, i) {
     if (selected) return;
-
+    //tip.style()
+    tip.attr('class', 'd3-tip').show(d);
+    tip.hide();
     node.style("stroke", function(n) { return color(n.group); });
     link.classed("link-selected", false);
 
@@ -357,6 +391,7 @@ $('#submit').click(function() {
         success: function(msg){
             nodesCopy = nodes.slice(0);
             linksCopy = links.slice(0);
+            linkedIndexCopy = $.extend({}, linkedIndex);
             alert(msg);
             updateRcmdPanel(1);
             resetMenu();
@@ -364,27 +399,28 @@ $('#submit').click(function() {
     });
 });
 
-//$('#lineme').click(function() {
-//
-//    nodes.forEach(function(node) {
-//        if (node != self  && (!linkedIndex[self.id + "," + node.id]
-//            && !linkedIndex[node.id + "," + self.id])) {
-//            links.push({"source" : self, "target": node, "value": 1});
-//            linkedIndex[self.id + "," + node.id] = true;
-//        }
-//    });
-//
-//    start();
-//    resetMenu();
-//});
+$('#lineme').click(function() {
+
+    nodes.forEach(function(node) {
+        if (node != self  && (!linkedIndex[self.id + "," + node.id]
+            && !linkedIndex[node.id + "," + self.id])) {
+            links.push({"source" : self, "target": node, "value": 1, "status": 4});
+            linkedIndex[self.id + "," + node.id] = true;
+        }
+    });
+
+    start();
+    resetMenu();
+});
 
 $('#reset').click(function() {
 
     nodes = nodesCopy.slice(0);
     links = linksCopy.slice(0);
+    linkedIndex = $.extend({}, linkedIndexCopy);
 
     start();
-    sugNodeAdded = {};
+    rcmdAddedNode = {};
     updateRcmdPanel(1);
     resetMenu();
 });

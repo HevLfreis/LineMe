@@ -10,15 +10,17 @@ from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.shortcuts import render, render_to_response, redirect, get_object_or_404
+from django.shortcuts import render, render_to_response, redirect, get_object_or_404, get_list_or_404
 from django.template import Context
 from django.utils import timezone
 from Human.constants import PROJECT_NAME, STATIC_FOLDER, IDENTIFIER
 from Human.forms import LoginForm, RegisterForm, GroupCreateForm, GroupMemberCreateForm, ReJoinIdentifierForm, \
     FileUploadForm
 from Human.methods import create_user, get_user_groups, get_group_joined_num, check_groupid, \
-    create_group, create_group_member, group_recommender, get_user_name, member_join, member_recommender, update_links
+    create_group, create_group_member, group_recommender, get_user_name, member_join, member_recommender, update_links, \
+    link_confirm, link_reject, get_user_mesgs
 from Human.models import Group, GroupMember, Link
 
 
@@ -53,6 +55,8 @@ def lm_login(request):
             else:
                 context["status"] = 'User does not existed'
                 return render(request, 'Human/login.html', context)
+        else:
+            render(request, 'Human/login.html', context)
 
     else:
         return render(request, 'Human/login.html', context)
@@ -118,24 +122,13 @@ def home(request):
         else:
             in_groups.setdefault(group, get_group_joined_num(group))
 
-    context = Context({"project_name": PROJECT_NAME, "user": user, "my_groups": my_groups, "in_groups": in_groups})
-    return render(request, 'Human/home.html', context)
+    my_members = GroupMember.objects.filter(user=user)
 
+    mesgs = get_user_mesgs(user)
 
-@login_required
-def ego(request):
-    user = request.user
-    groups = get_user_groups(user)
-    rcmd_groups = group_recommender(user)
-
-    groupid = check_groupid(request.GET.get('groupid'))
-    if groupid == 0:
-        group = None
-    else:
-        group = get_object_or_404(Group, id=groupid)
-
-    context = Context({"project_name": PROJECT_NAME, "user": user, "identifier": IDENTIFIER, "groups": groups,
-                       "group": group, "rcmd_groups": rcmd_groups, "status": 0})
+    context = Context({"project_name": PROJECT_NAME, "user": user, "my_groups": my_groups,
+                       "in_groups": in_groups, "my_members": my_members, "mesgs": mesgs,
+                       "mesgs_num": len(mesgs), "status": 0, "identifier": IDENTIFIER})
 
     if request.method == 'POST':
         gf = GroupCreateForm(request.POST)
@@ -154,12 +147,46 @@ def ego(request):
                 groupid = Group.objects.get(group_name=name).id
                 return redirect('/group?groupid='+str(groupid))
             else:
-                return render(request, 'Human/ego.html', context)
+                return render(request, 'Human/home.html', context)
         else:
             context["status"] = 1
-            return render(request, 'Human/ego.html', context)
+            return render(request, 'Human/home.html', context)
     else:
-        return render(request, 'Human/ego.html', context)
+        return render(request, 'Human/home.html', context)
+
+
+@login_required
+def mesg_handle(request, type, linkid):
+    user = request.user
+    if type == '1':
+        status = link_confirm(user, int(linkid))
+        print 'Confirm Link: ', linkid, user.username
+    elif type == '0':
+        status = link_reject(user, int(linkid))
+        print 'Reject Link: ', linkid, user.username
+    else:
+        raise Http404
+
+    return HttpResponse(status)
+
+
+@login_required
+def ego(request):
+    user = request.user
+    groups = get_user_groups(user)
+    rcmd_groups = group_recommender(user)
+    mesgs_num = len(get_user_mesgs(user))
+
+    groupid = check_groupid(request.GET.get('groupid'))
+    if groupid == 0:
+        group = None
+    else:
+        group = get_object_or_404(Group, id=groupid)
+
+    context = Context({"project_name": PROJECT_NAME, "user": user, "groups": groups,
+                       "group": group, "rcmd_groups": rcmd_groups, "status": 0, "mesgs_num": mesgs_num})
+
+    return render(request, 'Human/ego.html', context)
 
 
 @login_required
@@ -244,7 +271,9 @@ def update_graph(request, groupid):
 @login_required
 def avatar(request):
     user = request.user
-    context = Context({"project_name": PROJECT_NAME, "user": user})
+    mesgs_num = len(get_user_mesgs(user))
+
+    context = Context({"project_name": PROJECT_NAME, "user": user, "mesgs_num": mesgs_num})
     return render(request, 'Human/avatar.html', context)
 
 
@@ -280,11 +309,14 @@ def manage_group(request):
     up = request.GET.get('up')
     groups = get_user_groups(user)
     rcmd_groups = group_recommender(user)
+
+    mesgs_num = len(get_user_mesgs(user))
+
     groupid = request.GET.get('groupid')
     group = Group.objects.get(id=groupid)
 
     context = Context({"project_name": PROJECT_NAME, "user": user, "group": group, "groups": groups,
-                       "rcmd_groups": rcmd_groups, "up": up})
+                       "rcmd_groups": rcmd_groups, "up": up, "mesgs_num": mesgs_num})
 
     if groupid != check_groupid(groupid):
         raise Http404

@@ -6,12 +6,13 @@
     <title>{{ project_name }} | My Network</title>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/static/plugins/iCheck/all.css">
+
     <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
     <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
     <link rel="stylesheet" href="/static/lineme/css/borderMenu.css">
+    <link rel="stylesheet" href="/static/d3/css/d3-tip.css">
 
     <style>
 
@@ -30,12 +31,11 @@
 
       }
 
-      .pull-left {
-        margin-top: 0;
-      }
+{#      .pull-left {#}
+{#        margin-top: 0;#}
+{#      }#}
 
       .link {
-
         fill: none;
         stroke-width: 3px;
         stroke-opacity: 0.5;
@@ -43,21 +43,26 @@
         cursor: pointer;
       }
 
-
-
-
       .link-unconfirmed {
         stroke-width: 3px;
         stroke-opacity: 0.1;
+      }
 
+      .link-rejected {
+        stroke: #cd0500;
+        stroke-width: 3px;
+        stroke-opacity: 0.5;
+      }
 
+      .link-created {
+        stroke: #572dcd;
+        stroke-width: 3px;
+        stroke-opacity: 0.5;
       }
 
       .link-selected {
         stroke-width: 5px;
         stroke-opacity: 0.8;
-
-
       }
 
       .box .box-widget {
@@ -68,9 +73,7 @@
       .box-success {
         min-height: 650px;
         margin: 0 auto -25px;
-
       }
-
 
       .box-footer {
         margin-top: 30px;
@@ -78,65 +81,64 @@
 
       }
 
+      @keyframes fade-in {
+        0% {opacity: 0;}
+        40% {opacity: 0;}
+        100% {opacity: 1;}
+      }
+      @-webkit-keyframes fade-in {
+        0% {opacity: 0;}
+        40% {opacity: 0;}
+        100% {opacity: 1;}
+      }
 
+      @-webkit-keyframes bounce-in {
+        0% {
+          opacity: 0;
+          -webkit-transform: scaleY(.3);
+        }
+        50% {
+          opacity: 0.5;
+          -webkit-transform: scaleY(.7);
+        }
+        70% {
+          opacity: 0.7;
+          -webkit-transform: scaleY(.9);
+        }
+        100% {
+          opacity: 1;
+          -webkit-transform: scaleY(1);
+        }
+      }
+      @keyframes bounce-in {
+        0% {
+          opacity: 0;
+          -webkit-transform: scaleY(.3);
+        }
+        50% {
+          opacity: 0.5;
+          -webkit-transform: scaleY(.7);
+        }
+        70% {
+          opacity: 0.7;
+          -webkit-transform: scaleY(.9);
+        }
+        100% {
+          opacity: 1;
+          -webkit-transform: scaleY(1);
+        }
+      }
+
+      .d3-tip.animate {
+        animation: bounce-in 0.1s ease-out;
+        -webkit-animation: bounce-in 0.1s ease-out;
+      }
 
     </style>
   </head>
 
   <body class="hold-transition skin-black sidebar-mini">
     <div class="wrapper">
-
-      <!-- Group Create Modal -->
-      <div class="modal fade" id="group-create-modal">
-        <div class="modal-dialog">
-          <form method="post" class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-              <h4 class="modal-title">Create a New Group</h4>
-            </div>
-            <div class="modal-body">
-              <div class="form-group has-feedback">
-                <label for="group-name">Group name</label>
-                <input type="text" class="form-control" name="name" placeholder="Enter group name">
-                <span class="glyphicon glyphicon-tags form-control-feedback"></span>
-              </div>
-              <div class="form-group has-feedback">
-                <label for="group-maxsize">Group Max Size</label>
-                <input type="number" class="form-control" name="maxsize" placeholder="Enter max group size, less than 5000">
-                <span class="glyphicon glyphicon-asterisk form-control-feedback"></span>
-              </div>
-
-              <div class="form-group">
-                <label>Group Identifier</label>
-                <select class="form-control select2" name="identifier">
-                  {% for k, v in identifier.items %}
-                    {% if k == 0 %}
-                      <option value="{{ k }}" selected="selected">{{ v }}</option>
-                    {% else %}
-                      <option value="{{ k }}">{{ v }}</option>
-                    {% endif %}
-                  {% endfor %}
-                </select>
-              </div><!-- /.form-group -->
-              <label>Group Type</label>
-              <div class="form-group">
-
-                <label style="padding-right: 10px">
-                  <input type="radio" name="type" class="minimal" value="0" checked>
-                  Normal
-                </label>
-                <label>
-                  <input type="radio" name="type" class="minimal" value="1">
-                  RealTime
-                </label>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="submit" class="btn btn-primary">Create</button>
-            </div>
-          </form><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-      </div>
 
       <!-- Main Header -->
       <header class="main-header">
@@ -151,31 +153,34 @@
           <!-- Navbar Right Menu -->
           <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
-              <li class="dropdown messages-menu">
+              <li class="dropdown notifications-menu">
                 <!-- Menu toggle button -->
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                   <i class="fa fa-envelope-o"></i>
-                  <span class="label label-success">4</span>
+                  {% if mesgs_num >= 99  %}
+                    <span class="label label-danger">99</span>
+                  {% else %}
+                    <span class="label label-success">{{ mesgs_num }}</span>
+                  {% endif %}
                 </a>
                 <ul class="dropdown-menu">
-                  <li class="header">You have 10 messages</li>
+
                   <li>
                     <!-- inner menu: contains the actual data -->
-                    <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 100px;"><ul class="menu" style="overflow: hidden; width: 100%; height: 200px;">
+                    <ul class="menu">
                       <li>
-                        <a href="#">
-                          <i class="fa fa-users text-aqua"></i> 5 new members joined today
+                        <a href="{% url 'home' %}">
+                          <i class="fa fa-users text-aqua"></i> You have {{ mesgs_num }} messages
                         </a>
                       </li>
-                    </ul><div class="slimScrollBar" style="width: 3px; position: absolute; top: 0px; opacity: 0.4; display: none; border-radius: 7px; z-index: 99; right: 1px; height: 195.122px; background: rgb(0, 0, 0);"></div><div class="slimScrollRail" style="width: 3px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; opacity: 0.2; z-index: 90; right: 1px; background: rgb(51, 51, 51);"></div></div>
+
+                    </ul>
                   </li>
-                  <li class="footer"><a href="{% url 'home' %}">View all</a></li>
+
                 </ul>
-              </li><!-- /.messages-menu -->
 
+              </li>
 
-
-              <!-- User Account Menu -->
               <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                     <img src="/static/images/user_avatars/{{ user.id }}.png" class="user-image" alt="User Image">
@@ -255,12 +260,6 @@
             {% endfor %}
           </ul>
         </section>
-        {% if status == 0 %}
-          <a  class="btn bg-olive btn-flat margin" data-toggle="modal" data-target="#group-create-modal" style="width:90%;"><i class="fa fa-plus pull-left"></i>Create a New Group</a>
-        {% else %}
-          <a  class="btn bg-yellow btn-flat margin" data-toggle="modal" data-target="#group-create-modal" style="width:90%;"><i class="fa fa-info pull-left"></i>Try Again</a>
-        {% endif %}
-        <!-- /.sidebar -->
       </aside>
 
       <!-- Content Wrapper. Contains page content -->
@@ -295,7 +294,7 @@
                 </div>
 
                   <div id="main-panel" class="bg-gray-light" style="height: 750px;">
-                    <div id="network" style="position: absolute">
+                    <div id="network" style="position: absolute;z-index: 1;">
 
                     </div>
                     <div id="bt-menu" class="bt-menu">
@@ -312,11 +311,11 @@
                   </div>
               </div>
             </div>
-            <div class="col-md-3 col-sm-12" id="sug-panel">
+            <div class="col-md-3 col-sm-12" id="rcmd-panel">
               <div class="box box-success">
                 <div class="box-header with-border">
 
-                  <h3 class="box-title">Suggestions</h3>
+                  <h3 class="box-title">Recommendations</h3>
                 </div><!-- /.box-header -->
               </div>
 
@@ -349,7 +348,7 @@
     <script src="/static/dist/js/app.min.js"></script>
     <script src="/static/lineme/js/classie.js"></script>
     <script src="/static/lineme/js/borderMenu.js"></script>
-    <script src="/static/plugins/iCheck/icheck.min.js"></script>
+
 
     <script src="/static/d3/js/d3.js"></script>
     <script src="/static/d3/js/d3-tip.js"></script>
@@ -362,25 +361,5 @@
       <script src="/static/lineme/js/ego.js"></script>
     {% endif %}
 
-    <script type="text/javascript">
-
-      $('#group-create-modal').on('show.bs.modal', function (e) {
-        $(this).find('.modal-dialog').css({
-          'margin-top': function () {
-            var modalHeight = $('#search').find('.modal-dialog').height();
-            return ($(window).height() / 6 - (modalHeight / 2));
-          }
-        });
-
-      });
-
-      $('input[type="checkbox"].flat-red, input[type="radio"].minimal').iCheck({
-        checkboxClass: 'icheckbox_flat-green',
-        radioClass: 'iradio_flat-green'
-      });
-
-
-
-    </script>
   </body>
 </html>

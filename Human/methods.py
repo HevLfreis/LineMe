@@ -8,8 +8,12 @@ import re
 import datetime
 from django.contrib.auth.models import User
 from django.db.models import Q
+from django.http import Http404
+from django.shortcuts import get_object_or_404, get_list_or_404
 from django.utils import timezone
-from Human.constants import GROUP_MAXSIZE, GROUP_CREATED_CREDITS_COST
+from Human.constants import GROUP_MAXSIZE, GROUP_CREATED_CREDITS_COST, SOURCE_LINK_CONFIRM_STATUS_TRANSITION_TABLE, \
+    TARGET_LINK_CONFIRM_STATUS_TRANSITION_TABLE, SOURCE_LINK_REJECT_STATUS_TRANSITION_TABLE, \
+    TARGET_LINK_REJECT_STATUS_TRANSITION_TABLE
 from Human.models import Privacy, Extra, GroupMember, Link, Group, Credits
 from Human.utils import create_avatar
 import networkx as nx
@@ -83,6 +87,25 @@ def get_user_groups(user):
     groups = [gm.group for gm in gms]
 
     return groups
+
+
+def get_user_mesgs(user):
+    my_members = GroupMember.objects.filter(user=user)
+
+    mesgs = []
+    for mm in my_members:
+        # mesgs += Link.objects.filter(Q(source_member=mm, status=0) |
+        #                              Q(target_member=mm, status=0) |
+        #                              Q(source_member=mm, status=2) |
+        #                              Q(target_member=mm, status=1) |
+        #                              Q(source_member=mm, status=-2) |
+        #                              Q(source_member=mm, status=-1), ~Q(creator=user))
+
+        mesgs += Link.objects.filter((Q(source_member=mm) & (Q(status=0) | Q(status=2) | Q(status=-2))) |
+                                     Q(target_member=mm) & (Q(status=0) | Q(status=1) | Q(status=-1)),
+                                     ~Q(creator=user))
+
+    return mesgs
 
 
 def get_group_joined_num(group):
@@ -192,7 +215,7 @@ def member_recommender(user, groupid):
             gmin.append(l.source_member)
             gmin.append(l.target_member)
 
-    for gm in GroupMember.objects.filter(group__id=groupid).exclude(user=user):
+    for gm in GroupMember.objects.filter(group__id=groupid).exclude(user=user).order_by('-is_joined'):
         if gm not in gmin:
             gmout.append(gm)
 
@@ -223,6 +246,57 @@ def create_group_member(group, name, identifier):
 
 
 ########################################################################
+
+def link_confirm(user, linkid):
+
+    link = get_object_or_404(Link, id=linkid)
+
+    gm = GroupMember.objects.get(user=user, group=link.group)
+
+    if gm is not None:
+        now = timezone.now()
+        link.confirmed_time = now
+
+        if link.source_member == gm:
+            link.status = SOURCE_LINK_CONFIRM_STATUS_TRANSITION_TABLE[link.status]
+
+        elif link.target_member == gm:
+            link.status = TARGET_LINK_CONFIRM_STATUS_TRANSITION_TABLE[link.status]
+
+        else:
+            return -1
+        # print 'confirm: ', linkid, link.status
+        link.save()
+        return 0
+    else:
+        return 1
+
+
+def link_reject(user, linkid):
+
+    link = get_object_or_404(Link, id=linkid)
+
+    gm = GroupMember.objects.get(user=user, group=link.group)
+
+    if gm is not None:
+        now = timezone.now()
+        link.confirmed_time = now
+
+        if link.source_member == gm:
+            link.status = SOURCE_LINK_REJECT_STATUS_TRANSITION_TABLE[link.status]
+
+        elif link.target_member == gm:
+            link.status = TARGET_LINK_REJECT_STATUS_TRANSITION_TABLE[link.status]
+
+        else:
+            return -1
+
+        # print 'reject: ', linkid, link.status
+        link.save()
+        return 0
+    else:
+        return 1
+
 
 def update_links(newLinks, groupid, creator):
 

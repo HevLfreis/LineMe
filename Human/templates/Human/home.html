@@ -6,6 +6,7 @@
     <title>{{ project_name }} | Home</title>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/plugins/iCheck/all.css">
     <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
@@ -22,6 +23,58 @@
   <body class="hold-transition skin-black sidebar-mini">
     <div class="wrapper">
 
+      <!-- Group Create Modal -->
+      <div class="modal fade" id="group-create-modal">
+        <div class="modal-dialog">
+          <form method="post" class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+              <h4 class="modal-title">Create a New Group</h4>
+            </div>
+            <div class="modal-body">
+              <div class="form-group has-feedback">
+                <label for="group-name">Group name</label>
+                <input type="text" class="form-control" name="name" placeholder="Enter group name">
+                <span class="glyphicon glyphicon-tags form-control-feedback"></span>
+              </div>
+              <div class="form-group has-feedback">
+                <label for="group-maxsize">Group Max Size</label>
+                <input type="number" class="form-control" name="maxsize" placeholder="Enter max group size, less than 5000">
+                <span class="glyphicon glyphicon-asterisk form-control-feedback"></span>
+              </div>
+
+              <div class="form-group">
+                <label>Group Identifier</label>
+                <select class="form-control select2" name="identifier">
+                  {% for k, v in identifier.items %}
+                    {% if k == 0 %}
+                      <option value="{{ k }}" selected="selected">{{ v }}</option>
+                    {% else %}
+                      <option value="{{ k }}">{{ v }}</option>
+                    {% endif %}
+                  {% endfor %}
+                </select>
+              </div><!-- /.form-group -->
+              <label>Group Type</label>
+              <div class="form-group">
+
+                <label style="padding-right: 10px">
+                  <input type="radio" name="type" class="minimal" value="0" checked>
+                  Normal
+                </label>
+                <label>
+                  <input type="radio" name="type" class="minimal" value="1">
+                  RealTime
+                </label>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Create</button>
+            </div>
+          </form><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      </div>
+
       <!-- Main Header -->
       <header class="main-header">
 
@@ -37,34 +90,37 @@
           <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
               <!-- Messages: style can be found in dropdown.less-->
-              <li class="dropdown messages-menu">
+              <li class="dropdown notifications-menu">
                 <!-- Menu toggle button -->
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                   <i class="fa fa-envelope-o"></i>
-                  <span class="label label-success">4</span>
+                  {% if mesgs_num >= 99  %}
+                    <span class="label label-danger">99</span>
+                  {% else %}
+                    <span class="label label-success">{{ mesgs_num }}</span>
+                  {% endif %}
                 </a>
                 <ul class="dropdown-menu">
-                  <li class="header">You have 10 messages</li>
+
                   <li>
                     <!-- inner menu: contains the actual data -->
-                    <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 100px;"><ul class="menu" style="overflow: hidden; width: 100%; height: 200px;">
+                    <ul class="menu">
                       <li>
-                        <a href="#">
-                          <i class="fa fa-users text-aqua"></i> 5 new members joined today
+                        <a href="{% url 'home' %}">
+                          <i class="fa fa-users text-aqua"></i> You have {{ mesgs_num }} messages
                         </a>
                       </li>
-                    </ul><div class="slimScrollBar" style="width: 3px; position: absolute; top: 0px; opacity: 0.4; display: none; border-radius: 7px; z-index: 99; right: 1px; height: 195.122px; background: rgb(0, 0, 0);"></div><div class="slimScrollRail" style="width: 3px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; opacity: 0.2; z-index: 90; right: 1px; background: rgb(51, 51, 51);"></div></div>
+
+                    </ul>
                   </li>
-                  <li class="footer"><a href={% url 'home' %}>View all</a></li>
+
                 </ul>
-              </li><!-- /.messages-menu -->
 
+              </li>
 
-              <!-- User Account Menu -->
               <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                     <img src="/static/images/user_avatars/{{ user.id }}.png" class="user-image" alt="User Image">
-                    <!-- hidden-xs hides the username on small devices so only the image appears. -->
                     <span class="hidden-xs">{{ user.username }}</span>
                     <span class="caret"></span>
                 </a>
@@ -245,36 +301,57 @@
                 <div class="box-header">
                   <i class="ion ion-clipboard"></i>
                   <h3 class="box-title">Link Request Messages</h3>
-                  <div class="box-tools pull-right">
-                    <ul class="pagination pagination-sm inline">
-                      <li><a href="#">«</a></li>
-                      <li><a href="#">1</a></li>
-                      <li><a href="#">2</a></li>
-                      <li><a href="#">3</a></li>
-                      <li><a href="#">»</a></li>
-                    </ul>
-                  </div>
-                </div><!-- /.box-header -->
+
+                </div>
                 <div class="box-body">
                   <ul class="todo-list ui-sortable">
-                    <li>
-                      <!-- checkbox -->
-                      <input type="checkbox" value="" name="">
-                      <!-- todo text -->
-                      <span class="text">He invites you to confirm the friend link to <a href="pages/examples/invoice.html">She</a></span>
-                      <!-- Emphasis label -->
-                      <small class="label label-danger">Unconfirmed</small>
+                    {% for mesg in mesgs %}
+                      <li id="mesg-{{ mesg.id }}">
+                        <input type="checkbox" value="" name="">
+                        <span class="text">
+                          <a href="#">{{ mesg.creator.username }}</a>
+                          invites you to confirm the friend link to
+                          {% if mesg.source_member in my_members %}
+                            <a href="#">{{ mesg.target_member.member_name }}</a>
+                          {% else %}
+                            <a href="#">{{ mesg.source_member.member_name }}</a>
+                          {% endif %}
+                          in <a href={% url 'group' %}?groupid={{ mesg.group.id }}>{{ mesg.group.group_name }}</a>
+                        </span>
+                        {% if mesg.status <= 0 %}
+                          <small class="label label-warning">Both Unconfirmed</small>
+                        {% else %}
+                          <small class="label label-primary">Other Side Confirmed</small>
+                        {% endif %}
 
-                      <!-- General tools such as edit or delete-->
-                      <div class="tools">
-                        <i class="fa fa-check-circle-o"></i>
-                        <i class="fa fa-ban"></i>
-                      </div>
-                    </li>
+                        <div class="tools">
+                          <i class="fa fa-check-circle-o" onclick="mesgConfirmed('{% url 'mesgHandle' 1 mesg.id %}', 1,{{ mesg.id }})"></i>
+                          <i class="fa fa-ban" onclick="mesgConfirmed('{% url 'mesgHandle' 0 mesg.id %}', 0,{{ mesg.id }})"></i>
+                        </div>
+                      </li>
+                    {% endfor %}
                   </ul>
                 </div><!-- /.box-body -->
                 <div class="box-footer clearfix no-border">
-                  <button class="btn btn-default pull-right"><i class="fa fa-plus"></i> Add item</button>
+                  <div class="box-tools pull-left">
+                    <ul class="pagination pagination-sm inline">
+                      {% if members.has_previous %}
+                        <li><a onclick="updateRcmdPanel({{ members.previous_page_number }})">«</a></li>
+                      {% else %}
+                        <li class="disabled"><a href="#">«</a></li>
+                      {% endif %}
+                      {#      {% for i in "012" %}#}
+                      <li><a>{{ members.number }}/{{ members.paginator.num_pages }}</a></li>
+                      {#      {% endfor %}#}
+                      {% if members.has_next %}
+                        <li><a onclick="updateRcmdPanel({{ members.next_page_number }})">»</a></li>
+                      {% else %}
+                        <li class="disabled"><a href="#">»</a></li>
+                      {% endif %}
+
+                    </ul>
+                  </div>
+                  <a href="#" class="btn btn-sm btn-default btn-flat pull-right">Confirm Choosed</a>
                 </div>
 
               </div>
@@ -373,12 +450,28 @@
                 </div><!-- /.box-body -->
                 <div class="box-footer clearfix no-border">
                   <div class="box-tools pull-right">
+                    {% if status == 0 %}
+                      <a class="btn bg-olive btn-flat" data-toggle="modal" data-target="#group-create-modal" style=""><i class="fa fa-plus pull-left"></i>Create New Group</a>
+                    {% else %}
+                      <a class="btn bg-yellow btn-flat" data-toggle="modal" data-target="#group-create-modal" style=""><i class="fa fa-info pull-left"></i>Try Again</a>
+                    {% endif %}
+                  </div>
+                  <div class="box-tools pull-left">
                     <ul class="pagination pagination-sm inline">
-                      <li><a href="#">«</a></li>
-                      <li><a href="#">1</a></li>
-                      <li><a href="#">2</a></li>
-                      <li><a href="#">3</a></li>
-                      <li><a href="#">»</a></li>
+                      {% if members.has_previous %}
+                        <li><a onclick="updateRcmdPanel({{ members.previous_page_number }})">«</a></li>
+                      {% else %}
+                        <li class="disabled"><a href="#">«</a></li>
+                      {% endif %}
+                      {#      {% for i in "012" %}#}
+                      <li><a>{{ members.number }}/{{ members.paginator.num_pages }}</a></li>
+                      {#      {% endfor %}#}
+                      {% if members.has_next %}
+                        <li><a onclick="updateRcmdPanel({{ members.next_page_number }})">»</a></li>
+                      {% else %}
+                        <li class="disabled"><a href="#">»</a></li>
+                      {% endif %}
+
                     </ul>
                   </div>
                 </div>
@@ -451,7 +544,7 @@
     <script src="/static/bootstrap/js/bootstrap.min.js"></script>
     <!-- AdminLTE App -->
     <script src="/static/dist/js/app.min.js"></script>
-
+    <script src="/static/plugins/iCheck/icheck.min.js"></script>
     <script type="text/javascript">
 
       var emails = "{{ user.email }}".split("@");
@@ -461,9 +554,13 @@
       $('#profile-email1').text(emails[0]);
       $('#profile-email2').text('@'+emails[1]);
       $('#profile-birth').text(births[0]);
-      $('#profile-location1').text(locations[0]);
+      $('#profile-location1').text(function(){
+        return locations[0]=="None"?"Blank":locations[0];
+      });
       $('#profile-location2').text(locations[1]);
-      $('#profile-institution1').text(institutions[0]);
+      $('#profile-institution1').text(function(){
+        return institutions[0]=="None"?"Blank":locations[0];
+      });
       $('#profile-institution2').text(institutions[1]);
 
       $('#btn-my-group').click(function() {
@@ -474,6 +571,42 @@
         $('#table-in-group').show();
         $('#table-my-group').hide();
       });
+
+
+
+      $('#group-create-modal').on('show.bs.modal', function (e) {
+        $(this).find('.modal-dialog').css({
+          'margin-top': function () {
+            var modalHeight = $('#search').find('.modal-dialog').height();
+            return ($(window).height() / 6 - (modalHeight / 2));
+          }
+        });
+
+      });
+
+
+      $('input[type="checkbox"].flat-red, input[type="radio"].minimal').iCheck({
+        checkboxClass: 'icheckbox_flat-green',
+        radioClass: 'iradio_flat-green'
+      });
+
+      function mesgConfirmed(url, type, linkid) {
+        $.get(url, function(data){
+          if(data == -1) {
+             alert("You have already rejected this link");
+          }
+          else {
+            if(type == 1)
+              $('#mesg-'+linkid+' > small').attr('class', 'label label-success').text('Confirmed');
+            else if(type == 0)
+              $('#mesg-'+linkid+' > small').attr('class', 'label label-danger').text('Rejected');
+          }
+
+        });
+
+      }
+
+
     </script>
   </body>
 </html>
