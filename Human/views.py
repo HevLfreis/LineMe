@@ -20,7 +20,7 @@ from Human.forms import LoginForm, RegisterForm, GroupCreateForm, GroupMemberCre
     FileUploadForm
 from Human.methods import create_user, get_user_groups, get_group_joined_num, check_groupid, \
     create_group, create_group_member, group_recommender, get_user_name, member_join, member_recommender, update_links, \
-    link_confirm, link_reject, get_user_mesgs
+    link_confirm, link_reject, get_user_msgs, get_user_msgs_count
 from Human.models import Group, GroupMember, Link
 
 
@@ -122,13 +122,12 @@ def home(request):
         else:
             in_groups.setdefault(group, get_group_joined_num(group))
 
-    my_members = GroupMember.objects.filter(user=user)
-
-    mesgs = get_user_mesgs(user)
+    msgs_count = get_user_msgs_count(user)
+    rcmd_groups = group_recommender(user)
 
     context = Context({"project_name": PROJECT_NAME, "user": user, "my_groups": my_groups,
-                       "in_groups": in_groups, "my_members": my_members, "mesgs": mesgs,
-                       "mesgs_num": len(mesgs), "status": 0, "identifier": IDENTIFIER})
+                       "in_groups": in_groups, "rcmd_groups": rcmd_groups, "msgs_count": msgs_count,
+                       "status": 0, "identifier": IDENTIFIER})
 
     if request.method == 'POST':
         gf = GroupCreateForm(request.POST)
@@ -156,7 +155,30 @@ def home(request):
 
 
 @login_required
-def mesg_handle(request, type, linkid):
+def msg_panel(request, page):
+    user = request.user
+    if request.is_ajax():
+
+        msgs = get_user_msgs(user)
+
+        paginator = Paginator(msgs, 10)
+
+        try:
+            p = paginator.page(page)
+        except PageNotAnInteger:
+            p = paginator.page(1)
+        except EmptyPage:
+            p = paginator.page(paginator.num_pages)
+
+        my_members = GroupMember.objects.filter(user=user)
+
+        return render(request, 'Human/home_msg.html', {'msgs': p, 'my_members': my_members})
+    else:
+        raise Http404
+
+
+@login_required
+def msg_handle(request, type, linkid):
     user = request.user
     if type == '1':
         status = link_confirm(user, int(linkid))
@@ -170,12 +192,14 @@ def mesg_handle(request, type, linkid):
     return HttpResponse(status)
 
 
+########################################################################
+
 @login_required
 def ego(request):
     user = request.user
     groups = get_user_groups(user)
     rcmd_groups = group_recommender(user)
-    mesgs_num = len(get_user_mesgs(user))
+    msgs_count = get_user_msgs_count(user)
 
     groupid = check_groupid(request.GET.get('groupid'))
     if groupid == 0:
@@ -184,7 +208,7 @@ def ego(request):
         group = get_object_or_404(Group, id=groupid)
 
     context = Context({"project_name": PROJECT_NAME, "user": user, "groups": groups,
-                       "group": group, "rcmd_groups": rcmd_groups, "status": 0, "mesgs_num": mesgs_num})
+                       "group": group, "rcmd_groups": rcmd_groups, "status": 0, "msgs_count": msgs_count})
 
     return render(request, 'Human/ego.html', context)
 
@@ -231,12 +255,12 @@ def graph(request, groupid):
 
 
 @login_required
-def rcmd_member(request, groupid, page):
+def rcmd_panel(request, groupid, page):
     user = request.user
     if request.is_ajax():
         # groupid = check_groupid(request.GET.get('groupid'))
         if groupid == '0':
-            return render(request, 'Human/ego_sub.html')
+            return render(request, 'Human/ego_rcmd.html')
 
         rcmd_gms = member_recommender(user, groupid)
 
@@ -249,7 +273,7 @@ def rcmd_member(request, groupid, page):
         except EmptyPage:
             p = paginator.page(paginator.num_pages)
 
-        return render(request, 'Human/ego_sub.html', {'members': p})
+        return render(request, 'Human/ego_rcmd.html', {'members': p})
     else:
         raise Http404
 
@@ -271,9 +295,9 @@ def update_graph(request, groupid):
 @login_required
 def avatar(request):
     user = request.user
-    mesgs_num = len(get_user_mesgs(user))
+    msgs_count = get_user_msgs_count(user)
 
-    context = Context({"project_name": PROJECT_NAME, "user": user, "mesgs_num": mesgs_num})
+    context = Context({"project_name": PROJECT_NAME, "user": user, "msgs_count": msgs_count})
     return render(request, 'Human/avatar.html', context)
 
 
@@ -310,13 +334,13 @@ def manage_group(request):
     groups = get_user_groups(user)
     rcmd_groups = group_recommender(user)
 
-    mesgs_num = len(get_user_mesgs(user))
+    msgs_count = get_user_msgs_count(user)
 
     groupid = request.GET.get('groupid')
     group = Group.objects.get(id=groupid)
 
     context = Context({"project_name": PROJECT_NAME, "user": user, "group": group, "groups": groups,
-                       "rcmd_groups": rcmd_groups, "up": up, "mesgs_num": mesgs_num})
+                       "rcmd_groups": rcmd_groups, "up": up, "msgs_count": msgs_count})
 
     if groupid != check_groupid(groupid):
         raise Http404

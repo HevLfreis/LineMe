@@ -47,12 +47,12 @@
               <div class="form-group has-feedback">
                 <label for="member-identifier">Identifier</label>
                 <input type="hidden" value="{{ group.id }}" class="form-control" name="groupid">
-                {% if group.identifier == 2 %}
-                  <input type="text" class="form-control" name="identifier" placeholder="Enter identifier for this member">
+                {% if group.identifier == 0 %}
+                  <input type="text" class="form-control" name="identifier" placeholder="Re-enter identifier">
+                {% elif group.identifier == 2 %}
+                  <input type="text" class="form-control" name="identifier" placeholder="Re-enter institution">
                 {% elif group.identifier == 1 %}
-                  <input type="text" value="Institution" class="form-control" name="identifier">
-                {% elif group.identifier == 0 %}
-                  <input type="text" class="form-control" name="identifier" placeholder="Re-enter the identifier of email">
+                  <input type="text" class="form-control" name="identifier" placeholder="Re-enter email">
                 {% endif %}
 
                 <span class="glyphicon glyphicon-info-sign form-control-feedback"></span>
@@ -93,10 +93,10 @@
               <li class="dropdown notifications-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                   <i class="fa fa-envelope-o"></i>
-                  {% if mesgs_num >= 99  %}
+                  {% if msgs_count >= 99  %}
                     <span class="label label-danger">99</span>
                   {% else %}
-                    <span class="label label-success">{{ mesgs_num }}</span>
+                    <span class="label label-success">{{ msgs_count }}</span>
                   {% endif %}
                 </a>
                 <ul class="dropdown-menu">
@@ -104,7 +104,7 @@
                     <ul class="menu">
                       <li>
                         <a href="{% url 'home' %}">
-                          <i class="fa fa-users text-aqua"></i> You have {{ mesgs_num }} messages
+                          <i class="fa fa-users text-aqua"></i> You have {{ msgs_count }} messages
                         </a>
                       </li>
                     </ul>

@@ -13,6 +13,9 @@
     <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
 
     <style>
+      a {
+        cursor: pointer;
+      }
       td {
         width: 20%;
       }
@@ -94,10 +97,10 @@
                 <!-- Menu toggle button -->
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                   <i class="fa fa-envelope-o"></i>
-                  {% if mesgs_num >= 99  %}
+                  {% if msgs_count >= 99  %}
                     <span class="label label-danger">99</span>
                   {% else %}
-                    <span class="label label-success">{{ mesgs_num }}</span>
+                    <span class="label label-success">{{ msgs_count }}</span>
                   {% endif %}
                 </a>
                 <ul class="dropdown-menu">
@@ -107,7 +110,7 @@
                     <ul class="menu">
                       <li>
                         <a href="{% url 'home' %}">
-                          <i class="fa fa-users text-aqua"></i> You have {{ mesgs_num }} messages
+                          <i class="fa fa-users text-aqua"></i> You have {{ msgs_count }} messages
                         </a>
                       </li>
 
@@ -297,79 +300,28 @@
           </div>
           <div class="row" style="margin-top: 10px">
             <div class="col-xs-7">
-              <div class="box box-primary">
+              <div id="box-msg" class="box box-primary">
                 <div class="box-header">
                   <i class="ion ion-clipboard"></i>
                   <h3 class="box-title">Link Request Messages</h3>
-
                 </div>
-                <div class="box-body">
-                  <ul class="todo-list ui-sortable">
-                    {% for mesg in mesgs %}
-                      <li id="mesg-{{ mesg.id }}">
-                        <input type="checkbox" value="" name="">
-                        <span class="text">
-                          <a href="#">{{ mesg.creator.username }}</a>
-                          invites you to confirm the friend link to
-                          {% if mesg.source_member in my_members %}
-                            <a href="#">{{ mesg.target_member.member_name }}</a>
-                          {% else %}
-                            <a href="#">{{ mesg.source_member.member_name }}</a>
-                          {% endif %}
-                          in <a href={% url 'group' %}?groupid={{ mesg.group.id }}>{{ mesg.group.group_name }}</a>
-                        </span>
-                        {% if mesg.status <= 0 %}
-                          <small class="label label-warning">Both Unconfirmed</small>
-                        {% else %}
-                          <small class="label label-primary">Other Side Confirmed</small>
-                        {% endif %}
-
-                        <div class="tools">
-                          <i class="fa fa-check-circle-o" onclick="mesgConfirmed('{% url 'mesgHandle' 1 mesg.id %}', 1,{{ mesg.id }})"></i>
-                          <i class="fa fa-ban" onclick="mesgConfirmed('{% url 'mesgHandle' 0 mesg.id %}', 0,{{ mesg.id }})"></i>
-                        </div>
-                      </li>
-                    {% endfor %}
-                  </ul>
-                </div><!-- /.box-body -->
-                <div class="box-footer clearfix no-border">
-                  <div class="box-tools pull-left">
-                    <ul class="pagination pagination-sm inline">
-                      {% if members.has_previous %}
-                        <li><a onclick="updateRcmdPanel({{ members.previous_page_number }})">«</a></li>
-                      {% else %}
-                        <li class="disabled"><a href="#">«</a></li>
-                      {% endif %}
-                      {#      {% for i in "012" %}#}
-                      <li><a>{{ members.number }}/{{ members.paginator.num_pages }}</a></li>
-                      {#      {% endfor %}#}
-                      {% if members.has_next %}
-                        <li><a onclick="updateRcmdPanel({{ members.next_page_number }})">»</a></li>
-                      {% else %}
-                        <li class="disabled"><a href="#">»</a></li>
-                      {% endif %}
-
-                    </ul>
-                  </div>
-                  <a href="#" class="btn btn-sm btn-default btn-flat pull-right">Confirm Choosed</a>
-                </div>
-
               </div>
 
-              <div class="box box-success">
+              <div id="box-group" class="box box-warning">
                 <div class="box-header">
                   <i class="ion ion-clipboard"></i>
-                  <h3 class="box-title">Manage Groups</h3>
+                  <h3 class="box-title">Manage Groups --- Group Recommendations</h3>
                   <div class="box-tools pull-right" title="">
                     <div class="btn-group" data-toggle="btn-toggle">
-                      <button id="btn-my-group" type="button" class="btn btn-default btn-sm active"><i class="fa fa-square text-aqua"></i></button>
+                      <button id="btn-rcmd-group" type="button" class="btn btn-default btn-sm active"><i class="fa fa-square text-yellow"></i></button>
+                      <button id="btn-my-group" type="button" class="btn btn-default btn-sm"><i class="fa fa-square text-aqua"></i></button>
                       <button id="btn-in-group" type="button" class="btn btn-default btn-sm"><i class="fa fa-square text-green"></i></button>
                     </div>
                   </div>
 
                 </div><!-- /.box-header -->
                 <div class="box-body">
-                  <div class="table-responsive" id="table-my-group">
+                  <div class="table-responsive" id="table-my-group" hidden>
                     <table class="table no-margin">
                       <thead>
                       <tr>
@@ -394,11 +346,11 @@
                             {% endif %}
                           </td>
                           <td>
-                            {% if group.identifier == 0 %}
+                            {% if group.identifier == 1 %}
                               Email
-                            {% elif group.identifier == 1 %}
-                              Institution
                             {% elif group.identifier == 2 %}
+                              Institution
+                            {% elif group.identifier == 0 %}
                               Special Code
                             {% endif %}</td>
                           <td><span class="label label-info">{{ v }}</span></td>
@@ -433,14 +385,54 @@
                             {% endif %}
                           </td>
                           <td>
-                            {% if group.identifier == 0 %}
+                            {% if group.identifier == 1 %}
                               Email
-                            {% elif group.identifier == 1 %}
-                              Institution
                             {% elif group.identifier == 2 %}
+                              Institution
+                            {% elif group.identifier == 0 %}
                               Special Code
                             {% endif %}</td>
                           <td><span class="label label-success">{{ v }}</span></td>
+
+                        </tr>
+                      {% endfor %}
+                      </tbody>
+                    </table>
+                  </div><!-- /.table-responsive -->
+                  <div class="table-responsive" id="table-rcmd-group">
+                    <table class="table no-margin">
+                      <thead>
+                      <tr>
+                        <th>Group Name</th>
+                        <th>Creator</th>
+                        <th>Created Time</th>
+                        <th>Type</th>
+                        <th>Identifier</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      {% for group in rcmd_groups %}
+                        <tr>
+                          <td><a href="{% url 'group' %}?groupid={{ group.id }}">{{ group.group_name }}</a></td>
+                          <td>{{ group.creator.username }}</td>
+                          <td>{{ group.created_time|date:'M d, Y' }}</td>
+
+                          <td>
+                            {% if group.type == 0 %}
+                              Normal
+                            {% else %}
+                              RealTime
+                            {% endif %}
+                          </td>
+                          <td>
+                            {% if group.identifier == 1 %}
+                              Email
+                            {% elif group.identifier == 2 %}
+                              Institution
+                            {% elif group.identifier == 0 %}
+                              Special Code
+                            {% endif %}</td>
+                          <td><span class="label label-info">{{ v }}</span></td>
 
                         </tr>
                       {% endfor %}
@@ -451,7 +443,7 @@
                 <div class="box-footer clearfix no-border">
                   <div class="box-tools pull-right">
                     {% if status == 0 %}
-                      <a class="btn bg-olive btn-flat" data-toggle="modal" data-target="#group-create-modal" style=""><i class="fa fa-plus pull-left"></i>Create New Group</a>
+                      <a class="btn bg-aqua btn-flat" data-toggle="modal" data-target="#group-create-modal" style=""><i class="fa fa-plus pull-left"></i>Create New Group</a>
                     {% else %}
                       <a class="btn bg-yellow btn-flat" data-toggle="modal" data-target="#group-create-modal" style=""><i class="fa fa-info pull-left"></i>Try Again</a>
                     {% endif %}
@@ -480,7 +472,7 @@
 
             </div>
             <div class="col-xs-5">
-              <div class="box box-info">
+              <div id="box-invitation" class="box box-purple">
                 <div class="box-header with-border">
                   <h3 class="box-title">My Link Invitations</h3>
                 </div><!-- /.box-header -->
@@ -500,7 +492,7 @@
                       <tr>
                         <td>Today</td>
                         <td>Me</td>
-                        <td><a href="pages/examples/invoice.html">He</a></td>
+                        <td><a href="#">He</a></td>
                         <td>CNC</td>
                         <td><span class="label label-success">Confirmed</span></td>
 
@@ -510,15 +502,10 @@
                   </div><!-- /.table-responsive -->
                 </div><!-- /.box-body -->
                 <div class="box-footer clearfix">
-                  <a href="" class="btn btn-sm btn-default btn-flat pull-left">Send Emails</a>
+                  <a href="#" class="btn btn-sm btn-default btn-flat pull-left">Send Emails</a>
                 </div><!-- /.box-footer -->
               </div>
 
-
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-xs-7">
 
             </div>
           </div>
@@ -566,10 +553,20 @@
       $('#btn-my-group').click(function() {
         $('#table-my-group').show();
         $('#table-in-group').hide();
+        $('#table-rcmd-group').hide();
+        $('#box-group').attr('class', 'box box-info').find('h3').text('Manage Groups --- My Created Groups');
       });
       $('#btn-in-group').click(function() {
         $('#table-in-group').show();
         $('#table-my-group').hide();
+        $('#table-rcmd-group').hide();
+        $('#box-group').attr('class', 'box box-success').find('h3').text('Manage Groups --- My Joined Groups');
+      });
+      $('#btn-rcmd-group').click(function() {
+        $('#table-rcmd-group').show();
+        $('#table-my-group').hide();
+        $('#table-in-group').hide();
+        $('#box-group').attr('class', 'box box-warning').find('h3').text('Manage Groups --- Group Recommendations');
       });
 
 
@@ -590,21 +587,29 @@
         radioClass: 'iradio_flat-green'
       });
 
-      function mesgConfirmed(url, type, linkid) {
+      function msgConfirmed(url, type, linkid) {
         $.get(url, function(data){
           if(data == -1) {
-             alert("You have already rejected this link");
+             alert("Error");
           }
           else {
             if(type == 1)
-              $('#mesg-'+linkid+' > small').attr('class', 'label label-success').text('Confirmed');
+              $('#msg-'+linkid+' > small').attr('class', 'label label-success').text('Confirmed');
             else if(type == 0)
-              $('#mesg-'+linkid+' > small').attr('class', 'label label-danger').text('Rejected');
+              $('#msg-'+linkid+' > small').attr('class', 'label label-danger').text('Rejected');
           }
 
         });
 
       }
+
+      function updateMsgPanel(page) {
+        $.get('/msgpanel/'+page, function(data){
+          $('#box-msg').html(data);
+        });
+      }
+
+      updateMsgPanel(1);
 
 
     </script>

@@ -7,7 +7,7 @@ var rcmdAddedNode = {};
 
 function updateRcmdPanel(page) {
 
-    $.get("/rcmd/"+groupid+"/"+page, function(data) {
+    $.get("/rcmdpanel/"+groupid+"/"+page, function(data) {
         $('#rcmd-panel').html(data);
 
         $('#refresh').click(function() {
@@ -387,7 +387,7 @@ $('#submit').click(function() {
     $.ajax({
         type: "POST",
         data: { links: data },
-        url: "/update/"+groupid+"/",
+        url: "/updategraph/"+groupid+"/",
         success: function(msg){
             nodesCopy = nodes.slice(0);
             linksCopy = links.slice(0);

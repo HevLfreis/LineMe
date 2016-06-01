@@ -91,10 +91,10 @@
                 <!-- Menu toggle button -->
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                   <i class="fa fa-envelope-o"></i>
-                  {% if mesgs_num >= 99  %}
+                  {% if msgs_count >= 99  %}
                     <span class="label label-danger">99</span>
                   {% else %}
-                    <span class="label label-success">{{ mesgs_num }}</span>
+                    <span class="label label-success">{{ msgs_count }}</span>
                   {% endif %}
                 </a>
                 <ul class="dropdown-menu">
@@ -104,7 +104,7 @@
                     <ul class="menu">
                       <li>
                         <a href="{% url 'home' %}">
-                          <i class="fa fa-users text-aqua"></i> You have {{ mesgs_num }} messages
+                          <i class="fa fa-users text-aqua"></i> You have {{ msgs_count }} messages
                         </a>
                       </li>
 
