@@ -15,7 +15,7 @@
             {% else %}
               <a href="#">{{ msg.source_member.member_name }}</a>
             {% endif %}
-            in <a href={% url 'group' %}?groupid={{ msg.group.id }}>{{ msg.group.group_name }}</a>
+            in <a href="{% url 'group' msg.group.id %}">{{ msg.group.group_name }}</a>
           </span>
         {% if msg.status <= 0 %}
           <small class="label label-warning">Both Unconfirmed</small>

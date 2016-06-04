@@ -236,7 +236,7 @@
             <li class="header">My Groups</li>
             {% for group in rcmd_groups %}
               <li>
-                <a href="{% url 'group' %}?groupid={{ group.id }}">
+                <a href="{% url 'group' group.id %}">
                   <i class="fa fa-circle-o text-yellow"></i>
                   <span>{{ group.group_name }}</span>
 
@@ -245,7 +245,7 @@
             {% endfor %}
             {% for group in groups %}
               <li>
-                <a href="{% url 'ego' %}?groupid={{ group.id }}">
+                <a href="{% url 'egoId' group.id %}">
                   {% if group.creator == user %}
 
                     <i class="fa fa-circle-o text-aqua"></i>
@@ -289,9 +289,9 @@
           <div class="row">
             <div class="col-md-9 col-sm-12">
               <div class="box box-primary">
-                <div class="box-header">
-                  <h3 class="box-title"></h3>
-                </div>
+{#                <div class="box-header">#}
+{#                  <h3 class="box-title"></h3>#}
+{#                </div>#}
 
                   <div id="main-panel" class="bg-gray-light" style="height: 750px;">
                     <div id="network" style="position: absolute;z-index: 1;">
@@ -355,8 +355,9 @@
 
     {% if group %}
       <script type="text/javascript">
-        var groupid = 0;
-        groupid = {{ group.id }};
+        var groupid = {{ group.id }};
+{#                graphUrl = {% url 'graph' group.id%},#}
+{#                rcmdpanelUrl = {% url 'rcmd' group.id %};#}
       </script>
       <script src="/static/lineme/js/ego.js"></script>
     {% endif %}

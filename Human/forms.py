@@ -14,7 +14,7 @@ class LoginForm(forms.Form):
 
 
 class RegisterForm(forms.Form):
-    name = forms.CharField(label='Account name', max_length=40)
+    name = forms.CharField(max_length=40)
     email = forms.EmailField()
     password = forms.CharField(widget=forms.PasswordInput)
     password2 = forms.CharField(widget=forms.PasswordInput)
@@ -35,7 +35,6 @@ class GroupMemberCreateForm(forms.Form):
 
 
 class ReJoinIdentifierForm(forms.Form):
-    groupid = forms.CharField()
     identifier = forms.CharField(required=True)
 
 

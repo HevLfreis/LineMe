@@ -172,7 +172,7 @@
           <ul class="sidebar-menu">
             <li class="header">My Profile</li>
           </ul>
-          <ul class="control-sidebar-menu" style="margin-left: 0px">
+          <ul class="control-sidebar-menu">
             <li>
               <a href="#">
                 {% if user.extra.sex  %}
@@ -335,7 +335,7 @@
                       <tbody>
                       {% for group, v in my_groups.items %}
                         <tr>
-                          <td><a href="{% url 'group' %}?groupid={{ group.id }}">{{ group.group_name }}</a></td>
+                          <td><a href="{% url 'group' group.id %}">{{ group.group_name }}</a></td>
                           <td>{{ group.created_time|date:'M d, Y' }}</td>
 
                           <td>
@@ -374,7 +374,7 @@
                       <tbody>
                       {% for group, v in in_groups.items %}
                         <tr>
-                          <td><a href="{% url 'group' %}?groupid={{ group.id }}">{{ group.group_name }}</a></td>
+                          <td><a href="{% url 'group' group.id %}">{{ group.group_name }}</a></td>
                           <td>{{ group.created_time|date:'M d, Y' }}</td>
 
                           <td>
@@ -413,7 +413,7 @@
                       <tbody>
                       {% for group in rcmd_groups %}
                         <tr>
-                          <td><a href="{% url 'group' %}?groupid={{ group.id }}">{{ group.group_name }}</a></td>
+                          <td><a href="{% url 'group' group.id %}">{{ group.group_name }}</a></td>
                           <td>{{ group.creator.username }}</td>
                           <td>{{ group.created_time|date:'M d, Y' }}</td>
 
@@ -546,7 +546,7 @@
       });
       $('#profile-location2').text(locations[1]);
       $('#profile-institution1').text(function(){
-        return institutions[0]=="None"?"Blank":locations[0];
+        return institutions[0]=="None"?"Blank":institutions[0];
       });
       $('#profile-institution2').text(institutions[1]);
 

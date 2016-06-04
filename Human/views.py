@@ -3,25 +3,26 @@ import cStringIO
 import json
 import os
 import random
-from PIL import Image
 import datetime
+
+from PIL import Image
 from django.contrib.auth import authenticate, logout
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.db.models import Q
-from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.shortcuts import render, render_to_response, redirect, get_object_or_404, get_list_or_404
+from django.http import HttpResponse, Http404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.template import Context
-from django.utils import timezone
+
 from Human.constants import PROJECT_NAME, STATIC_FOLDER, IDENTIFIER
 from Human.forms import LoginForm, RegisterForm, GroupCreateForm, GroupMemberCreateForm, ReJoinIdentifierForm, \
     FileUploadForm
 from Human.methods import create_user, get_user_groups, get_group_joined_num, check_groupid, \
     create_group, create_group_member, group_recommender, get_user_name, member_join, member_recommender, update_links, \
-    link_confirm, link_reject, get_user_msgs, get_user_msgs_count
-from Human.models import Group, GroupMember, Link
+    link_confirm, link_reject, get_user_msgs, get_user_msgs_count, check_profile
+from Human.models import Group, GroupMember, Link, Extra
+from Human.utils import create_avatar
 
 
 def redirect2main(request):
@@ -63,6 +64,7 @@ def lm_login(request):
 
 
 def lm_logout(request):
+    request.session.flush()
     logout(request)
     return redirect('login')
 
@@ -83,7 +85,7 @@ def lm_register(request):
             password = rf.cleaned_data['password']
             password2 = rf.cleaned_data['password2']
 
-            status = 0
+            # status = 0
             status = create_user(name, email, password, password2)
             context["status"] = status
             # print name, password, email
@@ -93,8 +95,9 @@ def lm_register(request):
                 user = authenticate(username=name, password=password)
                 if user is not None:
                     if user.is_active:
+                        request.session['newUser'] = True
                         login(request, user)
-                        return redirect('home')
+                        return redirect('profile')
                     else:
                         return redirect('register')
                 else:
@@ -144,7 +147,7 @@ def home(request):
                 print 'New group created: ', name, maxsize, identifier, type
 
                 groupid = Group.objects.get(group_name=name).id
-                return redirect('/group?groupid='+str(groupid))
+                return redirect('group', groupid=groupid)
             else:
                 return render(request, 'Human/home.html', context)
         else:
@@ -195,13 +198,13 @@ def msg_handle(request, type, linkid):
 ########################################################################
 
 @login_required
-def ego(request):
+def ego(request, groupid=0):
     user = request.user
     groups = get_user_groups(user)
     rcmd_groups = group_recommender(user)
     msgs_count = get_user_msgs_count(user)
 
-    groupid = check_groupid(request.GET.get('groupid'))
+    groupid = check_groupid(groupid)
     if groupid == 0:
         group = None
     else:
@@ -214,9 +217,9 @@ def ego(request):
 
 
 @login_required
-def graph(request, groupid):
+def graph(request, groupid=0):
     user = request.user
-    if groupid == '0':
+    if groupid == 0:
         return HttpResponse(json.dumps({"nodes": None, "links": None}))
 
     print "Graph groupid: ", groupid
@@ -293,6 +296,60 @@ def update_graph(request, groupid):
 ########################################################################
 
 @login_required
+def profile(request):
+    user = request.user
+    first_login = request.session.get('newUser')
+
+    username = get_user_name(user)
+
+    msgs_count = get_user_msgs_count(user)
+
+    context = Context({"project_name": PROJECT_NAME, "user": user, "username": username, "msgs_count": msgs_count,
+                       "first_login": first_login})
+
+    if request.is_ajax():
+        first_name = request.POST.get('firstname')
+        last_name = request.POST.get('lastname')
+        birth = request.POST.get('birth')
+        sex = request.POST.get('sex')
+        country = request.POST.get('country')
+        city = request.POST.get('city')
+        institution = request.POST.get('institution')
+
+        if check_profile(first_name, last_name, birth, sex, country, city, institution):
+
+            try:
+                user.first_name = first_name
+                user.last_name = last_name
+
+                ue = Extra.objects.get(user=user)
+                ue.sex = int(sex)
+                ue.birth = datetime.datetime.strptime(birth, '%Y/%m/%d').date()
+                # ue.location = country+' '+city
+                ue.institution = institution
+                user.save()
+                ue.save()
+
+            except Exception, e:
+                print 'Profile update failed: ', e
+                return HttpResponse(-1)
+
+            print 'Update profile: user:', user.id, first_name, last_name, birth, country, city, institution, sex
+            if first_login:
+                create_avatar(user.id, username=first_name+' '+last_name)
+                del request.session['newUser']
+                return HttpResponse(0)
+            else:
+                return HttpResponse('Save Successfully')
+        else:
+            return HttpResponse('Save failed')
+
+    return render(request, 'Human/profile.html', context)
+
+
+########################################################################
+
+@login_required
 def avatar(request):
     user = request.user
     msgs_count = get_user_msgs_count(user)
@@ -312,7 +369,7 @@ def img_handle(request):
             image = Image.open(image_string)
 
             path = os.path.join(STATIC_FOLDER, 'images/user_avatars/')
-            image.save(path+str(userid)+".png", image.format, quality=100)
+            image.resize((200, 200)).save(path+str(userid)+".png", image.format, quality=100)
             # print image.format, image.size, image.mode
         except Exception, e:
             print 'Avatar: ', e
@@ -327,20 +384,24 @@ def img_handle(request):
 
 
 @login_required
-def manage_group(request):
+def manage_group(request, groupid, page=1):
     user = request.user
 
-    up = request.GET.get('up')
+    upfile = request.session.get('upfile')
+
     groups = get_user_groups(user)
     rcmd_groups = group_recommender(user)
 
     msgs_count = get_user_msgs_count(user)
 
-    groupid = request.GET.get('groupid')
+    # groupid = request.GET.get('groupid')
     group = Group.objects.get(id=groupid)
 
     context = Context({"project_name": PROJECT_NAME, "user": user, "group": group, "groups": groups,
-                       "rcmd_groups": rcmd_groups, "up": up, "msgs_count": msgs_count})
+                       "rcmd_groups": rcmd_groups, "upfile": upfile, "msgs_count": msgs_count})
+
+    if upfile:
+        del request.session['upfile']
 
     if groupid != check_groupid(groupid):
         raise Http404
@@ -352,18 +413,17 @@ def manage_group(request):
             name = gf.cleaned_data['name']
             identifier = gf.cleaned_data['identifier']
 
-            # dangerous
+            # ---------------------------------------dangerous
             status = create_group_member(group, name, identifier)
             if status == 0:
                 print 'New group member created: ', name, identifier
-            return redirect('/group/?groupid='+str(groupid))
+            return redirect('groupId', groupid=groupid)
 
-    joined = request.GET.get('joined')
+    joined = request.session.get('joined')
 
-    if joined == '0':
-        context.push(joined=0)
-    elif joined == '1':
-        context.push(joined=1)
+    context.push(joined=joined)
+    if joined:
+        del request.session['joined']
 
     if user != group.creator:
         members = GroupMember.objects.filter(group=group)
@@ -379,7 +439,7 @@ def manage_group(request):
 
     else:
         members = GroupMember.objects.filter(group=group)
-        page = 1 if request.GET.get('page') is None else request.GET.get('page')
+        # page = 1 if request.GET.get('page') is None else request.GET.get('page')
         paginator = Paginator(members, 15)
 
         try:
@@ -396,11 +456,11 @@ def manage_group(request):
 
 
 @login_required
-def join(request):
+def join(request, groupid):
 
     user = request.user
     if request.is_ajax():
-        groupid = int(request.POST.get('groupid'))
+        # groupid = int(request.POST.get('groupid'))
         identifier = request.POST.get('identifier')
         print 'Join:', groupid, identifier
         group = Group.objects.get(id=groupid)
@@ -433,18 +493,19 @@ def join(request):
         rf = ReJoinIdentifierForm(request.POST)
 
         if rf.is_valid():
-            groupid = int(rf.cleaned_data['groupid'])
+            # groupid = int(rf.cleaned_data['groupid'])
             group = Group.objects.get(id=groupid)
             identifier = rf.cleaned_data['identifier']
             print 'Rejoin: ', groupid, identifier
             if identifier != '':
                 if GroupMember.objects.filter(group=group, member_name=get_user_name(user), token=identifier).exists():
                     member_join(user, group, identifier)
-                    return redirect('/group/?groupid='+str(groupid)+'&joined=0')
+
+                    return redirect('group', groupid=groupid)
 
         # -----
-        groupid = int(rf.cleaned_data['groupid'])
-        return redirect('/group/?groupid='+str(groupid)+'&joined=1')
+        request.session['joined'] = True
+        return redirect('group', groupid=groupid)
 
     else:
         raise Http404
@@ -465,20 +526,23 @@ def upload_members(request, groupid):
                         kv = l.strip().split(',')
 
                         if len(kv) != 2:
-                            return redirect('/group/?groupid='+str(groupid)+'&up=0')
+                            return redirect('group', groupid=groupid)
                         else:
                             members.append(kv)
 
                 for m in members:
                     if create_group_member(group, m[0], m[1]) != 0:
-                        return redirect('/group/?groupid='+str(groupid)+'&up=0')
 
-                return redirect('/group/?groupid='+str(groupid)+'&up=1')
+                        return redirect('group', groupid=groupid)
+                request.session['upfile'] = True
+                return redirect('group', groupid=groupid)
             else:
-                return redirect('/group/?groupid='+str(groupid)+'&up=0')
+
+                return redirect('group', groupid=groupid)
 
     else:
-        return redirect('/group/?groupid='+str(groupid)+'&up=0')
+
+        return redirect('group', groupid=groupid)
 
 
 

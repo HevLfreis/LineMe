@@ -22,14 +22,14 @@ def create_avatar(userid, username='Unknown'):
                     (6, 128, 67),
                     (38, 157, 128),
                     (137, 157, 192))
-    # font = ImageFont.truetype('simhei.ttf', 250)
-    font = ImageFont.truetype('/usr/share/fonts/truetype/simhei.ttf', 250)
-    img = Image.new('RGB', (400, 400), random.choice(beautifulRGB))
+    # font = ImageFont.truetype('simhei.ttf', 125)
+    font = ImageFont.truetype('/usr/share/fonts/truetype/simhei.ttf', 125)
+    img = Image.new('RGB', (200, 200), random.choice(beautifulRGB))
     draw = ImageDraw.Draw(img)
     if len(word) >= 2:
-        draw.text((84, 75), word[:2], (255, 255, 255), font=font)
+        draw.text((40, 38), word[:2], (255, 255, 255), font=font)
     if len(word) == 1:
-        draw.text((137, 75), word, (255, 255, 255), font=font)
+        draw.text((69, 38), word, (255, 255, 255), font=font)
     try:
         img.save(save_path + str(userid) + '.png')
     except IOError, e:

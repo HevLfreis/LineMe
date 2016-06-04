@@ -167,7 +167,7 @@
             <li class="header">My Groups</li>
             {% for k, v in sug.items %}
               <li>
-                <a href="{% url 'group' %}?groupid={{ k }}">
+                <a href="{% url 'group' k %}">
                   <i class="fa fa-circle-o text-yellow"></i>
                   <span>{{ v }}</span>
 
@@ -177,7 +177,7 @@
             {% for group in groups %}
 
               <li>
-                <a href="{% url 'group' %}?groupid={{ group.id }}">
+                <a href="{% url 'group' group.id %}">
                   {% if group.creator == user %}
 
                     <i class="fa fa-circle-o text-aqua"></i>
@@ -268,8 +268,8 @@
                         </form>
 
                       </div>
-                      {% if up != None %}
-                        {% if up == '0' %}
+                      {% if upfile != None %}
+                        {% if not upfile %}
                           <p class="text-center bg-red" style="margin-top: 5px">Update failed</p>
                         {% else %}
                           <p class="text-center bg-green" style="margin-top: 5px">Update members successfully</p>
@@ -300,12 +300,12 @@
 
                             <td>{{ member.token }}</td>
 
-                            <td>{{ member.created_time|date:'Y-m-d'  }}</td>
+                            <td>{{ member.created_time|date:'Y-m-d' }}</td>
 
                             {% if member.is_joined %}
-                              <td><span class="label label-success"><li class="fa fa-check-square"></li></span></td>
+                              <td><span class="label label-success"><span class="fa fa-check-square"></span></span></td>
                             {% else %}
-                              <td><span class="label label-warning"><li class="fa fa-circle"></span></td>
+                              <td><span class="label label-warning"><span class="fa fa-circle"></span></span></td>
                             {% endif %}
 
                           </tr>
@@ -324,7 +324,7 @@
                   <div class="box-tools pull-left">
                     <ul class="pagination pagination-sm inline">
                       {% if members.has_previous %}
-                        <li><a href="{% url 'group' %}?groupid={{ group.id }}&page={{ members.previous_page_number }}">«</a></li>
+                        <li><a href="{% url 'groupPage' group.id members.previous_page_number %}">«</a></li>
                       {% else %}
                         <li class="disabled"><a href="#">«</a></li>
                       {% endif %}
@@ -333,7 +333,7 @@
                       {#      {% endfor %}#}
 
                       {% if members.has_next %}
-                        <li><a href="{% url 'group' %}?groupid={{ group.id }}&page={{ members.next_page_number }}">»</a></li>
+                        <li><a href="{% url 'groupPage' group.id members.next_page_number %}">»</a></li>
                       {% else %}
                         <li class="disabled"><a href="#">»</a></li>
                       {% endif %}

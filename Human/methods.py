@@ -71,14 +71,13 @@ def validate_passwd(password, password2):
 
 ########################################################################
 
-
 def get_user_name(user):
     last = user.last_name
     first = user.first_name
     if len(first) is 0 and len(last) is 0:
         return user.username
     else:
-        return last+' '+first
+        return first + ' ' + last
 
 
 def get_user_groups(user):
@@ -89,23 +88,34 @@ def get_user_groups(user):
     return groups
 
 
-def get_user_mesgs(user):
+def get_user_msgs(user):
     my_members = GroupMember.objects.filter(user=user)
 
-    mesgs = []
+    msgs = []
     for mm in my_members:
-        # mesgs += Link.objects.filter(Q(source_member=mm, status=0) |
+        # msgs += Link.objects.filter(Q(source_member=mm, status=0) |
         #                              Q(target_member=mm, status=0) |
         #                              Q(source_member=mm, status=2) |
         #                              Q(target_member=mm, status=1) |
         #                              Q(source_member=mm, status=-2) |
         #                              Q(source_member=mm, status=-1), ~Q(creator=user))
 
-        mesgs += Link.objects.filter((Q(source_member=mm) & (Q(status=0) | Q(status=2) | Q(status=-2))) |
-                                     Q(target_member=mm) & (Q(status=0) | Q(status=1) | Q(status=-1)),
-                                     ~Q(creator=user))
+        msgs += Link.objects.filter((Q(source_member=mm) & (Q(status=0) | Q(status=2) | Q(status=-2))) |
+                                    Q(target_member=mm) & (Q(status=0) | Q(status=1) | Q(status=-1)),
+                                    ~Q(creator=user))
 
-    return mesgs
+    return msgs
+
+
+def get_user_msgs_count(user):
+    my_members = GroupMember.objects.filter(user=user)
+
+    count = 0
+    for mm in my_members:
+        count += Link.objects.filter((Q(source_member=mm) & (Q(status=0) | Q(status=2) | Q(status=-2))) |
+                                     Q(target_member=mm) & (Q(status=0) | Q(status=1) | Q(status=-1)),
+                                     ~Q(creator=user)).count()
+    return count
 
 
 def get_group_joined_num(group):
@@ -113,17 +123,31 @@ def get_group_joined_num(group):
 
     joined = GroupMember.objects.filter(group=group, is_joined=True).count()
 
-    return str(joined)+'/'+str(total)
+    return str(joined) + '/' + str(total)
+
+
+def get_user_joined(user, group):
+    return GroupMember.objects.filter(user=user, group=group, is_joined=True).exists()
 
 
 ########################################################################
 
-def check_groupid(id):
-    if id == '':
+def check_profile(first_name, last_name, birth, sex, country, city, institution):
+    if re.match("^(?:(?!0000)[0-9]{4}/(?:(?:0[1-9]|1[0-2])/(?:0[1-9]|1[0-9]|2[0-8])|"
+                "(?:0[13-9]|1[0-2])/(?:29|30)|(?:0[13578]|1[02])-31)|(?:[0-9]{2}(?:0[48]|"
+                "[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)/02/29)$", birth):
+        return True
+
+
+########################################################################
+
+def check_groupid(groupid):
+    if groupid is None:
         return -2
-    if Group.objects.filter(id=id).exists():
-        return id
-    return 0
+    elif Group.objects.filter(id=groupid).exists():
+        return groupid
+    else:
+        return 0
 
 
 def group_name_existed(name):
@@ -166,7 +190,7 @@ def create_group(request, name, maxsize, identifier, type):
                     timestamp=now)
 
         m.save()
-        u.save()
+        u.extra.save()
         c.save()
 
     except Exception, e:
@@ -190,11 +214,33 @@ def group_recommender(user):
     return sug
 
 
+########################################################################
+
+def create_group_member(group, name, identifier):
+    now = timezone.now()
+
+    if GroupMember.objects.filter(Q(member_name=name) | Q(token=identifier), group=group).exists():
+        return 1
+
+    try:
+        m = GroupMember(group=group,
+                        member_name=name,
+                        token=identifier,
+                        is_creator=False,
+                        is_joined=False,
+                        created_time=now)
+        m.save()
+    except Exception, e:
+        print 'Group member create: ', e
+        return 1
+    return 0
+
+
 # -----
 def member_join(user, group, identifier):
     now = timezone.now()
 
-    m = GroupMember.objects.get(group=group, member_name=user.username, token=identifier)
+    m = GroupMember.objects.get(group=group, member_name=get_user_name(user), token=identifier)
     m.is_joined = True
     m.user = user
     m.joined_time = now
@@ -224,31 +270,7 @@ def member_recommender(user, groupid):
 
 ########################################################################
 
-def create_group_member(group, name, identifier):
-
-    now = timezone.now()
-
-    if GroupMember.objects.filter(Q(member_name=name) | Q(token=identifier), group=group).exists():
-        return 1
-
-    try:
-        m = GroupMember(group=group,
-                        member_name=name,
-                        token=identifier,
-                        is_creator=False,
-                        is_joined=False,
-                        created_time=now)
-        m.save()
-    except Exception, e:
-        print 'Group member create: ', e
-        return 1
-    return 0
-
-
-########################################################################
-
 def link_confirm(user, linkid):
-
     link = get_object_or_404(Link, id=linkid)
 
     gm = GroupMember.objects.get(user=user, group=link.group)
@@ -273,7 +295,6 @@ def link_confirm(user, linkid):
 
 
 def link_reject(user, linkid):
-
     link = get_object_or_404(Link, id=linkid)
 
     gm = GroupMember.objects.get(user=user, group=link.group)
@@ -299,24 +320,23 @@ def link_reject(user, linkid):
 
 
 def update_links(newLinks, groupid, creator):
-
     oldLinks = Link.objects.filter(creator=creator, group__id=groupid)
-    LinksDict = {}
+    linksDict = {}
 
     for link in oldLinks:
-        LinksDict[str(link.source_member.id)+','+str(link.target_member.id)] = link
+        linksDict[str(link.source_member.id) + ',' + str(link.target_member.id)] = link
 
     for link in eval(newLinks):
-        if link["source"]+','+link["target"] in LinksDict:
-            LinksDict[link["source"]+','+link["target"]] = 0
-        elif link["target"]+','+link["source"] in LinksDict:
-            LinksDict[link["target"]+','+link["source"]] = 0
+        if link["source"] + ',' + link["target"] in linksDict:
+            linksDict[link["source"] + ',' + link["target"]] = 0
+        elif link["target"] + ',' + link["source"] in linksDict:
+            linksDict[link["target"] + ',' + link["source"]] = 0
         else:
-            LinksDict[link["source"]+','+link["target"]] = 1
+            linksDict[link["source"] + ',' + link["target"]] = 1
 
     user_gmid = GroupMember.objects.get(group__id=groupid, user=creator).id
 
-    for k, v in LinksDict.items():
+    for k, v in linksDict.items():
         if v is 0:
             continue
         elif v is 1:
@@ -349,8 +369,8 @@ def update_links(newLinks, groupid, creator):
 
 def create_dummy_members(group, u, num):
     for i in range(num):
-        if u.username != 'test'+str(i):
-            create_group_member(group, 'test'+str(i), 'test'+str(i)+'@123.com')
+        if u.username != 'test' + str(i):
+            create_group_member(group, 'test' + str(i), 'test' + str(i) + '@123.com')
 
 
 def create_dummy_links(group, user, now):
@@ -362,7 +382,7 @@ def create_dummy_links(group, user, now):
         if node == 0:
             G.node[node]['name'] = user.username
         else:
-            G.node[node]['name'] = 'test'+str(i)
+            G.node[node]['name'] = 'test' + str(i)
             i += 1
 
     for (f, t) in G.edges():
@@ -373,4 +393,3 @@ def create_dummy_links(group, user, now):
                     status=0,
                     created_time=now)
         link.save()
-

@@ -28,18 +28,22 @@ urlpatterns = [
     url(r'^msgpanel/(?P<page>[0-9]+)/$', views.msg_panel, name='homeMsg'),
     url(r'^msghandle/(?P<type>[0-1])/(?P<linkid>[0-9]+)/$', views.msg_handle, name='msgHandle'),
     #
+
     url(r'^ego/$', views.ego, name='ego'),
+    url(r'^ego/(?P<groupid>[0-9]+)/$', views.ego, name='egoId'),
+
     url(r'^graph/(?P<groupid>[0-9]+)/$', views.graph, name='graph'),
     url(r'^rcmdpanel/(?P<groupid>[0-9]+)/(?P<page>[0-9]+)/$', views.rcmd_panel, name='rcmd'),
     url(r'^updategraph/(?P<groupid>[0-9]+)/$', views.update_graph, name='updateGraph'),
 
     url(r'^global/$', views.ego, name='global'),
-    url(r'^profile/$', views.ego, name='profile'),
+    url(r'^profile/$', views.profile, name='profile'),
     url(r'^settings/$', views.ego, name='settings'),
 
     #
-    url(r'^group/$', views.manage_group, name='group'),
-    url(r'^join/$', views.join, name='join'),
+    url(r'^group/(?P<groupid>[0-9]+)/$', views.manage_group, name='group'),
+    url(r'^group/(?P<groupid>[0-9]+)/(?P<page>[0-9]+)/$', views.manage_group, name='groupPage'),
+    url(r'^join/(?P<groupid>[0-9]+)$', views.join, name='join'),
     url(r'^upload/(?P<groupid>[0-9]+)/$', views.upload_members, name='uploadMembers'),
     #
     #

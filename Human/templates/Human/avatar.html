@@ -157,7 +157,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
           <ul class="sidebar-menu">
             <li class="header">My Profile</li>
           </ul>
-          <ul class="control-sidebar-menu" style="margin-left: 0px">
+          <ul class="control-sidebar-menu">
             <li>
               <a href="#">
                 {% if user.extra.sex  %}
@@ -247,16 +247,18 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
                 <div id="image-cropper">
                   <div class="row">
-                    <div class="col-md-7 col-xs-12">
-                      <div class="cropit-preview"></div>
-                        <div class="col-xs-12 text-center" style="padding-top: 5px">
-                          <li class="fa fa-rotate-left fa-lg rotate-ccw" style="padding-right: 20px;cursor: pointer"></li>
-                          <li class="fa fa-rotate-right fa-lg rotate-cw" style="cursor: pointer"></li>
-                          <input type="range" class="cropit-image-zoom-input" style=""/>
-                        </div>
+                    <div class="col-md-7 col-xs-7">
+                      <div class="cropit-preview">
 
+                      </div>
+                      <div class="col-xs-12 text-center" style="padding-top: 5px">
+                        <li class="fa fa-rotate-left fa-lg rotate-ccw" style="padding-right: 20px;cursor: pointer"></li>
+                        <li class="fa fa-rotate-right fa-lg rotate-cw" style="cursor: pointer"></li>
+                        <input type="range" class="cropit-image-zoom-input" style=""/>
+                      </div>
                     </div>
-                    <div class="col-md-5 col-xs-12 text-center" style="margin-top: 25%">
+
+                    <div class="col-md-5 col-xs-5 text-center" style="margin-top: 25%">
                       <div class="row" style="margin-bottom: 15px">
                         <button id="select" class="btn btn-primary" ><i class="fa fa-image pull-left"></i>Select New Image</button>
                       </div>
@@ -264,6 +266,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         <button id="upload" class="export btn btn-success disabled" style="" disabled><i class="fa fa-upload pull-left"></i>Upload</button>
                       </div>
                     </div>
+
                   </div>
 
 
@@ -324,7 +327,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
       $('#profile-institution2').text(institutions[1]);
 
 
-      $('.cropit-preview').height($('.cropit-preview').width());
+      $('.cropit-preview').height($('.col-md-7').width());
+      $('.cropit-preview').width($('.col-md-7').width());
       $('#image-cropper').cropit({
         imageState: {
           src: '/static/images/user_avatars/{{ user.id }}.png'
