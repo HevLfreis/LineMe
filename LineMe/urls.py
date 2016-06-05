@@ -13,8 +13,8 @@ Including another URLconf
     1. Add an import:  from blog import urls as blog_urls
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
-from django.conf.urls import include, url
-from django.contrib import admin
+from django.conf.urls import url
+
 from Human import views
 
 urlpatterns = [
@@ -27,8 +27,11 @@ urlpatterns = [
     url(r'^home/$', views.home, name='home'),
     url(r'^msgpanel/(?P<page>[0-9]+)/$', views.msg_panel, name='homeMsg'),
     url(r'^msghandle/(?P<type>[0-1])/(?P<linkid>[0-9]+)/$', views.msg_handle, name='msgHandle'),
-    #
 
+    url(r'^invpanel/(?P<page>[0-9]+)/$', views.inv_panel, name='homeInv'),
+    url(r'^sendemail/(?P<page>[0-9]+)/$', views.send_email2unconfirmed, name='email'),
+
+    #
     url(r'^ego/$', views.ego, name='ego'),
     url(r'^ego/(?P<groupid>[0-9]+)/$', views.ego, name='egoId'),
 

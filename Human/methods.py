@@ -4,6 +4,7 @@
 # Date: 2016/5/16 
 # Time: 19:56
 #
+import random
 import re
 import datetime
 from django.contrib.auth.models import User
@@ -118,6 +119,48 @@ def get_user_msgs_count(user):
     return count
 
 
+def get_user_invs(user, group_name=None):
+    if group_name:
+        invs = Link.objects.filter(creator=user, group__group_name=group_name).order_by('-created_time')
+    else:
+        invs = Link.objects.filter(creator=user).order_by('-created_time')
+    return invs
+
+
+def get_user_graph_in_group(user, groupid):
+    gms = []
+    ls = Link.objects.filter(group__id=groupid, creator=user)
+
+    data = {}
+    nodes, links = [], []
+
+    self = GroupMember.objects.get(group__id=groupid, user=user)
+    nodes.append({'id': self.id, 'userid': self.user.id, 'name': self.member_name,
+                  'self': True, 'group': 0})
+
+    if ls.count() != 0:
+
+        for link in ls:
+
+            if link.source_member not in gms and link.source_member != self:
+                gms.append(link.source_member)
+            if link.target_member not in gms and link.target_member != self:
+                gms.append(link.target_member)
+
+        for gm in gms:
+            nodes.append({'id': gm.id, 'userid': (-1 if gm.user is None else gm.user.id), 'name': gm.member_name,
+                          'self': False, 'group': random.randint(1, 4)})
+
+        for link in ls:
+            links.append({'id': link.id, 'source': link.source_member.id, 'target': link.target_member.id,
+                          'status': link.status, 'value': 1, 'group': link.group.id})
+
+    data["nodes"] = nodes
+    data["links"] = links
+
+    return data
+
+
 def get_group_joined_num(group):
     total = GroupMember.objects.filter(group=group).count()
 
@@ -133,10 +176,15 @@ def get_user_joined(user, group):
 ########################################################################
 
 def check_profile(first_name, last_name, birth, sex, country, city, institution):
-    if re.match("^(?:(?!0000)[0-9]{4}/(?:(?:0[1-9]|1[0-2])/(?:0[1-9]|1[0-9]|2[0-8])|"
-                "(?:0[13-9]|1[0-2])/(?:29|30)|(?:0[13578]|1[02])-31)|(?:[0-9]{2}(?:0[48]|"
-                "[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)/02/29)$", birth):
-        return True
+    if re.match("^[A-Za-z]+$", first_name) and re.match("^[A-Za-z]+$", last_name):
+        if sex == 0 or sex == 1:
+
+            if re.match("^(?:(?!0000)[0-9]{4}/(?:(?:0[1-9]|1[0-2])/(?:0[1-9]|1[0-9]|2[0-8])|"
+                        "(?:0[13-9]|1[0-2])/(?:29|30)|(?:0[13578]|1[02])-31)|(?:[0-9]{2}(?:0[48]|"
+                        "[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)/02/29)$", birth):
+                if re.match("^[A-Za-z\s]+$", institution):
+                    return True
+    return False
 
 
 ########################################################################

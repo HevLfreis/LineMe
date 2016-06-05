@@ -269,11 +269,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
       $('#submit').click(function() {
         $.post('{% url 'profile' %}', $('form').serialize(), function(data) {
-           if(data == 0) window.location.href="{% url 'home' %}";
-           else {
-             alert(data);
-              window.location.reload();
-           }
+           if(data == -1) alert("There're some mistakes in your submission");
+           else window.location.href="{% url 'home' %}";
+
         });
       });
 

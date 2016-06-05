@@ -20,7 +20,7 @@ from Human.forms import LoginForm, RegisterForm, GroupCreateForm, GroupMemberCre
     FileUploadForm
 from Human.methods import create_user, get_user_groups, get_group_joined_num, check_groupid, \
     create_group, create_group_member, group_recommender, get_user_name, member_join, member_recommender, update_links, \
-    link_confirm, link_reject, get_user_msgs, get_user_msgs_count, check_profile
+    link_confirm, link_reject, get_user_msgs, get_user_msgs_count, check_profile, get_user_invs, get_user_graph_in_group
 from Human.models import Group, GroupMember, Link, Extra
 from Human.utils import create_avatar
 
@@ -37,16 +37,16 @@ def lm_login(request):
         lf = LoginForm(request.POST)
 
         if lf.is_valid():
-            email = lf.cleaned_data['email']
+            username = lf.cleaned_data['username']
             password = lf.cleaned_data['password']
-            print 'Login: ', email, password
+            print 'Login: ', username, password
             try:
-                u = User.objects.get(email=email)
+                u = User.objects.get(username=username)
             except User.DoesNotExist:
                 context["status"] = 'User does not existed'
                 return render(request, 'Human/login.html', context)
 
-            user = authenticate(username=u.username, password=password)
+            user = authenticate(username=username, password=password)
             if user is not None:
                 if user.is_active:
                     login(request, user)
@@ -57,7 +57,7 @@ def lm_login(request):
                 context["status"] = 'User does not existed'
                 return render(request, 'Human/login.html', context)
         else:
-            render(request, 'Human/login.html', context)
+            return redirect('login')
 
     else:
         return render(request, 'Human/login.html', context)
@@ -195,6 +195,38 @@ def msg_handle(request, type, linkid):
     return HttpResponse(status)
 
 
+@login_required
+def inv_panel(request, page):
+    user = request.user
+    if request.is_ajax():
+
+        group_name = request.GET.get('groupname')
+        if group_name:
+            invs = get_user_invs(user, group_name)
+        else:
+            invs = get_user_invs(user)
+
+        paginator = Paginator(invs, 8)
+
+        try:
+            p = paginator.page(page)
+        except PageNotAnInteger:
+            p = paginator.page(1)
+        except EmptyPage:
+            p = paginator.page(paginator.num_pages)
+
+        my_members = GroupMember.objects.filter(user=user)
+
+        return render(request, 'Human/home_inv.html', {'invs': p, 'my_members': my_members})
+    else:
+        raise Http404
+
+
+@login_required
+def send_email2unconfirmed(request):
+    return 0
+
+
 ########################################################################
 
 @login_required
@@ -224,35 +256,7 @@ def graph(request, groupid=0):
 
     print "Graph groupid: ", groupid
 
-    gms = []
-    ls = Link.objects.filter(group__id=groupid, creator=user)
-
-    data = {}
-    nodes, links = [], []
-
-    self = GroupMember.objects.get(group__id=groupid, user=user)
-    nodes.append({'id': self.id, 'userid': self.user.id, 'name': self.member_name,
-                  'self': True, 'group': 0})
-
-    if ls.count() != 0:
-
-        for link in ls:
-
-            if link.source_member not in gms and link.source_member != self:
-                gms.append(link.source_member)
-            if link.target_member not in gms and link.target_member != self:
-                gms.append(link.target_member)
-
-        for gm in gms:
-            nodes.append({'id': gm.id, 'userid': (-1 if gm.user is None else gm.user.id), 'name': gm.member_name,
-                          'self': False, 'group': random.randint(1, 4)})
-
-        for link in ls:
-            links.append({'id': link.id, 'source': link.source_member.id, 'target': link.target_member.id,
-                          'status': link.status, 'value': 1, 'group': link.group.id})
-
-    data["nodes"] = nodes
-    data["links"] = links
+    data = get_user_graph_in_group(user, groupid)
 
     return HttpResponse(json.dumps(data))
 
@@ -311,7 +315,7 @@ def profile(request):
         first_name = request.POST.get('firstname')
         last_name = request.POST.get('lastname')
         birth = request.POST.get('birth')
-        sex = request.POST.get('sex')
+        sex = int(request.POST.get('sex'))
         country = request.POST.get('country')
         city = request.POST.get('city')
         institution = request.POST.get('institution')
@@ -323,7 +327,7 @@ def profile(request):
                 user.last_name = last_name
 
                 ue = Extra.objects.get(user=user)
-                ue.sex = int(sex)
+                ue.sex = sex
                 ue.birth = datetime.datetime.strptime(birth, '%Y/%m/%d').date()
                 # ue.location = country+' '+city
                 ue.institution = institution
@@ -338,11 +342,11 @@ def profile(request):
             if first_login:
                 create_avatar(user.id, username=first_name+' '+last_name)
                 del request.session['newUser']
-                return HttpResponse(0)
-            else:
-                return HttpResponse('Save Successfully')
+
+            return HttpResponse(0)
+
         else:
-            return HttpResponse('Save failed')
+            return HttpResponse(-1)
 
     return render(request, 'Human/profile.html', context)
 
@@ -511,6 +515,7 @@ def join(request, groupid):
         raise Http404
 
 
+@login_required
 def upload_members(request, groupid):
     user = request.user
 

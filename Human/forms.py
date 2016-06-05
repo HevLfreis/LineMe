@@ -9,7 +9,7 @@ from Human.constants import IDENTIFIER, GROUP_TYPE
 
 
 class LoginForm(forms.Form):
-    email = forms.EmailField()
+    username = forms.CharField(max_length=40)
     password = forms.CharField(widget=forms.PasswordInput)
 
 

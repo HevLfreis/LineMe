@@ -34,25 +34,23 @@
         <p class="login-box-msg">Register a new membership</p>
         <form method="post">
           {% if status == 1 %}
-          <p class="text-center bg-red">This name has been used</p>
-          {% endif %}
-          {% if status == 4 %}
+            <p class="text-center bg-red">This name has been used</p>
+          {% elif status == 4 %}
             <p class="text-center bg-red">Register Info Incorrect </p>
+          {% elif status == 2 %}
+            <p class="text-center bg-red">Invalid Email Address</p>
+          {% elif status == 3 %}
+            <p class="text-center bg-red">Wrong Password</p>
           {% endif %}
           <div class="form-group has-feedback">
             <input name="name" type="text" class="form-control" placeholder="Account Name">
             <span class="glyphicon glyphicon-user form-control-feedback"></span>
           </div>
-          {% if status == 2 %}
-          <p class="text-center bg-red">Invalid Email Address</p>
-          {% endif %}
+
           <div class="form-group has-feedback">
             <input name="email" type="email" class="form-control" placeholder="Email">
             <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
           </div>
-          {% if status == 3 %}
-            <p class="text-center bg-red">Wrong Password</p>
-          {% endif %}
 
           <div class="form-group has-feedback">
             <input name="password" type="password" class="form-control" placeholder="Password">
@@ -92,8 +90,6 @@
           radioClass: 'iradio_square-blue',
           increaseArea: '20%' // optional
         });
-      });
-      $('#date').datepicker({
       });
     </script>
   </body>

@@ -4,8 +4,12 @@
 # Date: 2016/5/25 
 # Time: 10:44
 #
+from email.mime.image import MIMEImage
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 import os
 import random
+import smtplib
 from PIL import ImageFont
 from PIL import Image
 from PIL import ImageDraw
@@ -37,6 +41,37 @@ def create_avatar(userid, username='Unknown'):
         return -1
     return 0
 
-# if __name__ == '__main__':
-#     create_avatar(9, 'Name Potter')
 
+def send_email(receiver, subject, text):
+    sender = 'hevlhayt@foxmail.com'
+    subject = subject
+    smtpserver = 'smtp.qq.com'
+    username = 'hevlhayt'
+    password = 'cypxypypmmvxbcii'
+
+    msgRoot = MIMEMultipart('related')
+    msgRoot['From'] = sender
+    msgRoot['To'] = receiver
+    msgRoot['Subject'] = subject
+
+    msgText = MIMEText(text, 'html', 'utf-8')
+    msgRoot.attach(msgText)
+
+    # fp = open('h:\\python\\1.jpg', 'rb')
+    # msgImage = MIMEImage(fp.read())
+    # fp.close()
+
+    # msgImage.add_header('Content-ID', '<image1>')
+    # msgRoot.attach(msgImage)
+
+    smtp = smtplib.SMTP()
+    smtp.connect(smtpserver)
+    smtp.starttls()
+    smtp.login(username, password)
+    smtp.sendmail(sender, receiver, msgRoot.as_string())
+    smtp.quit()
+
+# if __name__ == '__main__':
+#     # create_avatar(9, 'Name Potter')
+#     text = '<b>Some <i>HTML</i> text</b> and an image.<br><img src="cid:image1"><br>good!'
+#     send_email('1017844578@qq.com', 'Test', text)
