@@ -32,16 +32,19 @@ urlpatterns = [
     url(r'^sendemail/(?P<page>[0-9]+)/$', views.send_email2unconfirmed, name='email'),
 
     #
-    url(r'^ego/$', views.ego, name='ego'),
-    url(r'^ego/(?P<groupid>[0-9]+)/$', views.ego, name='egoId'),
+    url(r'^ego/$', views.ego_network, name='ego'),
+    url(r'^ego/(?P<groupid>[0-9]+)/$', views.ego_network, name='egoId'),
 
     url(r'^graph/(?P<groupid>[0-9]+)/$', views.graph, name='graph'),
     url(r'^rcmdpanel/(?P<groupid>[0-9]+)/(?P<page>[0-9]+)/$', views.rcmd_panel, name='rcmd'),
     url(r'^updategraph/(?P<groupid>[0-9]+)/$', views.update_graph, name='updateGraph'),
 
-    url(r'^global/$', views.ego, name='global'),
+    url(r'^global/$', views.global_network, name='global'),
+    url(r'^global/(?P<groupid>[0-9]+)/$', views.global_network, name='globalId'),
+
+    #
     url(r'^profile/$', views.profile, name='profile'),
-    url(r'^settings/$', views.ego, name='settings'),
+    url(r'^settings/$', views.ego_network, name='settings'),
 
     #
     url(r'^group/(?P<groupid>[0-9]+)/$', views.manage_group, name='group'),

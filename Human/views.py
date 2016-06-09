@@ -20,7 +20,7 @@ from Human.forms import LoginForm, RegisterForm, GroupCreateForm, GroupMemberCre
     FileUploadForm
 from Human.methods import create_user, get_user_groups, get_group_joined_num, check_groupid, \
     create_group, create_group_member, group_recommender, get_user_name, member_join, member_recommender, update_links, \
-    link_confirm, link_reject, get_user_msgs, get_user_msgs_count, check_profile, get_user_invs, get_user_graph_in_group
+    link_confirm, link_reject, get_user_msgs, get_user_msgs_count, check_profile, get_user_invs, get_user_ego_graph
 from Human.models import Group, GroupMember, Link, Extra
 from Human.utils import create_avatar
 
@@ -80,7 +80,7 @@ def lm_register(request):
         rf = RegisterForm(request.POST)
         # print 'Register Form valid: ', rf.is_valid()
         if rf.is_valid():
-            name = rf.cleaned_data['name']
+            name = rf.cleaned_data['username']
             email = rf.cleaned_data['email']
             password = rf.cleaned_data['password']
             password2 = rf.cleaned_data['password2']
@@ -230,7 +230,7 @@ def send_email2unconfirmed(request):
 ########################################################################
 
 @login_required
-def ego(request, groupid=0):
+def ego_network(request, groupid=0):
     user = request.user
     groups = get_user_groups(user)
     rcmd_groups = group_recommender(user)
@@ -243,7 +243,7 @@ def ego(request, groupid=0):
         group = get_object_or_404(Group, id=groupid)
 
     context = Context({"project_name": PROJECT_NAME, "user": user, "groups": groups,
-                       "group": group, "rcmd_groups": rcmd_groups, "status": 0, "msgs_count": msgs_count})
+                       "group": group, "rcmd_groups": rcmd_groups, "msgs_count": msgs_count})
 
     return render(request, 'Human/ego.html', context)
 
@@ -256,7 +256,7 @@ def graph(request, groupid=0):
 
     print "Graph groupid: ", groupid
 
-    data = get_user_graph_in_group(user, groupid)
+    data = get_user_ego_graph(user, groupid)
 
     return HttpResponse(json.dumps(data))
 
@@ -295,6 +295,27 @@ def update_graph(request, groupid):
 
     else:
         raise Http404
+
+
+########################################################################
+
+@login_required
+def global_network(request, groupid=0):
+    user = request.user
+    groups = get_user_groups(user)
+
+    msgs_count = get_user_msgs_count(user)
+
+    groupid = check_groupid(groupid)
+    if groupid == 0:
+        group = None
+    else:
+        group = get_object_or_404(Group, id=groupid)
+
+    context = Context({"project_name": PROJECT_NAME, "user": user, "groups": groups,
+                       "group": group, "msgs_count": msgs_count})
+
+    return render(request, 'Human/global.html', context)
 
 
 ########################################################################

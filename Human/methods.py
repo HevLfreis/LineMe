@@ -127,7 +127,7 @@ def get_user_invs(user, group_name=None):
     return invs
 
 
-def get_user_graph_in_group(user, groupid):
+def get_user_ego_graph(user, groupid):
     gms = []
     ls = Link.objects.filter(group__id=groupid, creator=user)
 
@@ -159,6 +159,14 @@ def get_user_graph_in_group(user, groupid):
     data["links"] = links
 
     return data
+
+
+def get_user_global_graph(user, groupid):
+    return
+
+
+def get_user_global_info(user, groupid):
+    return
 
 
 def get_group_joined_num(group):
