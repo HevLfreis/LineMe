@@ -20,7 +20,8 @@ from Human.forms import LoginForm, RegisterForm, GroupCreateForm, GroupMemberCre
     FileUploadForm
 from Human.methods import create_user, get_user_groups, get_group_joined_num, check_groupid, \
     create_group, create_group_member, group_recommender, get_user_name, member_join, member_recommender, update_links, \
-    link_confirm, link_reject, get_user_msgs, get_user_msgs_count, check_profile, get_user_invs, get_user_ego_graph
+    link_confirm, link_reject, get_user_msgs, get_user_msgs_count, check_profile, get_user_invs, get_user_ego_graph, \
+    get_user_global_info
 from Human.models import Group, GroupMember, Link, Extra
 from Human.utils import create_avatar
 
@@ -307,13 +308,16 @@ def global_network(request, groupid=0):
     msgs_count = get_user_msgs_count(user)
 
     groupid = check_groupid(groupid)
+    context = Context()
+
     if groupid == 0:
         group = None
     else:
         group = get_object_or_404(Group, id=groupid)
+        context.push(get_user_global_info(user, groupid))
 
-    context = Context({"project_name": PROJECT_NAME, "user": user, "groups": groups,
-                       "group": group, "msgs_count": msgs_count})
+    context.push({"project_name": PROJECT_NAME, "user": user, "groups": groups,
+                  "group": group, "msgs_count": msgs_count})
 
     return render(request, 'Human/global.html', context)
 

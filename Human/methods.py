@@ -166,7 +166,7 @@ def get_user_global_graph(user, groupid):
 
 
 def get_user_global_info(user, groupid):
-    return
+    return graph_analyzer(user, groupid)
 
 
 def get_group_joined_num(group):
@@ -449,3 +449,53 @@ def create_dummy_links(group, user, now):
                     status=0,
                     created_time=now)
         link.save()
+
+
+def graph_analyzer(user, groupid):
+
+    distribution = {}
+
+    links = Link.objects.filter(group__id=groupid)
+
+    G = nx.Graph()
+
+    my_member = GroupMember.objects.get(group__id=groupid, user=user)
+
+    print my_member
+
+    for link in links:
+        if not G.has_edge(link.source_member, link.target_member):
+            G.add_edge(link.source_member, link.target_member, weight=1)
+        else:
+            G[link.source_member][link.target_member]['weight'] += 1
+
+    print G.edges(data=True)
+
+    top = sorted(G.degree().items(), key=lambda x: x[1], reverse=True)
+
+    top3 = top[0:3]
+
+    myRank = top.index((my_member, G.degree(my_member))) + 1
+
+    print top3, myRank
+
+    myGraph = links.filter(creator=user).count()
+
+    cover = myGraph / float(G.number_of_edges()) if not G.number_of_edges() == 0 else 0
+
+    print cover
+
+    average_degree = 2 * G.number_of_edges() / G.number_of_nodes()
+
+    average_distance = nx.average_shortest_path_length(G)
+
+    print average_degree, average_distance
+
+    return {'distribution': distribution, 'top3': top3, 'my_rank': myRank,
+            'average_degree': average_degree, 'average_distance': average_distance,
+            'cover': cover}
+
+
+
+
+

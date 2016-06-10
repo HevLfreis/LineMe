@@ -317,20 +317,16 @@
                     </thead>
                     <tbody>
 
+                      {% for top, d in top3 %}
+                        <tr>
+                          <td>{{ forloop.counter }}</td>
+                          <td>{{ top.member_name }}</td>
+                        </tr>
+
+                      {% endfor %}
+
                       <tr>
-                        <td>1</td>
-                        <td>xfwang</td>
-                      </tr>
-                      <tr>
-                        <td>2</td>
-                        <td>wanglin</td>
-                      </tr>
-                      <tr>
-                        <td>3</td>
-                        <td>liusa</td>
-                      </tr>
-                      <tr>
-                        <td>15</td>
+                        <td>{{ my_rank }}</td>
                         <td>Me</td>
                       </tr>
 
@@ -342,14 +338,14 @@
                     <thead>
                       <tr>
                         <th>Average Degree</th>
-                        <td>6</td>
+                        <td>{{ average_degree|floatformat:"2" }}</td>
                       </tr>
 
                     </thead>
                     <tbody>
                       <tr>
                         <th>Average Distance</th>
-                        <td>6</td>
+                        <td>{{ average_distance|floatformat:"2" }}</td>
                       </tr>
 
                     </tbody>
@@ -357,7 +353,7 @@
                   </br>
                   <blockquote>
                     <ul>
-                      <li>Your links cover 29% of the global network</li>
+                      <li>Your links cover {{ cover|floatformat:"2" }} of the global network</li>
                       </br>
                       <li>Your best friend is xxx, 60% of the members have lined you two.</li>
                       </br>
@@ -859,27 +855,11 @@
 
       var option2 = {
         backgroundColor: '#404a59',
-        title: {
-          text: '全国主要城市空气质量',
-          subtext: 'data from PM25.in',
-          sublink: 'http://www.pm25.in',
-          left: 'center',
-          textStyle: {
-            color: '#fff'
-          }
-        },
+
         tooltip : {
           trigger: 'item'
         },
-        legend: {
-          orient: 'vertical',
-          y: 'bottom',
-          x:'right',
-          data:['pm2.5'],
-          textStyle: {
-            color: '#fff'
-          }
-        },
+
         geo: {
           map: 'china',
           label: {
