@@ -28,8 +28,6 @@ function updateRcmdPanel(page) {
             })
             .click(function(){
 
-                //后台一定要检测新node的正确性！！！！！！！！！！！！！！！
-
                 var newNode = rcmdId2Node($(this).attr("id"));
 
                 if (!rcmdAddedNode[newNode.id]) {

@@ -4,11 +4,13 @@
 # Date: 2016/5/16 
 # Time: 19:56
 #
+from collections import Counter
+import json
 import random
 import re
 import datetime
 from django.contrib.auth.models import User
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.http import Http404
 from django.shortcuts import get_object_or_404, get_list_or_404
 from django.utils import timezone
@@ -453,15 +455,17 @@ def create_dummy_links(group, user, now):
 
 def graph_analyzer(user, groupid):
 
-    distribution = {}
-
+    nodes = GroupMember.objects.filter(group__id=groupid)
     links = Link.objects.filter(group__id=groupid)
+    my_member = nodes.get(user=user)
 
     G = nx.Graph()
 
-    my_member = GroupMember.objects.get(group__id=groupid, user=user)
+    # print my_member
 
-    print my_member
+    # all members are calculated as nodes or only linked member are nodes
+    for node in nodes:
+        G.add_node(node)
 
     for link in links:
         if not G.has_edge(link.source_member, link.target_member):
@@ -469,32 +473,69 @@ def graph_analyzer(user, groupid):
         else:
             G[link.source_member][link.target_member]['weight'] += 1
 
-    print G.edges(data=True)
+    # print G.edges(data=True)
+
+    distribution = {k: v / float(G.number_of_nodes()) for k, v in dict(Counter(G.degree().values())).items()}
+
+    # print distribution, dict(Counter(G.degree().values()))
+
+    # distribution = {str(k): v for k, v in nx.degree_centrality(G)}
 
     top = sorted(G.degree().items(), key=lambda x: x[1], reverse=True)
-
     top3 = top[0:3]
 
     myRank = top.index((my_member, G.degree(my_member))) + 1
 
-    print top3, myRank
+    # print top3, myRank
 
     myGraph = links.filter(creator=user).count()
 
     cover = myGraph / float(G.number_of_edges()) if not G.number_of_edges() == 0 else 0
 
-    print cover
+    # print cover
 
     average_degree = 2 * G.number_of_edges() / G.number_of_nodes()
 
-    average_distance = nx.average_shortest_path_length(G)
+    # need fix !!!
+    if nx.is_connected(G) and G.number_of_nodes() > 1:
+        average_distance = nx.average_shortest_path_length(G)
+    else:
+        average_distance = 'INF'
 
-    print average_degree, average_distance
+    # print average_degree, average_distance
 
-    return {'distribution': distribution, 'top3': top3, 'my_rank': myRank,
+    friends = G.neighbors(my_member)
+
+    friends = [(friend, G[friend][my_member]['weight']) for friend in friends]
+
+    friends = sorted(friends, key=lambda x: x[1], reverse=True)
+
+    # print friends
+    # print friends[0][0].id
+    if len(friends) > 0:
+        bestfriend = friends[0][0]
+        bf_ratio = friends[0][1] / float(G.number_of_nodes())
+    else:
+        bestfriend = None
+        bf_ratio = 0
+
+    links_of_me = links.filter(Q(source_member=my_member) | Q(target_member=my_member)).exclude(creator=user)\
+        .values('creator').annotate(count=Count('pk')).order_by('-count')
+
+    # print links_of_me
+    if len(links_of_me) != 0:
+
+        heart = GroupMember.objects.get(user__id=links_of_me[0]['creator'], group__id=groupid)
+        heart_count = links_of_me[0]['count']
+    else:
+        heart = None
+        heart_count = None
+
+    return {'distribution': json.dumps(distribution), 'top3': top3, 'my_rank': myRank,
             'average_degree': average_degree, 'average_distance': average_distance,
-            'cover': cover}
-
+            'cover': cover,
+            'bestfriend': bestfriend, 'bf_ratio': bf_ratio,
+            'heart': heart, 'heart_count': heart_count}
 
 
 
