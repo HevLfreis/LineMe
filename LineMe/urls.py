@@ -35,12 +35,14 @@ urlpatterns = [
     url(r'^ego/$', views.ego_network, name='ego'),
     url(r'^ego/(?P<groupid>[0-9]+)/$', views.ego_network, name='egoId'),
 
-    url(r'^graph/(?P<groupid>[0-9]+)/$', views.graph, name='graph'),
+    url(r'^egraph/(?P<groupid>[0-9]+)/$', views.ego_graph, name='egraph'),
     url(r'^rcmdpanel/(?P<groupid>[0-9]+)/(?P<page>[0-9]+)/$', views.rcmd_panel, name='rcmd'),
     url(r'^updategraph/(?P<groupid>[0-9]+)/$', views.update_graph, name='updateGraph'),
 
     url(r'^global/$', views.global_network, name='global'),
     url(r'^global/(?P<groupid>[0-9]+)/$', views.global_network, name='globalId'),
+
+    url(r'^ggraph/(?P<groupid>[0-9]+)/$', views.global_graph, name='ggraph'),
 
     #
     url(r'^profile/$', views.profile, name='profile'),

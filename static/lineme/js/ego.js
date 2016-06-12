@@ -92,13 +92,13 @@ var drag = force.drag()
 var svg = d3.select("#network").append("svg")
     .attr("width", width)
     .attr("height", height)
-    .on("mouseover", function(d){
-        return d3.select(this).call(zoomer);
-    })
-    .on("mouseout", function(d){
-        return d3.select(this).on(".zoom", null);
-    })
-    //.call(zoomer)
+    //.on("mouseover", function(d){
+    //    return d3.select(this).call(zoomer);
+    //})
+    //.on("mouseout", function(d){
+    //    return d3.select(this).on(".zoom", null);
+    //})
+    .call(zoomer)
     .on("dblclick.zoom", null);
 
 
@@ -137,7 +137,7 @@ var linkedIndex = {}, linkedIndexCopy = {};
 
 var defs = vis.append("defs").attr("id", "imgdefs");
 //d3.json("/static/data/miserables.json", function(error, graph) {
-d3.json("/graph/"+groupid+"/", function(error, graph) {
+d3.json("/egraph/"+groupid+"/", function(error, graph) {
     if (error) {
         alert("Network error");
         throw error;

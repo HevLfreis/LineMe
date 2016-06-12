@@ -21,7 +21,7 @@ from Human.forms import LoginForm, RegisterForm, GroupCreateForm, GroupMemberCre
 from Human.methods import create_user, get_user_groups, get_group_joined_num, check_groupid, \
     create_group, create_group_member, group_recommender, get_user_name, member_join, member_recommender, update_links, \
     link_confirm, link_reject, get_user_msgs, get_user_msgs_count, check_profile, get_user_invs, get_user_ego_graph, \
-    get_user_global_info
+    get_user_global_info, get_user_global_graph
 from Human.models import Group, GroupMember, Link, Extra
 from Human.utils import create_avatar
 
@@ -176,7 +176,10 @@ def msg_panel(request, page):
 
         my_members = GroupMember.objects.filter(user=user)
 
-        return render(request, 'Human/home_msg.html', {'msgs': p, 'my_members': my_members})
+        msg_creators = {xp: GroupMember.objects.get(user=xp.creator, group=xp.group).member_name for xp in p}
+        # print msg_creators
+
+        return render(request, 'Human/home_msg.html', {'msgs': p, 'my_members': my_members, 'msg_creators': msg_creators})
     else:
         raise Http404
 
@@ -250,7 +253,7 @@ def ego_network(request, groupid=0):
 
 
 @login_required
-def graph(request, groupid=0):
+def ego_graph(request, groupid=0):
     user = request.user
     if groupid == 0:
         return HttpResponse(json.dumps({"nodes": None, "links": None}))
@@ -320,6 +323,19 @@ def global_network(request, groupid=0):
                   "group": group, "msgs_count": msgs_count})
 
     return render(request, 'Human/global.html', context)
+
+
+@login_required
+def global_graph(request, groupid=0):
+    user = request.user
+    if groupid == 0:
+        return HttpResponse(json.dumps({"nodes": None, "links": None}))
+
+    print "Graph groupid: ", groupid
+
+    data = get_user_global_graph(user, groupid)
+
+    return HttpResponse(json.dumps(data))
 
 
 ########################################################################
@@ -446,7 +462,7 @@ def manage_group(request, groupid, page=1):
             status = create_group_member(group, name, identifier)
             if status == 0:
                 print 'New group member created: ', name, identifier
-            return redirect('groupId', groupid=groupid)
+            return redirect('group', groupid=groupid)
 
     joined = request.session.get('joined')
 

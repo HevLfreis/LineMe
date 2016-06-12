@@ -130,11 +130,9 @@ def get_user_invs(user, group_name=None):
 
 
 def get_user_ego_graph(user, groupid):
-    gms = []
     ls = Link.objects.filter(group__id=groupid, creator=user)
-
     data = {}
-    nodes, links = [], []
+    gms, nodes, links = [], [], []
 
     self = GroupMember.objects.get(group__id=groupid, user=user)
     nodes.append({'id': self.id, 'userid': self.user.id, 'name': self.member_name,
@@ -164,7 +162,30 @@ def get_user_ego_graph(user, groupid):
 
 
 def get_user_global_graph(user, groupid):
-    return
+    ls = Link.objects.filter(group__id=groupid)
+
+    data = {}
+    nodes, links = [], []
+
+    self = GroupMember.objects.get(group__id=groupid, user=user)
+    nodes.append({'id': self.id, 'userid': self.user.id, 'name': self.member_name,
+                  'self': True, 'group': 0})
+
+    gms = GroupMember.objects.filter(group__id=groupid).exclude(user=user)
+    for gm in gms:
+        nodes.append({'id': gm.id, 'userid': (-1 if gm.user is None else gm.user.id), 'name': gm.member_name,
+                      'self': False, 'group': random.randint(1, 4)})
+
+    if ls.count() != 0:
+
+        for link in ls:
+            links.append({'id': link.id, 'source': link.source_member.id, 'target': link.target_member.id,
+                          'status': link.status, 'value': 1, 'group': link.group.id})
+
+    data["nodes"] = nodes
+    data["links"] = links
+
+    return data
 
 
 def get_user_global_info(user, groupid):
@@ -519,6 +540,7 @@ def graph_analyzer(user, groupid):
         bestfriend = None
         bf_ratio = 0
 
+    # need fix!
     links_of_me = links.filter(Q(source_member=my_member) | Q(target_member=my_member)).exclude(creator=user)\
         .values('creator').annotate(count=Count('pk')).order_by('-count')
 

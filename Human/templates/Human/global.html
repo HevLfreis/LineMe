@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
     <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
-    <link rel="stylesheet" href="/static/lineme/css/borderMenu.css">
+    <link rel="stylesheet" href="/static/lineme/css/global.css">
     <link rel="stylesheet" href="/static/d3/css/d3-tip.css">
 
     <style>
@@ -40,7 +40,6 @@
         stroke-width: 3px;
         stroke-opacity: 0.5;
         stroke: #38363a;
-        cursor: pointer;
       }
 
       .link-unconfirmed {
@@ -288,14 +287,15 @@
 
           <div class="row">
             <div class="col-md-9 col-sm-12">
-              <div class="box box-danger">
-{#                <div class="box-header">#}
-{#                  <h3 class="box-title"></h3>#}
-{#                </div>#}
+              <div class="box box-success">
 
-                  <div id="main-panel" class="bg-gray-light" style="height: 750px;">
-                    <div id="network" style="position: absolute;z-index: 1;"></div>
-                    <div id="map" style="position: absolute;z-index: 1;"></div>
+                  <div id="main-panel" class="bg-gray-light cl-effect" style="height: 750px;">
+                    {% if group %}
+                      <a id="map-mode" class="map text-center" style="width: 200px;z-index: 100;position: absolute;bottom: 0px;margin:75px" hidden>MAP MODE</a>
+                      <a id="normal-mode" class="normal text-center" style="width: 200px;z-index: 100;position: absolute;bottom: 0px;margin:75px">NORMAL MODE</a>
+                      <div id="network" style="position: absolute;z-index: 1;"></div>
+                      <div id="map" style="position: absolute;z-index: 1;" hidden></div>
+                    {% endif %}
                   </div>
               </div>
             </div>
@@ -330,8 +330,6 @@
                           <td>{{ my_rank }}</td>
                           <td>Me</td>
                         </tr>
-
-
                       </tbody>
                     </table>
                     </br>
@@ -404,7 +402,7 @@
     {% if group %}
       <script type="text/javascript">
         var groupid = {{ group.id }};
-        var xydata = {{ distribution|safe }};
+        var disData = {{ distribution|safe }};
 
       </script>
       <script src="/static/lineme/js/global.js"></script>
