@@ -178,9 +178,14 @@ def get_user_global_graph(user, groupid):
 
     if ls.count() != 0:
 
-        for link in ls:
-            links.append({'id': link.id, 'source': link.source_member.id, 'target': link.target_member.id,
-                          'status': link.status, 'value': 1, 'group': link.group.id})
+        G = global_graph(gms, ls, user)
+
+        for s, t, d in G.edges_iter(data='created'):
+            links.append({'source': s.id, 'target': t.id, 'status': d, 'value': 1})
+
+        # for link in ls:
+        #     links.append({'id': link.id, 'source': link.source_member.id, 'target': link.target_member.id,
+        #                   'status': user == link.creator, 'value': 1, 'group': link.group.id})
 
     data["nodes"] = nodes
     data["links"] = links
@@ -398,6 +403,7 @@ def link_reject(user, linkid):
         return 1
 
 
+# need check
 def update_links(newLinks, groupid, creator):
     oldLinks = Link.objects.filter(creator=creator, group__id=groupid)
     linksDict = {}
@@ -474,15 +480,8 @@ def create_dummy_links(group, user, now):
         link.save()
 
 
-def graph_analyzer(user, groupid):
-
-    nodes = GroupMember.objects.filter(group__id=groupid)
-    links = Link.objects.filter(group__id=groupid)
-    my_member = nodes.get(user=user)
-
+def global_graph(nodes, links, user):
     G = nx.Graph()
-
-    # print my_member
 
     # all members are calculated as nodes or only linked member are nodes
     for node in nodes:
@@ -490,9 +489,29 @@ def graph_analyzer(user, groupid):
 
     for link in links:
         if not G.has_edge(link.source_member, link.target_member):
-            G.add_edge(link.source_member, link.target_member, weight=1)
+            if link.creator == user:
+                G.add_edge(link.source_member, link.target_member, weight=1, created=True)
+            else:
+                G.add_edge(link.source_member, link.target_member, weight=1)
         else:
-            G[link.source_member][link.target_member]['weight'] += 1
+            if link.creator == user:
+                G[link.source_member][link.target_member]['weight'] += 1
+                G[link.source_member][link.target_member]['created'] = True
+            else:
+                G[link.source_member][link.target_member]['weight'] += 1
+
+    return G
+
+
+def graph_analyzer(user, groupid):
+
+    nodes = GroupMember.objects.filter(group__id=groupid)
+    links = Link.objects.filter(group__id=groupid)
+    my_member = nodes.get(user=user)
+
+    G = global_graph(nodes, links, user)
+
+    # print my_member
 
     # print G.edges(data=True)
 

@@ -112,7 +112,7 @@ vis.attr('fill', 'red')
     .attr('stroke', 'black')
     .attr('stroke-width', 1)
     .attr('id', 'vis')
-    .call(tip);;
+    .call(tip);
 
 
 var node, link, nodes, links, self;
@@ -131,11 +131,8 @@ d3.json("/ggraph/"+groupid+"/", function(error, graph) {
     nodes = graph.nodes;
     links = graph.links;
 
-    nodesCopy = nodes.slice(0);
-    linksCopy = links.slice(0);
-
     //console.log(nodes);
-    //console.log(links);
+    console.log(links);
 
     var nodeById = d3.map();
 
@@ -189,7 +186,10 @@ function start(){
 
     link = link.data(links, function(d){return d.source.id + "," + d.target.id;});
     link.enter().insert("line", ".node")
-        .attr("class", "link");
+        .attr("class", function(d){
+           if(d.status) return "link link-created";
+           else return "link link-unconfirmed";
+        });
 
     node = node.data(nodes, function(d){return d.id;});
     node.enter().append("g")
@@ -267,8 +267,6 @@ function dragended(d) {
 
 var myChart = echarts.init(document.getElementById('info-degree'), 'macarons');
 
-
-
 disData = $.map(disData, function(value, key){
     return [[parseInt(key), value]]
 });
@@ -296,8 +294,6 @@ myChart.setOption(option);
 $('#map').width(width).height(height);
 
 var myMap = echarts.init(document.getElementById('map'));
-
-
 
 var data = [
     {name: '海门', value: 9},
