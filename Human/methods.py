@@ -404,14 +404,14 @@ def link_reject(user, linkid):
 
 
 # need check
-def update_links(newLinks, groupid, creator):
-    oldLinks = Link.objects.filter(creator=creator, group__id=groupid)
+def update_links(new_links, groupid, creator):
+    old_links = Link.objects.filter(creator=creator, group__id=groupid)
     linksDict = {}
 
-    for link in oldLinks:
+    for link in old_links:
         linksDict[str(link.source_member.id) + ',' + str(link.target_member.id)] = link
 
-    for link in eval(newLinks):
+    for link in eval(new_links):
         if link["source"] + ',' + link["target"] in linksDict:
             linksDict[link["source"] + ',' + link["target"]] = 0
         elif link["target"] + ',' + link["source"] in linksDict:

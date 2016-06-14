@@ -11,7 +11,7 @@ from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template import Context
 
@@ -256,20 +256,19 @@ def ego_network(request, groupid=0):
 def ego_graph(request, groupid=0):
     user = request.user
     if groupid == 0:
-        return HttpResponse(json.dumps({"nodes": None, "links": None}))
+        return JsonResponse({"nodes": None, "links": None}, safe=False)
 
     print "Graph groupid: ", groupid
 
     data = get_user_ego_graph(user, groupid)
 
-    return HttpResponse(json.dumps(data))
+    return JsonResponse(data, safe=False)
 
 
 @login_required
 def rcmd_panel(request, groupid, page):
     user = request.user
     if request.is_ajax():
-        # groupid = check_groupid(request.GET.get('groupid'))
         if groupid == '0':
             return render(request, 'Human/ego_rcmd.html')
 
@@ -293,8 +292,8 @@ def rcmd_panel(request, groupid, page):
 def update_graph(request, groupid):
     user = request.user
     if request.is_ajax():
-        newLinks = request.POST.get('links')
-        update_links(newLinks, groupid, user)
+        new_links = request.POST.get('links')
+        update_links(new_links, groupid, user)
         return HttpResponse("Link update successfully")
 
     else:
@@ -329,13 +328,13 @@ def global_network(request, groupid=0):
 def global_graph(request, groupid=0):
     user = request.user
     if groupid == 0:
-        return HttpResponse(json.dumps({"nodes": None, "links": None}))
+        return JsonResponse({"nodes": None, "links": None}, safe=False)
 
     print "Graph groupid: ", groupid
 
     data = get_user_global_graph(user, groupid)
 
-    return HttpResponse(json.dumps(data))
+    return JsonResponse(data, safe=False)
 
 
 ########################################################################

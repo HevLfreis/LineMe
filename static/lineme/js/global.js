@@ -265,7 +265,7 @@ function dragended(d) {
 
 
 
-var myChart = echarts.init(document.getElementById('info-degree'), 'macarons');
+var myChart = echarts.init(document.getElementById('info-degree'), 'roma');
 
 disData = $.map(disData, function(value, key){
     return [[parseInt(key), value]]
@@ -278,10 +278,18 @@ var option = {
         x: 'center'
 
     },
-    tooltip: {},
+    tooltip: {
+        formatter: function(obj) {
+            return 'k : '+obj.value[0]+'</br>P(k) : '+obj.value[1].toFixed(2);
+        }
+    },
 
-    xAxis: {},
-    yAxis: {},
+    xAxis: {
+        name: 'k'
+    },
+    yAxis: {
+        name: 'P(k)'
+    },
     series: [{
         name: 'Degree',
         type: 'scatter',
@@ -293,7 +301,7 @@ myChart.setOption(option);
 
 $('#map').width(width).height(height);
 
-var myMap = echarts.init(document.getElementById('map'));
+var myMap = echarts.init(document.getElementById('map'), 'roma');
 
 var data = [
     {name: '海门', value: 9},

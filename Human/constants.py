@@ -4,6 +4,9 @@
 # Date: 2016/4/24 
 # Time: 11:11
 #
+import json
+import os
+
 from LineMe.settings import STATICFILES_DIRS
 
 PROJECT_NAME = 'LineMe'
@@ -32,3 +35,7 @@ SOURCE_LINK_REJECT_STATUS_TRANSITION_TABLE = {-3: -3, -21: -3, -12: -12,
 TARGET_LINK_REJECT_STATUS_TRANSITION_TABLE = {-3: -3, -21: -21, -12: -3,
                                               -2: -2, -1: -3, 0: -2,
                                               1: -21, 2: -2, 3: -21}
+
+
+CITIES_TABLE = ''
+
