@@ -37,5 +37,5 @@ TARGET_LINK_REJECT_STATUS_TRANSITION_TABLE = {-3: -3, -21: -21, -12: -3,
                                               1: -21, 2: -2, 3: -21}
 
 
-CITIES_TABLE = ''
+CITIES_TABLE = json.load(file(os.path.join(STATIC_FOLDER, 'data/cities.json')))
 

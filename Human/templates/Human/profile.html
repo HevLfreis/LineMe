@@ -159,30 +159,42 @@ scratch. This page gets rid of all links and provides the needed markup only.
                           </div>
                         </div><!-- /.input group -->
                       </div>
-
-                      <div class="form-group">
+                      {% load filters %}
+                      <div class="form-group" id="country-form">
                         <label>Country</label>
-                        <select class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true">
-                          <option selected="selected">Alabama</option>
-                          <option>Alaska</option>
-                          <option>California</option>
-                          <option>Delaware</option>
-                          <option>Tennessee</option>
-                          <option>Texas</option>
-                          <option>Washington</option>
-                          </select>
-                      </div>
-                      <div class="form-group">
-                        <label>City</label>
-                        <select class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true">
-                          <option selected="selected">Alabama</option>
-                          <option>Alaska</option>
-                          <option>California</option>
-                          <option>Delaware</option>
-                          <option>Tennessee</option>
-                          <option>Texas</option>
-                          <option>Washington</option>
+                        <select name="country" class="form-control elect2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true">
+
+                          {% for c in cities_table.keys|sort_list %}
+                            {% if c == country %}
+                              <option selected="selected" value="{{ c|safe|cut:" " }}">{{ c|safe }}</option>
+                            {% elif country == "" and c == "China" %}
+                              <option selected="selected" value="{{ c|safe|cut:" " }}">{{ c|safe }}</option>
+                            {% else %}
+                              <option value="{{ c|safe|cut:" " }}">{{ c|safe }}</option>
+                            {% endif %}
+                          {% endfor %}
                         </select>
+                      </div>
+                      <div class="form-group" id="city-form">
+
+                        {% load filters %}
+
+                        <label>Hometown</label>
+
+                        {% for country in cities_table.keys %}
+                          <select name="city" id="{{ country|safe|cut:" " }}" class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true" disabled>
+
+                            {% for c in cities_table|get_value_dict_keys:country|sort_list %}
+                              {% if c == city %}
+                                <option selected="selected">{{ c }}</option>
+                              {% else %}
+                                <option>{{ c }}</option>
+                              {% endif %}
+                            {% endfor %}
+
+                          </select>
+                        {% endfor %}
+
                       </div>
 
                       <div class="form-group has-feedback">
@@ -234,11 +246,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
           <!-- Default to the left -->
           <strong>Copyright &copy; 2016 <a href="http://cnc.sjtu.edu.cn" target="_black">CNC</a>.</strong> All rights reserved.
       </footer>
-
-
-      <!-- Add the sidebar's background. This div must be placed
-           immediately after the control sidebar -->
-      <div class="control-sidebar-bg"></div>
     </div><!-- ./wrapper -->
 
     <!-- REQUIRED JS SCRIPTS -->
@@ -258,8 +265,32 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- iCheck 1.0.1 -->
     <script src="/static/plugins/iCheck/icheck.min.js"></script>
     <script type="text/javascript">
+      var country = "{{ country }}", city = "{{ city }}";
 
-      $(".select2").select2();
+
+      $("#country-form").children("select").select2({
+        minimumResultsForSearch: 5
+      }).on("change", function (e) {
+         $("#city-form").children("span").hide();
+         $("#"+ country).attr("disabled", true);
+         country = $(this).select2("val");
+         $("#"+ country).attr("disabled",false).next("span").show();
+      });
+
+      $("#city-form").children(".select2").select2({
+        minimumResultsForSearch: 5
+      });
+
+      $("#city-form").children("span").hide();
+      if(country == "") {
+        $("#China").attr("disabled",false).next("span").show();
+      }
+      else {
+        $("#"+ country).attr("disabled",false).next("span").show();
+      }
+
+
+
       $("#birth").inputmask("yyyy/mm/dd", {"placeholder": "yyyy/mm/dd"});
 
       $('input[type="checkbox"].flat-red, input[type="radio"].minimal').iCheck({
@@ -268,7 +299,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
       });
 
       $('#submit').click(function() {
-        $.post('{% url 'profile' %}', $('form').serialize(), function(data) {
+        $.post('{% url 'profile' %}', $("form").serialize(), function(data) {
            if(data == -1) alert("There're some mistakes in your submission");
            else window.location.href="{% url 'home' %}";
 

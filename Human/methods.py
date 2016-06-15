@@ -16,7 +16,7 @@ from django.shortcuts import get_object_or_404, get_list_or_404
 from django.utils import timezone
 from Human.constants import GROUP_MAXSIZE, GROUP_CREATED_CREDITS_COST, SOURCE_LINK_CONFIRM_STATUS_TRANSITION_TABLE, \
     TARGET_LINK_CONFIRM_STATUS_TRANSITION_TABLE, SOURCE_LINK_REJECT_STATUS_TRANSITION_TABLE, \
-    TARGET_LINK_REJECT_STATUS_TRANSITION_TABLE
+    TARGET_LINK_REJECT_STATUS_TRANSITION_TABLE, CITIES_TABLE
 from Human.models import Privacy, Extra, GroupMember, Link, Group, Credits
 from Human.utils import create_avatar
 import networkx as nx
@@ -214,12 +214,12 @@ def get_user_joined(user, group):
 def check_profile(first_name, last_name, birth, sex, country, city, institution):
     if re.match("^[A-Za-z]+$", first_name) and re.match("^[A-Za-z]+$", last_name):
         if sex == 0 or sex == 1:
-
             if re.match("^(?:(?!0000)[0-9]{4}/(?:(?:0[1-9]|1[0-2])/(?:0[1-9]|1[0-9]|2[0-8])|"
                         "(?:0[13-9]|1[0-2])/(?:29|30)|(?:0[13578]|1[02])-31)|(?:[0-9]{2}(?:0[48]|"
                         "[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)/02/29)$", birth):
                 if re.match("^[A-Za-z\s]+$", institution):
-                    return True
+                    if country in CITIES_TABLE and city in CITIES_TABLE[country]:
+                        return True
     return False
 
 

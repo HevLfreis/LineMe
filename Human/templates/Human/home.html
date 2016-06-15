@@ -513,7 +513,7 @@
 
       var emails = "{{ user.email }}".split("@");
       var births = "{{ user.extra.birth }}".split(",");
-      var locations = "{{ user.extra.location }}".split(" ");
+      var locations = "{{ user.extra.location|safe }}".split("-");
       var institutions = "{{ user.extra.institution }}".split(" ");
       $('#profile-email1').text(emails[0]);
       $('#profile-email2').text('@'+emails[1]);

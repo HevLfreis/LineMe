@@ -15,7 +15,7 @@ from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template import Context
 
-from Human.constants import PROJECT_NAME, STATIC_FOLDER, IDENTIFIER
+from Human.constants import PROJECT_NAME, STATIC_FOLDER, IDENTIFIER, CITIES_TABLE
 from Human.forms import LoginForm, RegisterForm, GroupCreateForm, GroupMemberCreateForm, ReJoinIdentifierForm, \
     FileUploadForm
 from Human.methods import create_user, get_user_groups, get_group_joined_num, check_groupid, \
@@ -347,9 +347,12 @@ def profile(request):
     username = get_user_name(user)
 
     msgs_count = get_user_msgs_count(user)
-
+    if user.extra.location:
+        country, city = user.extra.location.split('-')
+    else:
+        country, city = "", ""
     context = Context({"project_name": PROJECT_NAME, "user": user, "username": username, "msgs_count": msgs_count,
-                       "first_login": first_login})
+                       "first_login": first_login, 'cities_table': CITIES_TABLE, 'country': country, 'city': city})
 
     if request.is_ajax():
         first_name = request.POST.get('firstname')
@@ -360,6 +363,8 @@ def profile(request):
         city = request.POST.get('city')
         institution = request.POST.get('institution')
 
+        # print country, city
+
         if check_profile(first_name, last_name, birth, sex, country, city, institution):
 
             try:
@@ -369,7 +374,7 @@ def profile(request):
                 ue = Extra.objects.get(user=user)
                 ue.sex = sex
                 ue.birth = datetime.datetime.strptime(birth, '%Y/%m/%d').date()
-                # ue.location = country+' '+city
+                ue.location = country+'-'+city
                 ue.institution = institution
                 user.save()
                 ue.save()

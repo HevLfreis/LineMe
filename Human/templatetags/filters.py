@@ -11,3 +11,13 @@ from django.template.defaulttags import register
 @register.filter
 def get_value(dictionary, key):
     return dictionary.get(key)
+
+
+@register.filter
+def get_value_dict_keys(dictionary, key):
+    return dictionary.get(key).keys()
+
+
+@register.filter
+def sort_list(l):
+    return sorted(l)

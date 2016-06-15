@@ -307,12 +307,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="/static/bootstrap/js/bootstrap.min.js"></script>
     <!-- AdminLTE App -->
     <script src="/static/dist/js/app.min.js"></script>
-    <script src="/static/cropit/dist/jquery.cropit.js"></script>
+    <script src="/static/plugins/cropit/js/jquery.cropit.js"></script>
     <script type="text/javascript">
 
       var emails = "{{ user.email }}".split("@");
       var births = "{{ user.extra.birth }}".split(",");
-      var locations = "{{ user.extra.location }}".split(" ");
+      var locations = "{{ user.extra.location|safe }}".split("-");
       var institutions = "{{ user.extra.institution }}".split(" ");
       $('#profile-email1').text(emails[0]);
       $('#profile-email2').text('@'+emails[1]);

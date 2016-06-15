@@ -4,7 +4,7 @@
       <li id="msg-{{ msg.id }}">
         <input type="checkbox" value="" name="">
           <span class="text">
-            {% load dict_extras %}
+            {% load filters %}
             <a href="#">{{ msg_creators|get_value:msg }}</a>
             invites you to confirm the friend link to
             {% if msg.source_member in my_members %}

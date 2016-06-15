@@ -3,7 +3,7 @@
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory(require("jquery"));
 	else if(typeof define === 'function' && define.amd)
-		define(["jquery.cropit"], factory);
+		define(["jquery.cropit.js"], factory);
 	else if(typeof exports === 'object')
 		exports["cropit"] = factory(require("jquery"));
 	else
