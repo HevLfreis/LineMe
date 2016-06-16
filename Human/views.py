@@ -509,7 +509,7 @@ def join(request, groupid):
 
     user = request.user
     if request.is_ajax():
-        # groupid = int(request.POST.get('groupid'))
+
         identifier = request.POST.get('identifier')
         print 'Join:', groupid, identifier
         group = Group.objects.get(id=groupid)

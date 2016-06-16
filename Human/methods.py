@@ -33,7 +33,6 @@ def create_user(name, email, password, password2):
         try:
 
             u = User.objects.create_user(name, email, password)
-            u.save()
             pri = Privacy(user=u, link_me=True, see_my_global=True)
             pri.save()
             extra = Extra(user=u,

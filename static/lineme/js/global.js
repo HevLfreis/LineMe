@@ -7,7 +7,7 @@
 $('#info-panel').find('.box-body').on('mousewheel', function ( e ) {
     var event = e.originalEvent,
         d = event.wheelDelta || -event.detail;
-    console.log('wheel');
+    //console.log('wheel');
     this.scrollTop += ( d < 0 ? 1 : -1 ) * 30;
     e.preventDefault();
 });
@@ -132,7 +132,7 @@ d3.json("/ggraph/"+groupid+"/", function(error, graph) {
     links = graph.links;
 
     //console.log(nodes);
-    console.log(links);
+    //console.log(links);
 
     var nodeById = d3.map();
 
@@ -699,6 +699,8 @@ var convertData = function (data) {
             });
         }
     }
+
+    console.log(res);
     return res;
 };
 
