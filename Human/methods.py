@@ -130,7 +130,7 @@ def get_user_invs(user, group_name=None):
 
 def get_user_ego_graph(user, groupid):
     ls = Link.objects.filter(group__id=groupid, creator=user)
-    data = {}
+
     gms, nodes, links = [], [], []
 
     self = GroupMember.objects.get(group__id=groupid, user=user)
@@ -154,16 +154,12 @@ def get_user_ego_graph(user, groupid):
             links.append({'id': link.id, 'source': link.source_member.id, 'target': link.target_member.id,
                           'status': link.status, 'value': 1, 'group': link.group.id})
 
-    data["nodes"] = nodes
-    data["links"] = links
-
-    return data
+    return {"nodes": nodes, "links": links}
 
 
 def get_user_global_graph(user, groupid):
     ls = Link.objects.filter(group__id=groupid)
 
-    data = {}
     nodes, links = [], []
 
     self = GroupMember.objects.get(group__id=groupid, user=user)
@@ -186,10 +182,50 @@ def get_user_global_graph(user, groupid):
         #     links.append({'id': link.id, 'source': link.source_member.id, 'target': link.target_member.id,
         #                   'status': user == link.creator, 'value': 1, 'group': link.group.id})
 
-    data["nodes"] = nodes
-    data["links"] = links
+    return {"nodes": nodes, "links": links}
 
-    return data
+
+def get_user_global_map(user, groupid):
+    ls = Link.objects.filter(group__id=groupid)
+    gms = GroupMember.objects.filter(group__id=groupid)
+
+    G = nx.Graph()
+
+    for gm in gms:
+        if gm.user is not None:
+            g_l = gm.user.extra.location
+            if g_l is not None:
+                if not G.has_node(g_l):
+                    G.add_node(g_l, weight=1)
+                else:
+                    G.node[g_l]['weight'] += 1
+
+    for link in ls:
+        if link.source_member.user is not None and link.target_member.user is not None:
+            s_l = link.source_member.user.extra.location
+            t_l = link.target_member.user.extra.location
+            if s_l is not None and t_l is not None and s_l != t_l:
+                if not G.has_edge(s_l, t_l):
+                    G.add_edge(s_l, t_l)
+
+    print G.edges(data=True)
+
+    nodes, links = [], []
+
+    for (node, d) in G.nodes(data=True):
+        country, city = node.split('-')
+        nodes.append({"name": city, "value": CITIES_TABLE[country][city][-1::-1] + [d['weight']]})
+
+    print nodes
+
+    for (s, t) in G.edges():
+        s_country, s_city = s.split('-')
+        t_country, t_city = t.split('-')
+        links.append({"source": s_city, "target": t_city})
+
+    print links
+
+    return {"nodes": nodes, "links": links}
 
 
 def get_user_global_info(user, groupid):

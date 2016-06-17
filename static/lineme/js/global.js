@@ -704,112 +704,116 @@ var convertData = function (data) {
     return res;
 };
 
-var option2 = {
-    backgroundColor: '#404a59',
 
-    tooltip : {
-        trigger: 'item'
-    },
 
-    geo: {
-        map: 'china',
-        label: {
-            emphasis: {
-                show: false
-            }
+
+$.get("/gmap/"+groupid+"/", function(result){
+
+    console.log(result.nodes);
+    console.log(result.links);
+    var option2 = {
+        backgroundColor: '#404a59',
+
+        tooltip : {
+            trigger: 'item'
         },
-        zoom: 1.2,
-        roam: true,
-        itemStyle: {
-            normal: {
-                areaColor: '#323c48',
-                borderColor: '#111'
-            },
-            emphasis: {
-                areaColor: '#2a333d'
-            }
-        }
-    },
-    series : [
-        {
-            name: 'pm2.5',
-            type: 'graph',
-            coordinateSystem: 'geo',
-            data: convertData(data),
-            symbolSize: function (val) {
-                return val[2] / 10;
-            },
 
-            links: [{
-                source: '北京',
-                target: '乌鲁木齐',
-            },{
-                source: '北京',
-                target: '沈阳',
-            }],
-            lineStyle: {
-                normal: {
-                    opacity: 0.8,
-                    width: 2,
-                    curveness: 0.1,
+        geo: {
+            map: 'china',
+            label: {
+                emphasis: {
+                    show: false
                 }
             },
-            label: {
+            zoom: 1.2,
+            roam: true,
+            itemStyle: {
                 normal: {
-                    formatter: '{b}',
-                    position: 'right',
-                    show: false
+                    areaColor: '#323c48',
+                    borderColor: '#111'
                 },
                 emphasis: {
-                    show: true
-                }
-            },
-            itemStyle: {
-                normal: {
-                    opacity: 0.8,
-                    shadowBlur: 10,
-                    shadowOffsetX: 0,
-                    shadowOffsetY: 0,
-                    shadowColor: 'rgba(0, 0, 0, 0.5)',
-                    color: '#80F1BE'
+                    areaColor: '#2a333d'
                 }
             }
         },
-        {
-            name: 'Top 5',
-            type: 'effectScatter',
-            coordinateSystem: 'geo',
-            data: convertData(data.sort(function (a, b) {
-                return b.value - a.value;
-            }).slice(0, 6)),
-            symbolSize: function (val) {
-                return val[2] / 10;
-            },
-            showEffectOn: 'render',
-            rippleEffect: {
-                brushType: 'stroke'
-            },
-            hoverAnimation: true,
-            label: {
-                normal: {
-                    formatter: '{b}',
-                    position: 'right',
-                    show: true
+        series : [
+            {
+                name: 'pm2.5',
+                type: 'graph',
+                coordinateSystem: 'geo',
+                //data: convertData(data),
+                data: result.nodes,
+                //symbolSize: function (val) {
+                //    return val[2] / 10;
+                //},
+                symbolSize: 10,
+                links: result.links,
+                lineStyle: {
+                    normal: {
+                        opacity: 0.8,
+                        width: 2,
+                        curveness: 0.1,
+                    }
+                },
+                label: {
+                    normal: {
+                        formatter: '{b}',
+                        position: 'right',
+                        show: false
+                    },
+                    emphasis: {
+                        show: true
+                    }
+                },
+                itemStyle: {
+                    normal: {
+                        opacity: 0.8,
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowOffsetY: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)',
+                        color: '#80F1BE'
+                    }
                 }
             },
-            itemStyle: {
-                normal: {
-                    color: '#f4e925',
-                    opacity: 0.9,
-                    shadowBlur: 10,
-                    shadowOffsetX: 0,
-                    shadowOffsetY: 0,
-                    shadowColor: 'rgba(0, 0, 0, 0.5)',
-                }
-            },
-            zlevel: 1
-        }
-    ]
-};
+            //{
+            //    name: 'Top 5',
+            //    type: 'effectScatter',
+            //    coordinateSystem: 'geo',
+            //    data: convertData(data.sort(function (a, b) {
+            //        return b.value - a.value;
+            //    }).slice(0, 6)),
+            //    symbolSize: function (val) {
+            //        return val[2] / 10;
+            //    },
+            //    showEffectOn: 'render',
+            //    rippleEffect: {
+            //        brushType: 'stroke'
+            //    },
+            //    hoverAnimation: true,
+            //    label: {
+            //        normal: {
+            //            formatter: '{b}',
+            //            position: 'right',
+            //            show: true
+            //        }
+            //    },
+            //    itemStyle: {
+            //        normal: {
+            //            color: '#f4e925',
+            //            opacity: 0.9,
+            //            shadowBlur: 10,
+            //            shadowOffsetX: 0,
+            //            shadowOffsetY: 0,
+            //            shadowColor: 'rgba(0, 0, 0, 0.5)',
+            //        }
+            //    },
+            //    zlevel: 1
+            //}
+        ]
+    };
 
-myMap.setOption(option2);
+    myMap.setOption(option2);
+   //alert(result);
+});

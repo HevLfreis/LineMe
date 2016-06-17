@@ -21,7 +21,7 @@ from Human.forms import LoginForm, RegisterForm, GroupCreateForm, GroupMemberCre
 from Human.methods import create_user, get_user_groups, get_group_joined_num, check_groupid, \
     create_group, create_group_member, group_recommender, get_user_name, member_join, member_recommender, update_links, \
     link_confirm, link_reject, get_user_msgs, get_user_msgs_count, check_profile, get_user_invs, get_user_ego_graph, \
-    get_user_global_info, get_user_global_graph
+    get_user_global_info, get_user_global_graph, get_user_global_map
 from Human.models import Group, GroupMember, Link, Extra
 from Human.utils import create_avatar
 
@@ -41,11 +41,6 @@ def lm_login(request):
             username = lf.cleaned_data['username']
             password = lf.cleaned_data['password']
             print 'Login: ', username, password
-            try:
-                u = User.objects.get(username=username)
-            except User.DoesNotExist:
-                context["status"] = 'User does not existed'
-                return render(request, 'Human/login.html', context)
 
             user = authenticate(username=username, password=password)
             if user is not None:
@@ -337,6 +332,19 @@ def global_graph(request, groupid=0):
     return JsonResponse(data, safe=False)
 
 
+@login_required
+def global_map(request, groupid=0):
+    user = request.user
+    if groupid == 0:
+        return JsonResponse({"nodes": None, "links": None}, safe=False)
+
+    print "Graph groupid: ", groupid
+
+    data = get_user_global_map(user, groupid)
+
+    return JsonResponse(data, safe=False)
+
+
 ########################################################################
 
 @login_required
@@ -359,8 +367,8 @@ def profile(request):
         last_name = request.POST.get('lastname')
         birth = request.POST.get('birth')
         sex = int(request.POST.get('sex'))
-        country = request.POST.get('country')
-        city = request.POST.get('city')
+        country = request.POST.get('country').replace('-', ' ')
+        city = request.POST.get('city').replace('-', ' ')
         institution = request.POST.get('institution')
 
         # print country, city
@@ -383,7 +391,8 @@ def profile(request):
                 print 'Profile update failed: ', e
                 return HttpResponse(-1)
 
-            print 'Update profile: user:', user.id, first_name, last_name, birth, country, city, institution, sex
+            print 'Update profile: user:', \
+                user.id, first_name, last_name, birth, country.encode('utf-8'), city.encode('utf-8'), institution, sex
             if first_login:
                 create_avatar(user.id, username=first_name+' '+last_name)
                 del request.session['newUser']

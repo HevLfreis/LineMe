@@ -43,6 +43,7 @@ urlpatterns = [
     url(r'^global/(?P<groupid>[0-9]+)/$', views.global_network, name='globalId'),
 
     url(r'^ggraph/(?P<groupid>[0-9]+)/$', views.global_graph, name='ggraph'),
+    url(r'^gmap/(?P<groupid>[0-9]+)/$', views.global_map, name='gmap'),
 
     #
     url(r'^profile/$', views.profile, name='profile'),

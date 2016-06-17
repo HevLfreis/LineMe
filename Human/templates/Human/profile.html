@@ -166,11 +166,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
                           {% for c in cities_table.keys|sort_list %}
                             {% if c == country %}
-                              <option selected="selected" value="{{ c|safe|cut:" " }}">{{ c|safe }}</option>
+                              <option selected="selected" value="{{ c.split|join:'-'|safe }}">{{ c|safe }}</option>
                             {% elif country == "" and c == "China" %}
-                              <option selected="selected" value="{{ c|safe|cut:" " }}">{{ c|safe }}</option>
+                              <option selected="selected" value="{{ c.split|join:'-'|safe }}">{{ c|safe }}</option>
                             {% else %}
-                              <option value="{{ c|safe|cut:" " }}">{{ c|safe }}</option>
+                              <option value="{{ c.split|join:'-'|safe }}">{{ c|safe }}</option>
                             {% endif %}
                           {% endfor %}
                         </select>
@@ -182,7 +182,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         <label>Hometown</label>
 
                         {% for country in cities_table.keys %}
-                          <select name="city" id="{{ country|safe|cut:" " }}" class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true" disabled>
+                          <select name="city" id="{{ country.split|join:'-'|safe }}" class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true" disabled>
 
                             {% for c in cities_table|get_value_dict_keys:country|sort_list %}
                               {% if c == city %}
@@ -265,7 +265,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- iCheck 1.0.1 -->
     <script src="/static/plugins/iCheck/icheck.min.js"></script>
     <script type="text/javascript">
-      var country = "{{ country }}", city = "{{ city }}";
+      var country = "{{ country }}".replace(' ', '-'), city = "{{ city }}";
 
 
       $("#country-form").children("select").select2({
@@ -288,7 +288,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
       else {
         $("#"+ country).attr("disabled",false).next("span").show();
       }
-
 
 
       $("#birth").inputmask("yyyy/mm/dd", {"placeholder": "yyyy/mm/dd"});
