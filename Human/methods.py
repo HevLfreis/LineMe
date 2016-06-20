@@ -4,22 +4,23 @@
 # Date: 2016/5/16 
 # Time: 19:56
 #
-from collections import Counter
+import datetime
 import json
 import random
 import re
-import datetime
+from collections import Counter
+
+import networkx as nx
 from django.contrib.auth.models import User
 from django.db.models import Q, Count
-from django.http import Http404
-from django.shortcuts import get_object_or_404, get_list_or_404
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
+
 from Human.constants import GROUP_MAXSIZE, GROUP_CREATED_CREDITS_COST, SOURCE_LINK_CONFIRM_STATUS_TRANSITION_TABLE, \
     TARGET_LINK_CONFIRM_STATUS_TRANSITION_TABLE, SOURCE_LINK_REJECT_STATUS_TRANSITION_TABLE, \
     TARGET_LINK_REJECT_STATUS_TRANSITION_TABLE, CITIES_TABLE
 from Human.models import Privacy, Extra, GroupMember, Link, Group, Credits
 from Human.utils import create_avatar
-import networkx as nx
 
 
 def create_user(name, email, password, password2):
@@ -188,37 +189,53 @@ def get_user_global_graph(user, groupid):
 def get_user_global_map(user, groupid):
     ls = Link.objects.filter(group__id=groupid)
     gms = GroupMember.objects.filter(group__id=groupid)
+    my_member = gms.get(group__id=groupid, user=user)
 
-    G = nx.Graph()
+    G = global_graph(gms, ls, user)
+
+    GMap = nx.Graph()
 
     for gm in gms:
         if gm.user is not None:
             g_l = gm.user.extra.location
             if g_l is not None:
-                if not G.has_node(g_l):
-                    G.add_node(g_l, weight=1)
+                if not GMap.has_node(g_l):
+                    GMap.add_node(g_l, weight=1, friends=0)
                 else:
-                    G.node[g_l]['weight'] += 1
+                    GMap.node[g_l]['weight'] += 1
+
+    for friend in G.neighbors(my_member):
+        if friend.user is not None:
+            f_l = friend.user.extra.location
+            if f_l is not None:
+                GMap.node[f_l]['friends'] += 1
+
+    if user.extra.location is not None:
+        GMap.node[user.extra.location]['self'] = True
+
+    print GMap.nodes(data=True)
 
     for link in ls:
         if link.source_member.user is not None and link.target_member.user is not None:
             s_l = link.source_member.user.extra.location
             t_l = link.target_member.user.extra.location
             if s_l is not None and t_l is not None and s_l != t_l:
-                if not G.has_edge(s_l, t_l):
-                    G.add_edge(s_l, t_l)
+                if not GMap.has_edge(s_l, t_l):
+                    GMap.add_edge(s_l, t_l)
 
-    print G.edges(data=True)
+    print GMap.edges(data=True)
 
     nodes, links = [], []
 
-    for (node, d) in G.nodes(data=True):
+    for (node, d) in GMap.nodes(data=True):
+        # print d
         country, city = node.split('-')
-        nodes.append({"name": city, "value": CITIES_TABLE[country][city][-1::-1] + [d['weight']]})
+        nodes.append({"name": city, "value": CITIES_TABLE[country][city][-1::-1] + [d['weight'], d['friends']],
+                      "self": True if d.has_key('self') else False})
 
     print nodes
 
-    for (s, t) in G.edges():
+    for (s, t) in GMap.edges():
         s_country, s_city = s.split('-')
         t_country, t_city = t.split('-')
         links.append({"source": s_city, "target": t_city})
