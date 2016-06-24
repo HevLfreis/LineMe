@@ -9,10 +9,15 @@ import os
 
 from LineMe.settings import STATICFILES_DIRS
 
+
+# Todo: constants separate
+
 PROJECT_NAME = 'LineMe'
 STATIC_FOLDER = STATICFILES_DIRS[0]
 GROUP_MAXSIZE = 5000
-GROUP_CREATED_CREDITS_COST = 100
+GROUP_CREATED_CREDITS_COST = 10
+
+# Todo: implement identifier
 IDENTIFIER = {0: 'Special Code', 1: 'Email', 2: 'Institution'}
 GROUP_TYPE = {0: 'Normal', 1: 'RealTime'}
 GROUP_REALTIME_ACTIVE_TIME = 0

@@ -4,13 +4,13 @@
  * Time: 20:13
  */
 
-$('#info-panel').find('.box-body').on('mousewheel', function ( e ) {
-    var event = e.originalEvent,
-        d = event.wheelDelta || -event.detail;
-    //console.log('wheel');
-    this.scrollTop += ( d < 0 ? 1 : -1 ) * 30;
-    e.preventDefault();
-});
+//$('#info-panel').find('.box-body').on('mousewheel', function ( e ) {
+//    var event = e.originalEvent,
+//        d = event.wheelDelta || -event.detail;
+//    //console.logs('wheel');
+//    this.scrollTop += ( d < 0 ? 1 : -1 ) * 30;
+//    e.preventDefault();
+//});
 
 $('#normal-mode').mouseover(function(){
     $(this).text('MAP MODE');
@@ -89,6 +89,7 @@ var svg = d3.select("#network").append("svg")
 
 function redraw() {
     var scale = d3.event.scale;
+    d3.event.sourceEvent.stopPropagation();
     if (scale > 1)
         force.charge(charge* scale*3).start();
     else
@@ -131,8 +132,8 @@ d3.json("/ggraph/"+groupid+"/", function(error, graph) {
     nodes = graph.nodes;
     links = graph.links;
 
-    //console.log(nodes);
-    //console.log(links);
+    //console.logs(nodes);
+    //console.logs(links);
 
     var nodeById = d3.map();
 
@@ -151,7 +152,7 @@ d3.json("/ggraph/"+groupid+"/", function(error, graph) {
     });
 
 
-    //console.log(graph.nodes);
+    //console.logs(graph.nodes);
     link = vis.selectAll(".link");
     node = vis.selectAll(".node");
     start();
@@ -222,7 +223,7 @@ function start(){
 
 
 function nodeMouseover(d, i) {
-    //console.log(d);
+    //console.logs(d);
     tip.attr('class', 'd3-tip animate').show(d);
     node.style("stroke", function(n) {
 
@@ -250,7 +251,7 @@ function nodeMouseout(d, i) {
 }
 
 function dragstarted(d) {
-    //console.log('drag start');
+    //console.logs('drag start');
     d3.event.sourceEvent.stopPropagation();
 }
 
@@ -309,8 +310,8 @@ var myMap = echarts.init(document.getElementById('map'), 'roma');
 
 $.get("/gmap/"+groupid+"/", function(result){
 
-    //console.log(result.nodes);
-    //console.log(result.links);
+    //console.logs(result.nodes);
+    //console.logs(result.links);
     var option2 = {
         backgroundColor: '#404a59',
 
@@ -320,8 +321,9 @@ $.get("/gmap/"+groupid+"/", function(result){
             borderColor: '#777',
             borderWidth: 1,
             formatter : function(obj){
-                //console.log(obj);
-                if(obj.dataType == 'node') return obj.name+": "+obj.value[2]+" members, "+obj.value[3]+" friends";
+                //console.logs(obj);
+                if(obj.dataType == 'node' || obj.dataType == undefined)
+                    return '<div style="border-bottom: 1px solid rgba(255,255,255,.3); font-size: 16px;padding-bottom: 7px;margin-bottom: 7px">'+obj.name+'</div>'+'Total : '+obj.value[2]+"</br>Friends : "+obj.value[3];
             }
         },
 
@@ -364,7 +366,7 @@ $.get("/gmap/"+groupid+"/", function(result){
                 lineStyle: {
                     normal: {
                         opacity: 0.8,
-                        width: 2,
+                        width: 1.8,
                         curveness: 0.08,
                     },
                 },
@@ -383,7 +385,7 @@ $.get("/gmap/"+groupid+"/", function(result){
                 }
             },
             {
-                name: 'Me',
+                name: 'Hometown',
                 type: 'effectScatter',
                 coordinateSystem: 'geo',
                 data: result.nodes.filter(function (d) {
@@ -422,3 +424,4 @@ $.get("/gmap/"+groupid+"/", function(result){
 
     myMap.setOption(option2);
 });
+

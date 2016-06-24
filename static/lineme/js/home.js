@@ -58,7 +58,7 @@ function msgConfirmed(url, type, linkid) {
 }
 
 function updateMsgPanel(page) {
-    $.get('/msgpanel/'+page, function(data){
+    $.get('/msgpanel/'+page+'/', function(data){
         var msg = $('#box-msg');
         msg.find('.box-body').detach();
         msg.find('.box-footer').detach();
@@ -73,7 +73,7 @@ function updateInvPanel(page, groupname) {
             onUpdateInvSucceess(data);
         });
     else
-        $.get('/invpanel/'+page, function(data){
+        $.get('/invpanel/'+page+'/', function(data){
             onUpdateInvSucceess(data);
         });
 }

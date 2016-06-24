@@ -1,7 +1,8 @@
 /**
-* Date: 2016/5/4
-* Time: 14:29
-*/
+ * Created by hevlhayt@foxmail.com
+ * Date: 2016/5/4
+ * Time: 14:29
+ */
 
 var rcmdAddedNode = {};
 
@@ -104,6 +105,7 @@ var svg = d3.select("#network").append("svg")
 
 function redraw() {
     var scale = d3.event.scale;
+    d3.event.sourceEvent.stopPropagation();
     if (scale > 1)
         force.charge(charge* scale*3).start();
     else
@@ -118,7 +120,6 @@ function redraw() {
         "padding": 14*scale+'px '+15*scale+'px '+15*scale+'px '+30*scale+'px'
     });
     tip.offset([0, -20*scale]);
-
 
 }
 
@@ -151,8 +152,8 @@ d3.json("/egraph/"+groupid+"/", function(error, graph) {
     nodesCopy = nodes.slice(0);
     linksCopy = links.slice(0);
 
-    //console.log(nodes);
-    //console.log(links);
+    //console.logs(nodes);
+    //console.logs(links);
 
     var nodeById = d3.map();
 
@@ -173,7 +174,7 @@ d3.json("/egraph/"+groupid+"/", function(error, graph) {
     linkedIndexCopy = $.extend({}, linkedIndex);
 
 
-    //console.log(graph.nodes);
+    //console.logs(graph.nodes);
     link = vis.selectAll(".link");
     node = vis.selectAll(".node");
     start();
@@ -261,7 +262,7 @@ function start(){
 function linkClick(d){
     if (selected) return;
     linkedIndex[d.source.id + "," + d.target.id] = false;
-    //console.log(links);
+    //console.logs(links);
     links = links.filter(function(a) { return a.source.id + "," + a.target.id !== d.source.id + "," + d.target.id; });
     start();
 }
@@ -270,7 +271,7 @@ var selected;
 function nodeClick(d){
 
     if (d3.event.defaultPrevented) return;
-    //console.log('Node click: ', d.name);
+    //console.logs('Node click: ', d.name);
     if(!selected){
         selected = d;
         d3.select(this).style('stroke', '#cd3b23');
@@ -283,7 +284,7 @@ function nodeClick(d){
     else {
 
         if (!linkedIndex[selected.id + "," + d.id]&&!linkedIndex[d.id + "," + selected.id]&&selected!= d) {
-            //console.log('New link:', selected, d);
+            //console.logs('New link:', selected, d);
             linkedIndex[selected.id + "," + d.id] = true;
             links.push({"source": selected, "target": d, "value": 1, "status": 4});
             start();
@@ -296,9 +297,9 @@ function nodeClick(d){
 }
 
 function nodeDbclick(d, i){
-    //console.log('Node dbclick: ', d.name, i);
+    //console.logs('Node dbclick: ', d.name, i);
     if (d == self) return;
-    //console.log(nodes);
+    //console.logs(nodes);
     links = links.filter(function(a){
         if (d === a.source||d === a.target)
             linkedIndex[a.source.id + "," + a.target.id] = false;
@@ -309,7 +310,7 @@ function nodeDbclick(d, i){
 
     rcmdAddedNode[d.id] = false;
 
-    //console.log(nodes);
+    //console.logs(nodes);
     selected = null;
     start();
 }
@@ -317,7 +318,7 @@ function nodeDbclick(d, i){
 
 function nodeMouseover(d, i) {
     if (selected) return;
-    //console.log(d);
+    //console.logs(d);
     tip.attr('class', 'd3-tip animate').show(d);
     node.style("stroke", function(n) {
 
@@ -357,7 +358,7 @@ function linkMouseout(d) {
 }
 
 function dragstarted(d) {
-    //console.log('drag start');
+    //console.logs('drag start');
     d3.event.sourceEvent.stopPropagation();
 }
 

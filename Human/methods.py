@@ -23,6 +23,23 @@ from Human.models import Privacy, Extra, GroupMember, Link, Group, Credits
 from Human.utils import create_avatar
 
 
+def create_session_id(request):
+    if not request.session.get('SessionID'):
+        request.session['SessionID'] = '(' + request.META.get('REMOTE_ADDR') + ')' \
+                                       + request.session.session_key + '[' + str(request.user.id) \
+                                       + ',' + request.user.username + ']'
+
+
+def get_session_id(request):
+    sessionid = request.session.get('SessionID')
+    if sessionid:
+        return sessionid
+    else:
+        return '(' + request.META.get('REMOTE_ADDR') + ')' \
+                    + request.COOKIES.cookie_key + '[' + str(request.user.id) \
+                    + ',' + request.user.username + ']'
+
+
 def create_user(name, email, password, password2):
     if user_existed(name):
         return 1
@@ -34,10 +51,14 @@ def create_user(name, email, password, password2):
         try:
 
             u = User.objects.create_user(name, email, password)
+
+            # Todo: impl privacy module
             pri = Privacy(user=u, link_me=True, see_my_global=True)
             pri.save()
             extra = Extra(user=u,
                           sex=False,
+
+                          # Todo: django timezone?
                           birth=datetime.date.today(),
                           credits=30,
                           privacy=pri)
@@ -179,9 +200,9 @@ def get_user_global_graph(user, groupid):
         for s, t, d in G.edges_iter(data='created'):
             links.append({'source': s.id, 'target': t.id, 'status': d, 'value': 1})
 
-        # for link in ls:
-        #     links.append({'id': link.id, 'source': link.source_member.id, 'target': link.target_member.id,
-        #                   'status': user == link.creator, 'value': 1, 'group': link.group.id})
+            # for link in ls:
+            #     links.append({'id': link.id, 'source': link.source_member.id, 'target': link.target_member.id,
+            #                   'status': user == link.creator, 'value': 1, 'group': link.group.id})
 
     return {"nodes": nodes, "links": links}
 
@@ -213,7 +234,7 @@ def get_user_global_map(user, groupid):
     if user.extra.location is not None:
         GMap.node[user.extra.location]['self'] = True
 
-    print GMap.nodes(data=True)
+    # print GMap.nodes(data=True)
 
     for link in ls:
         if link.source_member.user is not None and link.target_member.user is not None:
@@ -223,7 +244,7 @@ def get_user_global_map(user, groupid):
                 if not GMap.has_edge(s_l, t_l):
                     GMap.add_edge(s_l, t_l)
 
-    print GMap.edges(data=True)
+    # print GMap.edges(data=True)
 
     nodes, links = [], []
 
@@ -233,14 +254,14 @@ def get_user_global_map(user, groupid):
         nodes.append({"name": city, "value": CITIES_TABLE[country][city][-1::-1] + [d['weight'], d['friends']],
                       "self": True if d.has_key('self') else False})
 
-    print nodes
+    # print nodes
 
     for (s, t) in GMap.edges():
         s_country, s_city = s.split('-')
         t_country, t_city = t.split('-')
         links.append({"source": s_city, "target": t_city})
 
-    print links
+    # print links
 
     return {"nodes": nodes, "links": links}
 
@@ -275,6 +296,25 @@ def check_profile(first_name, last_name, birth, sex, country, city, institution)
     return False
 
 
+def update_profile(user, first_name, last_name, birth, sex, country, city, institution):
+    try:
+        user.first_name = first_name
+        user.last_name = last_name
+
+        ue = Extra.objects.get(user=user)
+        ue.sex = sex
+        ue.birth = datetime.datetime.strptime(birth, '%Y/%m/%d').date()
+        ue.location = country + '-' + city
+        ue.institution = institution
+        user.save()
+        ue.save()
+
+    except Exception, e:
+        print 'Profile update failed: ', e
+        return -1
+    return 0
+
+
 ########################################################################
 
 def check_groupid(groupid):
@@ -292,18 +332,17 @@ def group_name_existed(name):
     return False
 
 
-def create_group(request, name, maxsize, identifier, type):
-    u = request.user
+def create_group(user, name, maxsize, identifier, gtype):
     now = timezone.now()
 
-    # -----
-    if group_name_existed(name) or maxsize > GROUP_MAXSIZE or u.extra.credits < GROUP_CREATED_CREDITS_COST:
-        return 1
+    # Todo: fix
+    if group_name_existed(name) or maxsize > GROUP_MAXSIZE or user.extra.credits < GROUP_CREATED_CREDITS_COST:
+        return -1
     try:
 
         g = Group(group_name=name,
-                  creator=u,
-                  type=type,
+                  creator=user,
+                  type=gtype,
                   maxsize=maxsize,
                   identifier=identifier,
                   created_time=now,
@@ -311,27 +350,27 @@ def create_group(request, name, maxsize, identifier, type):
         g.save()
 
         m = GroupMember(group=g,
-                        user=u,
-                        member_name=get_user_name(u),
+                        user=user,
+                        member_name=get_user_name(user),
                         token="creator",
                         is_creator=True,
                         is_joined=True,
                         created_time=now,
                         joined_time=now)
 
-        u.extra.credits -= GROUP_CREATED_CREDITS_COST
+        user.extra.credits -= GROUP_CREATED_CREDITS_COST
 
-        c = Credits(user=u,
+        c = Credits(user=user,
                     action=-GROUP_CREATED_CREDITS_COST,
                     timestamp=now)
 
         m.save()
-        u.extra.save()
+        user.extra.save()
         c.save()
 
     except Exception, e:
         print 'Group: ', e
-        return 1
+        return -1
 
     # create dummy members
     # create_dummy_members(g, u, 20)
@@ -556,7 +595,6 @@ def global_graph(nodes, links, user):
 
 
 def graph_analyzer(user, groupid):
-
     nodes = GroupMember.objects.filter(group__id=groupid)
     links = Link.objects.filter(group__id=groupid)
     my_member = nodes.get(user=user)
@@ -612,7 +650,7 @@ def graph_analyzer(user, groupid):
         bf_ratio = 0
 
     # need fix!
-    links_of_me = links.filter(Q(source_member=my_member) | Q(target_member=my_member)).exclude(creator=user)\
+    links_of_me = links.filter(Q(source_member=my_member) | Q(target_member=my_member)).exclude(creator=user) \
         .values('creator').annotate(count=Count('pk')).order_by('-count')
 
     # print links_of_me
@@ -629,7 +667,3 @@ def graph_analyzer(user, groupid):
             'cover': cover,
             'bestfriend': bestfriend, 'bf_ratio': bf_ratio,
             'heart': heart, 'heart_count': heart_count}
-
-
-
-

