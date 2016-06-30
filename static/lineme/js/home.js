@@ -84,7 +84,7 @@ function onUpdateInvSucceess(data) {
     inv.find('.box-footer').detach();
     inv.append(data);
 
-    $('#search-group').bind('input propertychange', function () {
+    $('#search-group').bind('input', function () {
 
         clearTimeout(timeout);
         var text = $(this).val();

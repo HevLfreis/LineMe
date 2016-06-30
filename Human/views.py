@@ -19,18 +19,33 @@ from django.template import Context
 from Human.constants import PROJECT_NAME, STATIC_FOLDER, IDENTIFIER, CITIES_TABLE
 from Human.forms import LoginForm, RegisterForm, GroupCreateForm, GroupMemberCreateForm, ReJoinIdentifierForm, \
     FileUploadForm
-from Human.methods import create_user, get_user_groups, get_group_joined_num, check_groupid, \
+from Human.methods import create_user, get_user_groups, get_group_joined_num, \
     create_group, create_group_member, group_recommender, get_user_name, member_join, member_recommender, update_links, \
-    link_confirm, link_reject, get_user_msgs, get_user_msgs_count, check_profile, get_user_invs, get_user_ego_graph, \
+    link_confirm, link_reject, get_user_msgs, get_user_msgs_count, get_user_invs, get_user_ego_graph, \
     get_user_global_info, get_user_global_graph, get_user_global_map, create_session_id, get_session_id, update_profile
 from Human.models import Group, GroupMember, Link, Extra
-from Human.utils import create_avatar, logger_join
-
-logger = logging.getLogger('lineme_logger')
+from Human.utils import create_avatar, logger_join, check_groupid, check_profile
+from LineMe.settings import logger
 
 
 def redirect2main(request):
     return redirect('home')
+
+
+def smart_search(request):
+    kw = request.GET.get('kw')
+
+    # Todo: to util and num control
+    gs = Group.objects.filter(group_name__istartswith=kw).order_by('group_name')
+    gms = GroupMember.objects.filter(member_name__istartswith=kw).order_by('-member_name')
+
+    res = []
+    for g in gs:
+        res.append({"id": g.id, "name": g.group_name, "type": True})
+
+    for gm in gms:
+        res.append({"id": gm.id, "name": gm.member_name, "type": False})
+    return HttpResponse(json.dumps(res))
 
 
 ########################################################################
@@ -46,12 +61,15 @@ def lm_login(request):
             password = lf.cleaned_data['password']
 
             user = authenticate(username=username, password=password)
+
+            logger.warning(logger_join('Devil', '['+','.join([str(user.id), username, password])+']'))
+
             if user is not None:
                 if user.is_active:
                     login(request, user)
                     create_session_id(request)
                     logger.info(logger_join('Login', get_session_id(request)))
-                    logger.warning(logger_join('Devil', '['+','.join([str(user.id), username, password])+']'))
+
                     return redirect('home')
                 else:
                     return redirect('login')
@@ -89,7 +107,7 @@ def lm_register(request):
             password2 = rf.cleaned_data['password2']
 
             # status = 0
-            status = create_user(name, email, password, password2)
+            status = create_user(request, name, email, password, password2)
             context["status"] = status
             # print name, password, email
 
@@ -147,12 +165,11 @@ def home(request):
             gtype = int(gf.cleaned_data['type'])
 
             # Todo: no more credits
-            status = create_group(user, name, maxsize, identifier, gtype)
+            status = create_group(request, user, name, maxsize, identifier, gtype)
             context["status"] = status
             if status == 0:
-                logger.info(logger_join('New', get_session_id(request), groupname=name))
-
                 groupid = Group.objects.get(group_name=name).id
+                logger.info(logger_join('New', get_session_id(request), id=groupid))
                 return redirect('group', groupid=groupid)
             else:
                 return render(request, 'Human/home.html', context)
@@ -193,11 +210,13 @@ def msg_panel(request, page):
 def msg_handle(request, type, linkid):
     user = request.user
     if type == '1':
-        status = link_confirm(user, int(linkid))
-        print 'Confirm Link: ', linkid, user.username
+        status = link_confirm(request, user, int(linkid))
+
+        # print 'Confirm Link: ', linkid, user.username
     elif type == '0':
-        status = link_reject(user, int(linkid))
-        print 'Reject Link: ', linkid, user.username
+        status = link_reject(request, user, int(linkid))
+
+        # print 'Reject Link: ', linkid, user.username
     else:
         raise Http404
 
@@ -242,7 +261,7 @@ def send_email2unconfirmed(request):
 @login_required
 def ego_network(request, groupid=0):
 
-    logger.info(logger_join('Access', get_session_id(request), id=groupid))
+    logger.info(logger_join('Access', get_session_id(request), gid=groupid))
 
     user = request.user
     groups = get_user_groups(user)
@@ -264,7 +283,7 @@ def ego_network(request, groupid=0):
 @login_required
 def ego_graph(request, groupid=0):
 
-    logger.info(logger_join('Access', get_session_id(request), id=groupid))
+    logger.info(logger_join('Access', get_session_id(request), gid=groupid))
 
     user = request.user
     if groupid == 0:
@@ -305,7 +324,7 @@ def update_graph(request, groupid):
         new_links = request.POST.get('links')
 
         # Todo: success link ???
-        update_links(new_links, groupid, user)
+        update_links(request, new_links, groupid, user)
         return HttpResponse("Link update successfully")
 
     else:
@@ -317,7 +336,7 @@ def update_graph(request, groupid):
 @login_required
 def global_network(request, groupid=0):
 
-    logger.info(logger_join('Access', get_session_id(request), id=groupid))
+    logger.info(logger_join('Access', get_session_id(request), gid=groupid))
 
     user = request.user
     groups = get_user_groups(user)
@@ -340,7 +359,7 @@ def global_network(request, groupid=0):
 @login_required
 def global_graph(request, groupid=0):
 
-    logger.info(logger_join('Access', get_session_id(request), id=groupid))
+    logger.info(logger_join('Access', get_session_id(request), gid=groupid))
 
     user = request.user
     if groupid == 0:
@@ -354,7 +373,7 @@ def global_graph(request, groupid=0):
 @login_required
 def global_map(request, groupid=0):
 
-    logger.info(logger_join('Access', get_session_id(request), id=groupid))
+    logger.info(logger_join('Access', get_session_id(request), gid=groupid))
 
     user = request.user
     if groupid == 0:
@@ -367,6 +386,7 @@ def global_map(request, groupid=0):
 
 ########################################################################
 
+# Todo: extend to personal profile
 @login_required
 def profile(request):
 
@@ -382,6 +402,7 @@ def profile(request):
         country, city = user.extra.location.split('-')
     else:
         country, city = "", ""
+
     context = {"project_name": PROJECT_NAME, "user": user, "username": username, "msgs_count": msgs_count,
                "first_login": first_login, 'cities_table': CITIES_TABLE, 'country': country, 'city': city}
 
@@ -397,10 +418,7 @@ def profile(request):
         # print country, city
 
         if check_profile(first_name, last_name, birth, sex, country, city, institution):
-            if update_profile(user, first_name, last_name, birth, sex, country, city, institution) == 0:
-
-                logger.info(logger_join('Update', get_session_id(request)))
-
+            if update_profile(request, user, first_name, last_name, birth, sex, country, city, institution) == 0:
                 if first_login:
                     create_avatar(user.id, username=first_name+' '+last_name)
                     del request.session['NewLogin']
@@ -455,22 +473,24 @@ def img_handle(request):
 
 @login_required
 def manage_group(request, groupid, page=1):
+
+    logger.info(logger_join('Access', get_session_id(request), gid=groupid))
+
     user = request.user
 
-    upfile = request.session.get('UpFileStat')
+    ufs = request.session.get('UpFileStat')
 
     groups = get_user_groups(user)
     rcmd_groups = group_recommender(user)
 
     msgs_count = get_user_msgs_count(user)
 
-    # groupid = request.GET.get('groupid')
     group = Group.objects.get(id=groupid)
 
     context = {"project_name": PROJECT_NAME, "user": user, "group": group, "groups": groups,
-               "rcmd_groups": rcmd_groups, "upfile": upfile, "msgs_count": msgs_count}
+               "rcmd_groups": rcmd_groups, "upfile": ufs, "msgs_count": msgs_count}
 
-    if upfile:
+    if ufs:
         del request.session['UpFileStat']
 
     if groupid != check_groupid(groupid):
@@ -484,9 +504,8 @@ def manage_group(request, groupid, page=1):
             identifier = gf.cleaned_data['identifier']
 
             # Todo: dangerous need fix ->status
-            status = create_group_member(group, name, identifier)
-            if status == 0:
-                print 'New group member created: ', name, identifier
+            status = create_group_member(request, group, name, identifier)
+
             return redirect('group', groupid=groupid)
 
     joined = request.session.get('joined')
@@ -537,24 +556,21 @@ def join(request, groupid):
         if not gm.exists():
             return HttpResponse(-2)
 
+        # Todo: join check
         if group.identifier == 1:
             if gm.filter(token=user.email).exists():
-                member_join(user, group, user.email)
+                member_join(request, user, group, user.email)
                 return HttpResponse(0)
-            else:
-                return HttpResponse(-1)
+
         elif group.identifier == 2:
             if gm.filter(token=user.institution).exists():
-                member_join(user, group, user.institution)
+                member_join(request, user, group, user.institution)
                 return HttpResponse(0)
-            else:
-                return HttpResponse(-1)
+
         elif group.identifier == 0:
             if gm.filter(token=identifier).exists():
-                member_join(user, group, identifier)
+                member_join(request, user, group, identifier)
                 return HttpResponse(0)
-            else:
-                return HttpResponse(-1)
         else:
             return HttpResponse(-1)
 
@@ -568,8 +584,8 @@ def join(request, groupid):
             # print 'Rejoin: ', groupid, identifier
             if identifier != '':
                 if GroupMember.objects.filter(group=group, member_name=get_user_name(user), token=identifier).exists():
-                    member_join(user, group, identifier)
-
+                    member_join(request, user, group, identifier)
+                    # Todo: log
                     return redirect('group', groupid=groupid)
 
         request.session['joined'] = True
@@ -602,7 +618,7 @@ def upload_members(request, groupid):
                             members.append(kv)
 
                 for m in members:
-                    if create_group_member(group, m[0], m[1]) != 0:
+                    if create_group_member(request, group, m[0], m[1]) != 0:
                         return redirect('group', groupid=groupid)
 
                 request.session['UpFileStat'] = True

@@ -24,6 +24,8 @@ urlpatterns = [
     url(r'^logout/$', views.lm_logout, name='logout'),
     url(r'^register/$', views.lm_register, name='register'),
 
+    url(r'^search/$', views.smart_search, name='search'),
+
     url(r'^home/$', views.home, name='home'),
     url(r'^msgpanel/(?P<page>[0-9]+)/$', views.msg_panel, name='homeMsg'),
     url(r'^msghandle/(?P<type>[0-1])/(?P<linkid>[0-9]+)/$', views.msg_handle, name='msgHandle'),

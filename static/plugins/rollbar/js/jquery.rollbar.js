@@ -312,7 +312,7 @@
     	//keypress scroll with easing
     	this.bindEvent(document,'keydown',function(e){
     		var hkey=0, vkey=0;
-    		//38-key up, 40-key down, 39-key right, 37-key left 		
+    		//38-key up, 40-key down, 39-key right, 37-key left
     		vkey = (e.keyCode == 38)?-this.settings.keyScroll:vkey;
     		vkey = (e.keyCode == 40)?this.settings.keyScroll:vkey;
     		hkey = (e.keyCode == 37)?-this.settings.keyScroll:hkey;
@@ -321,9 +321,9 @@
 				this.easeScroll(vkey,hkey);
     		}
     		// prevent page scroll
-    		e.preventDefault();
+    		//e.preventDefault();
     	});
-    	
+
     	
     	//block "drag" events in FireFox
     	this.bindEvent(this.container,"dragstart",function(e){

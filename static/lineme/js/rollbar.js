@@ -9,6 +9,7 @@ $('body, .box-body').rollbar({
   sliderOpacity: 0,
   zIndex: 2000,
   blockGlobalScroll: true,
-  wheelSpeed: 30,
+  wheelSpeed: 40,
+  touchSpeed: 0.25,
   sliderSize: '25%',
 });

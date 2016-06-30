@@ -4,6 +4,7 @@
 # Date: 2016/5/25 
 # Time: 10:44
 #
+import re
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -13,7 +14,61 @@ import smtplib
 from PIL import ImageFont
 from PIL import Image
 from PIL import ImageDraw
-from Human.constants import STATIC_FOLDER
+from django.contrib.auth.models import User
+
+from Human.constants import STATIC_FOLDER, CITIES_TABLE
+from Human.models import Group
+
+
+def user_existed(name):
+    if User.objects.filter(username=name).exists():
+        return True
+    return False
+
+
+def validate_email(email):
+    if User.objects.filter(email=email).exists():
+        return False
+    if len(email) > 7:
+        if re.match("^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$", email) is not None:
+            return True
+    return False
+
+
+def validate_passwd(password, password2):
+    if len(password) < 6 or password != password2:
+        return False
+    return True
+
+
+def check_groupid(groupid):
+    if groupid is None:
+        return -2
+    elif Group.objects.filter(id=groupid).exists():
+        return groupid
+    else:
+        return 0
+
+
+def group_name_existed(name):
+    if Group.objects.filter(group_name=name).exists():
+        return True
+    return False
+
+
+def check_profile(first_name, last_name, birth, sex, country, city, institution):
+    if re.match("^[A-Za-z]+$", first_name) and re.match("^[A-Za-z]+$", last_name):
+        if sex == 0 or sex == 1:
+            if re.match("^(?:(?!0000)[0-9]{4}/(?:(?:0[1-9]|1[0-2])/(?:0[1-9]|1[0-9]|2[0-8])|"
+                        "(?:0[13-9]|1[0-2])/(?:29|30)|(?:0[13578]|1[02])-31)|(?:[0-9]{2}(?:0[48]|"
+                        "[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)/02/29)$", birth):
+                if re.match("^[A-Za-z\s]+$", institution):
+                    if country in CITIES_TABLE and city in CITIES_TABLE[country]:
+                        return True
+    return False
+
+
+#######################################################################
 
 
 def create_avatar(userid, username='Unknown'):
@@ -83,9 +138,9 @@ def logger_join(*args, **kwargs):
             return str_arg + ' ' + ' '.join([k.upper()+':'+str(v) for k, v in kwargs.items()])
 
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
     # create_avatar(9, 'Name Potter')
     # text = '<b>Some <i>HTML</i> text</b> and an image.<br><img src="cid:image1"><br>good!'
     # send_email('1017844578@qq.com', 'Test', text)
 
-    print logger_join('a', 'b', c='d', e='f')
+    # print logger_join('a', 'b', c='d', e='f')

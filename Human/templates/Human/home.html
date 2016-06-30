@@ -12,17 +12,14 @@
     <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
     <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
     <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
-
+    <link rel="stylesheet" href="/static/plugins/easyautocomplete/css/easy-autocomplete.css">
+    <link rel="stylesheet" href="/static/plugins/easyautocomplete/css/easy-autocomplete.themes.css">
+    <link rel="stylesheet" href="/static/plugins/autocomplete/css/jquery.autocomplete.css">
     <style>
       a {
         cursor: pointer;
       }
-{#      td {#}
-{#        width: 20%;#}
-{#      }#}
-
     </style>
-
   </head>
 
   <body class="hold-transition skin-black sidebar-mini">
@@ -160,17 +157,12 @@
             </div>
           </div>
 
-          <!-- search form (Optional) -->
-          <form action="#" method="get" class="sidebar-form">
-            <div class="input-group">
-              <input type="text" name="q" class="form-control" placeholder="Search...">
-              <span class="input-group-btn">
-                <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i></button>
-              </span>
-            </div>
-          </form>
-          <!-- /.search form -->
-
+          <div id="search" class="input-group sidebar-form">
+            <input type="text" name="q" class="form-control" placeholder="Search...">
+            <span class="input-group-btn">
+              <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i></button>
+            </span>
+          </div>
           <ul class="sidebar-menu">
             <li class="header">My Profile</li>
           </ul>
@@ -479,7 +471,7 @@
                   <h3 class="box-title">My Link Invitations</h3>
                   <div class="box-tools pull-right">
                     <div class="has-feedback">
-                      <input id="search-group" type="text" class="form-control input-sm" placeholder="Search Group"">
+                      <input id="search-group" type="text" class="form-control input-sm" placeholder="Search Group">
                       <span class="glyphicon glyphicon-search form-control-feedback"></span>
                     </div>
                   </div>
@@ -511,6 +503,9 @@
     <script src="/static/plugins/rollbar/js/jquery.mousewheel.js"></script>
     <script src="/static/plugins/rollbar/js/jquery.rollbar.min.js"></script>
     <script src="/static/lineme/js/rollbar.js"></script>
+
+    <script src="/static/plugins/easyautocomplete/js/jquery.easy-autocomplete.js"></script>
+    <script src="/static/lineme/js/autocomplete.js"></script>
     <script type="text/javascript">
 
       var emails = "{{ user.email }}".split("@");
@@ -528,6 +523,12 @@
         return institutions[0]=="None"?"Blank":institutions[0];
       });
       $('#profile-institution2').text(institutions[1]);
+
+      $('#search').autocomplete({
+        url: "{% url 'search' %}"
+      });
+
+
 
     </script>
     <script src="/static/lineme/js/home.js"></script>
