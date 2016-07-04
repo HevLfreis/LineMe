@@ -23,8 +23,6 @@ $('#btn-rcmd-group').click(function() {
     $('#box-group').attr('class', 'box box-warning').find('h3').text('Manage Groups --- Group Recommendations');
 });
 
-
-
 $('#group-create-modal').on('show.bs.modal', function (e) {
     $(this).find('.modal-dialog').css({
         'margin-top': function () {
@@ -32,9 +30,7 @@ $('#group-create-modal').on('show.bs.modal', function (e) {
             return ($(window).height() / 6 - (modalHeight / 2));
         }
     });
-
 });
-
 
 $('input[type="checkbox"].flat-red, input[type="radio"].minimal').iCheck({
     checkboxClass: 'icheckbox_flat-green',
@@ -52,9 +48,7 @@ function msgConfirmed(url, type, linkid) {
             else if(type == 0)
                 $('#msg-'+linkid+' > small').attr('class', 'label label-danger').text('Rejected');
         }
-
     });
-
 }
 
 function updateMsgPanel(page) {

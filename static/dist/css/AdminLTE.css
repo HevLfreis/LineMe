@@ -939,7 +939,7 @@ a:focus {
 .navbar-nav > .notifications-menu > .dropdown-menu,
 .navbar-nav > .messages-menu > .dropdown-menu,
 .navbar-nav > .tasks-menu > .dropdown-menu {
-  width: 250px;
+  width: 180px;
   padding: 0 0 0 0;
   margin: 0;
   top: 100%;

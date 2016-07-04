@@ -4,6 +4,7 @@
  * Time: 20:04
  */
 
+// Todo: fix select in profile
 $('body, .box-body').rollbar({
   scroll: 'vertical',
   sliderOpacity: 0,

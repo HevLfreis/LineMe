@@ -5,7 +5,7 @@
 # Time: 21:26
 #
 from django import forms
-from Human.constants import IDENTIFIER, GROUP_TYPE
+from LineMe.constants import IDENTIFIER, GROUP_TYPE
 
 
 class LoginForm(forms.Form):

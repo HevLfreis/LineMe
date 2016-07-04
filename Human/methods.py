@@ -16,37 +16,20 @@ from django.db.models import Q, Count
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
-from Human.constants import GROUP_MAXSIZE, GROUP_CREATED_CREDITS_COST, SOURCE_LINK_CONFIRM_STATUS_TRANSITION_TABLE, \
+from LineMe.constants import GROUP_MAXSIZE, GROUP_CREATED_CREDITS_COST, SOURCE_LINK_CONFIRM_STATUS_TRANSITION_TABLE, \
     TARGET_LINK_CONFIRM_STATUS_TRANSITION_TABLE, SOURCE_LINK_REJECT_STATUS_TRANSITION_TABLE, \
     TARGET_LINK_REJECT_STATUS_TRANSITION_TABLE, CITIES_TABLE
 from Human.models import Privacy, Extra, GroupMember, Link, Group, Credits
-from Human.utils import create_avatar, logger_join, user_existed, validate_email, validate_passwd, group_name_existed
+from Human.utils import create_avatar, logger_join, validate_user, validate_email, validate_passwd, group_name_existed, \
+    get_session_id
 from LineMe.settings import logger
 
 
-def create_session_id(request):
-    if not request.session.get('SessionID'):
-        request.session['SessionID'] = '(' + request.META.get('REMOTE_ADDR') + ')' \
-                                       + request.session.session_key + '[' + str(request.user.id) \
-                                       + ',' + request.user.username + ']'
-
-
-def get_session_id(request):
-    sessionid = request.session.get('SessionID')
-    if sessionid:
-        return sessionid
-    else:
-
-        # Todo： cookie danger
-        return '(' + request.META.get('REMOTE_ADDR') + ')' \
-                    + request.COOKIES.get('sessionid') + '[' + str(request.user.id) \
-                    + ',' + request.user.username + ']'
-
+# Todo: separate to different files
 
 def create_user(request, name, email, password, password2):
 
-    # Todo: optimize
-    if user_existed(name):
+    if not validate_user(name):
         return -1
     elif not validate_email(email):
         return -2
@@ -340,7 +323,7 @@ def create_group(request, user, name, maxsize, identifier, gtype):
     #
     # # create dummy links
     # create_dummy_links(g, u, now)
-    logger.info(logger_join('Create', get_session_id(request)), gid=g.id)
+    logger.info(logger_join('Create', get_session_id(request), gid=g.id))
     return 0
 
 
@@ -354,6 +337,7 @@ def group_recommender(user):
 
 ########################################################################
 
+# Todo: token multiple check
 def create_group_member(request, group, name, identifier):
     now = timezone.now()
 
@@ -372,14 +356,15 @@ def create_group_member(request, group, name, identifier):
         # print 'Group member create: ', e
         logger.error(logger_join('Create', get_session_id(request), 'failed', e=e))
         return -1
-    logger.info(logger_join('Create', get_session_id(request)), mid=m.id)
+    logger.info(logger_join('Create', get_session_id(request), mid=m.id))
     return 0
 
 
 def member_join(request, user, group, identifier):
     now = timezone.now()
     try:
-        m = GroupMember.objects.get(group=group, member_name=get_user_name(user), token=identifier)
+        m = GroupMember.objects.get((Q(member_name=get_user_name(user)) | Q(member_name=user.username)),
+                                    group=group, token=identifier)
         m.is_joined = True
         m.user = user
         m.joined_time = now
@@ -387,12 +372,13 @@ def member_join(request, user, group, identifier):
     except Exception, e:
         logger.error(logger_join('Join', get_session_id(request), 'failed', e=e))
         return -1
-    logger.info(logger_join('Join', get_session_id(request)), mid=m.id)
+
+    logger.info(logger_join('Join', get_session_id(request), mid=m.id))
     return 0
 
 
 def member_recommender(user, groupid):
-    if groupid == -2:
+    if groupid < 0:
         return None
     gmout = []
     gmin = []
@@ -412,6 +398,7 @@ def member_recommender(user, groupid):
 
 ########################################################################
 
+# Todo: logger
 def link_confirm(request, user, linkid):
     link = get_object_or_404(Link, id=linkid)
 
@@ -454,7 +441,7 @@ def link_reject(request, user, linkid):
             link.status = TARGET_LINK_REJECT_STATUS_TRANSITION_TABLE[link.status]
 
         else:
-            logger.info(logger_join('Reject', get_session_id(request), 'failed', uid=user.id))
+            logger.info(logger_join('Reject', get_session_id(request), 'failed'))
             return -1
 
         # print 'reject: ', linkid, link.status
@@ -462,11 +449,10 @@ def link_reject(request, user, linkid):
         logger.info(logger_join('Reject', get_session_id(request), lid=linkid))
         return 0
     else:
-        logger.info(logger_join('Reject', get_session_id(request), 'failed', uid=user.id))
+        logger.info(logger_join('Reject', get_session_id(request), 'failed'))
         return -1
 
 
-# need check
 def update_links(request, new_links, groupid, creator):
     now = timezone.now()
 
@@ -493,12 +479,24 @@ def update_links(request, new_links, groupid, creator):
             try:
                 source = int(k.split(',')[0])
                 target = int(k.split(',')[1])
+
+                # link safety check
                 if source == my_member.id:
-                    status = 1
+                    if not GroupMember.objects.get(id=target, group__id=groupid):
+                        continue
+                    else:
+                        status = 1
                 elif target == my_member.id:
-                    status = 2
+                    if not GroupMember.objects.get(id=source, group__id=groupid):
+                        continue
+                    else:
+                        status = 2
                 else:
-                    status = 0
+                    if not (GroupMember.objects.get(id=source, group__id=groupid) and
+                            GroupMember.objects.get(id=source, group__id=groupid)):
+                        continue
+                    else:
+                        status = 0
 
                 l = Link(creator=creator,
                          source_member_id=source,
@@ -572,7 +570,7 @@ def global_graph(nodes, links, user):
     return G
 
 
-# Todo: link status check
+# Todo: link status should be 3
 def graph_analyzer(user, groupid):
     nodes = GroupMember.objects.filter(group__id=groupid)
     links = Link.objects.filter(group__id=groupid)
@@ -605,18 +603,17 @@ def graph_analyzer(user, groupid):
 
     average_degree = 2 * G.number_of_edges() / G.number_of_nodes()
 
-    # Todo: fix shortest path inf
+    # If the network is not connected,
+    # return -1
     if nx.is_connected(G) and G.number_of_nodes() > 1:
         average_distance = nx.average_shortest_path_length(G)
     else:
-        average_distance = 'INF'
+        average_distance = -1
 
-    # print average_degree, average_distance
+    print average_degree, average_distance
 
     friends = G.neighbors(my_member)
-
     friends = [(friend, G[friend][my_member]['weight']) for friend in friends]
-
     friends = sorted(friends, key=lambda x: x[1], reverse=True)
 
     # print friends
@@ -634,7 +631,6 @@ def graph_analyzer(user, groupid):
 
     # print links_of_me
     if len(links_of_me) != 0:
-
         heart = GroupMember.objects.get(user__id=links_of_me[0]['creator'], group__id=groupid)
         heart_count = links_of_me[0]['count']
     else:

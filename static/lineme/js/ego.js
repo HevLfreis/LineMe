@@ -4,6 +4,7 @@
  * Time: 14:29
  */
 
+// Todo: check
 var rcmdAddedNode = {};
 
 function updateRcmdPanel(page) {
@@ -34,7 +35,11 @@ function updateRcmdPanel(page) {
                 if (!rcmdAddedNode[newNode.id]) {
                     nodes.push(newNode);
                     rcmdAddedNode[newNode.id] = true;
-                    $(this).removeClass("bg-gray-light").addClass("bg-gray").off('mouseout').off('mouseover').off('click');
+                    $(this).removeClass("bg-gray-light")
+                        .addClass("bg-gray")
+                        .off('mouseout')
+                        .off('mouseover')
+                        .off('click');
                     start();
                 }
 
@@ -160,6 +165,8 @@ d3.json("/egraph/"+groupid+"/", function(error, graph) {
     nodes.forEach(function(node) {
         nodeById.set(node.id, node);
         if (node.self) self = node;
+
+        rcmdAddedNode[node.id] = true;
     });
 
     links.forEach(function(link) {
@@ -422,4 +429,32 @@ $('#reset').click(function() {
     rcmdAddedNode = {};
     updateRcmdPanel(1);
     resetMenu();
+});
+
+$('#clear').click(function() {
+
+});
+
+$('#search').autocomplete({
+    type: 'member',
+    groupid: groupid,
+    onclick: f = function(d) {
+
+        var id = $(d).attr("id"),
+            nid = 'sug-'+id.substring(4, id.length),
+            newNode = rcmdId2Node(id);
+
+        if (!rcmdAddedNode[newNode.id]) {
+            nodes.push(newNode);
+            rcmdAddedNode[newNode.id] = true;
+            console.log("[id='"+nid+"']");
+            $("[id='"+nid+"']").removeClass("bg-gray-light")
+                .addClass("bg-gray")
+                .off('mouseout')
+                .off('mouseover')
+                .off('click');
+            start();
+        }
+
+    }
 });

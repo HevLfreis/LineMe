@@ -356,6 +356,8 @@ $.get("/gmap/"+groupid+"/", function(result){
                 //symbolSize: function (val) {
                 //    return val[2] / 10;
                 //},
+
+                // Todo: size relate to num of friends
                 symbolSize: 20,
                 label: {
                     emphasis : {

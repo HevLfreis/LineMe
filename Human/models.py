@@ -39,6 +39,8 @@ class GroupMember(models.Model):
     member_name = models.CharField(max_length=50)
     token = models.CharField(max_length=50)
     is_creator = models.BooleanField()
+
+    # Todo: change to int, prepare for member join
     is_joined = models.BooleanField()
     created_time = models.DateTimeField()
     joined_time = models.DateTimeField(null=True)

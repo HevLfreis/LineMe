@@ -4,6 +4,7 @@
 # Date: 2016/5/25 
 # Time: 10:44
 #
+import base64
 import re
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
@@ -11,18 +12,49 @@ from email.mime.text import MIMEText
 import os
 import random
 import smtplib
+
+import cStringIO
 from PIL import ImageFont
 from PIL import Image
 from PIL import ImageDraw
 from django.contrib.auth.models import User
+from django.db.models import Q
 
-from Human.constants import STATIC_FOLDER, CITIES_TABLE
-from Human.models import Group
+from LineMe.constants import STATIC_FOLDER, CITIES_TABLE
+from Human.models import Group, GroupMember
+from LineMe.settings import logger
+
+# Todo: separate to different files
 
 
-def user_existed(name):
-    if User.objects.filter(username=name).exists():
-        return True
+def create_session_id(request):
+    if not (request.session.get('SessionID') and request.user.id):
+        request.session['SessionID'] = '(' + request.META.get('REMOTE_ADDR') + ')' \
+                                       + request.session.session_key + '[' + str(request.user.id) \
+                                       + ',' + request.user.username + ']'
+
+
+def get_session_id(request):
+    sessionid = request.session.get('SessionID')
+    if sessionid:
+        return sessionid
+    elif request.user:
+
+        # Todo：cookie danger
+        return '(' + request.META.get('REMOTE_ADDR') + ')' \
+                    + request.COOKIES.get('sessionid') + '[' + str(request.user.id) \
+                    + ',' + request.user.username + ']'
+    else:
+        return '(' + request.META.get('REMOTE_ADDR') + ')' \
+                    + request.COOKIES.get('sessionid')
+
+
+#######################################################################
+
+def validate_user(name):
+    if re.match("^[a-zA-Z][a-zA-Z0-9]{6,16}$", name):
+        if not User.objects.filter(username=name).exists():
+            return True
     return False
 
 
@@ -30,7 +62,7 @@ def validate_email(email):
     if User.objects.filter(email=email).exists():
         return False
     if len(email) > 7:
-        if re.match("^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$", email) is not None:
+        if re.match("^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$", email):
             return True
     return False
 
@@ -70,8 +102,33 @@ def check_profile(first_name, last_name, birth, sex, country, city, institution)
 
 #######################################################################
 
+def smart_search(request, kw, groupid, limit):
 
-def create_avatar(userid, username='Unknown'):
+    logger.info(logger_join('Search', get_session_id(request), kw=kw))
+
+    res = []
+    if groupid:
+        gms = GroupMember.objects.filter(Q(member_name__istartswith=kw) |
+                                         Q(member_name__icontains=kw),
+                                         group__id=groupid).order_by('member_name')[0:limit]
+        for gm in gms:
+            if gm.is_joined:
+                res.append({"mid": gm.id, "uid": gm.user.id, "mname": gm.member_name})
+            else:
+                res.append({"mid": gm.id, "uid": 0, "mname": gm.member_name})
+
+    else:
+        gs = Group.objects.filter(group_name__istartswith=kw).order_by('group_name')[0:limit]
+        for g in gs:
+            res.append({"cid": g.creator.id, "gid": g.id, "name": g.group_name})
+
+    return res
+
+
+#######################################################################
+
+
+def create_avatar(request, userid, username='Unknown'):
     save_path = os.path.join(STATIC_FOLDER, 'images/user_avatars/')
     word = ''.join(map(lambda x: x[0].upper(), username.split(' ')))
     beautifulRGB = ((245, 67, 101),
@@ -92,8 +149,27 @@ def create_avatar(userid, username='Unknown'):
     try:
         img.save(save_path + str(userid) + '.png')
     except IOError, e:
-        print 'Avatar create: ', e
+        logger.error(logger_join('Avatar', get_session_id(request), e=e))
         return -1
+
+    logger.info(logger_join('Avatar', get_session_id(request)))
+    return 0
+
+
+def handle_avatar(request):
+    userid = request.user.id
+    try:
+
+        image_string = cStringIO.StringIO(base64.b64decode(request.POST['imgBase64'].partition('base64,')[2]))
+        image = Image.open(image_string)
+
+        path = os.path.join(STATIC_FOLDER, 'images/user_avatars/')
+        image.resize((200, 200)).save(path+str(userid)+".png", image.format, quality=100)
+        # print image.format, image.size, image.mode
+    except Exception, e:
+        logger.error(logger_join('Avatar', get_session_id(request), e=e))
+        return -1
+    logger.info(logger_join('Avatar', get_session_id(request)))
     return 0
 
 
@@ -142,5 +218,6 @@ def logger_join(*args, **kwargs):
     # create_avatar(9, 'Name Potter')
     # text = '<b>Some <i>HTML</i> text</b> and an image.<br><img src="cid:image1"><br>good!'
     # send_email('1017844578@qq.com', 'Test', text)
-
+    #
     # print logger_join('a', 'b', c='d', e='f')
+    # print validate_user('***nn__')

@@ -7,33 +7,24 @@
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/plugins/iCheck/all.css">
-    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
     <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
     <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
-
     <style>
+
       .form-group {
         width: 250px;
       }
       blockquote {
         margin: 0 0 10px;
-
       }
+
     </style>
-
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
   </head>
-
   <body class="hold-transition skin-black sidebar-mini">
     <div class="wrapper">
-
 
       <div class="modal fade" id="member-join-modal">
         <div class="modal-dialog">
@@ -43,7 +34,6 @@
               <h4 class="modal-title">Identifier Wrong</h4>
             </div>
             <div class="modal-body">
-
               <div class="form-group has-feedback">
                 <label for="member-identifier">Identifier</label>
                 {% if group.identifier == 0 %}
@@ -53,14 +43,15 @@
                 {% elif group.identifier == 1 %}
                   <input type="text" class="form-control" name="identifier" placeholder="Re-enter email">
                 {% endif %}
-
                 <span class="glyphicon glyphicon-info-sign form-control-feedback"></span>
               </div>
             </div>
             <div class="modal-footer">
-              <button  type="submit" class="btn btn-primary">Re-Follow</button>
+              <button id="modal-follow" type="submit" class="btn btn-primary">Follow</button>
             </div>
-          </form><!-- /.modal-content -->
+          </form>
+
+          {# Todo: not in group #}
           <form method="post" class="modal-content" id="modal-content-notexist">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
@@ -68,24 +59,27 @@
             </div>
             <div class="modal-body">
               <blockquote>
-                <h4>You are not in this group yet.</h4>
+                <h4>You are not in this group's list.</h4>
                 <h4>You can send a request to the group creator.</h4>
               </blockquote>
+
             </div>
             <div class="modal-footer">
+              <div class="form-group has-feedback pull-left" style="margin-bottom: 0">
+{#                <label for="member-identifier">Message</label>#}
+                  <input type="text" class="form-control" name="identifier" placeholder="Message">
+                <span class="glyphicon glyphicon-info-sign form-control-feedback"></span>
+              </div>
               <button type="submit" class="btn btn-primary">Send Request</button>
             </div>
-          </form><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
+          </form>
+        </div>
       </div>
 
       <header class="main-header">
-
-        <!-- Logo -->
         <a href="{% url 'home' %}" class="logo">
           <span class="logo-lg"><b>{{ project_name }}</b></span>
         </a>
-
         <nav class="navbar navbar-static-top" role="navigation">
           <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
@@ -113,7 +107,6 @@
               <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                     <img src="/static/images/user_avatars/{{ user.id }}.png" class="user-image" alt="User Image">
-                    <!-- hidden-xs hides the username on small devices so only the image appears. -->
                     <span class="hidden-xs">{{ user.username }}</span>
                     <span class="caret"></span>
                 </a>
@@ -130,35 +123,23 @@
           </div>
         </nav>
       </header>
-      <!-- Left side column. contains the logo and sidebar -->
       <aside class="main-sidebar">
-
-        <!-- sidebar: style can be found in sidebar.less -->
         <section class="sidebar">
-
-          <!-- Sidebar user panel (optional) -->
           <div class="user-panel">
             <div class="pull-left image">
               <img onclick="window.location.href='{% url 'avatar' %}'" src="/static/images/user_avatars/{{ user.id }}.png" class="img-circle" alt="User Image" style="cursor:pointer">
             </div>
             <div class="pull-left info">
               <p>{{ user.username }}</p>
-              <!-- Status -->
               <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
             </div>
           </div>
-
-          <!-- search form (Optional) -->
-          <form action="#" method="get" class="sidebar-form">
-            <div class="input-group">
-              <input type="text" name="q" class="form-control" placeholder="Search...">
-              <span class="input-group-btn">
-                <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i></button>
-              </span>
-            </div>
-          </form>
-          <!-- /.search form -->
-
+          <div id="search" class="input-group sidebar-form">
+            <input type="text" name="q" class="form-control" placeholder="Search...">
+            <span class="input-group-btn">
+              <button class="btn btn-flat"><i class="fa fa-search"></i></button>
+            </span>
+          </div>
           <ul class="sidebar-menu" style="margin-left: 0px">
             <li class="header">My Groups</li>
             {% for k, v in sug.items %}
@@ -166,38 +147,28 @@
                 <a href="{% url 'group' k %}">
                   <i class="fa fa-circle-o text-yellow"></i>
                   <span>{{ v }}</span>
-
                 </a>
               </li>
             {% endfor %}
             {% for group in groups %}
-
               <li>
                 <a href="{% url 'group' group.id %}">
                   {% if group.creator == user %}
-
                     <i class="fa fa-circle-o text-aqua"></i>
                   {% else %}
                     <i class="fa fa-circle-o text-green"></i>
                   {% endif %}
-
                   <span>{{ group.group_name }}</span>
-
                 </a>
               </li>
             {% endfor %}
-
           </ul>
         </section>
-        <!-- /.sidebar -->
       </aside>
-
-      <!-- Content Wrapper. Contains page content -->
       <div class="content-wrapper">
-        <!-- Content Header (Page header) -->
         <section class="content-header">
           <h1>
-            Group: {{ group.group_name }}
+            Group Information: <span class="text-bold">{{ group.group_name }}</span>
 {#            <small>Optional description</small>#}
           </h1>
           <ol class="breadcrumb">
@@ -205,21 +176,14 @@
             <li class="active">Group</li>
           </ol>
         </section>
-
-        <!-- Main content -->
         <section class="content">
-
-
           <div class="row">
             <div class="col-md-3">
-
-              <!-- Profile Image -->
               <div class="box box-primary">
                 <div class="box-body box-profile">
                   <img class="profile-user-img img-responsive img-circle" src="/static/images/user_avatars/{{ creator.id }}.png" alt="User profile picture">
                   <h3 class="profile-username text-center">{{ group.group_name }}</h3>
                   <p class="text-muted text-center">Created by {{ creator.username }}</p>
-
                   <ul class="list-group list-group-unbordered" style="padding-bottom: 50px">
                     <li class="list-group-item">
                       <b>Members</b> <a class="pull-right">{{ members_count }}</a>
@@ -241,35 +205,24 @@
                   </ul>
                   {% if is_member %}
                     <button class="btn btn-success btn-block" disabled><b>Already in Group</b></button>
-                  {% elif joined %}
+                  {% elif join_failed %}
                     <button id="follow" class="btn btn-danger btn-block"><b>Follow Failed</b></button>
                   {% else %}
                     <button id="follow" class="btn btn-primary btn-block"><b>Follow</b></button>
                   {% endif %}
-
-                </div><!-- /.box-body -->
-              </div><!-- /.box -->
+                </div>
+              </div>
             </div>
           </div>
-
-        </section><!-- /.content -->
-      </div><!-- /.content-wrapper -->
-
-      <!-- Main Footer -->
+        </section>
+      </div>
       <footer class="main-footer">
-          <!-- To the right -->
           <div class="pull-right hidden-xs">
-              POWERED BY HT
+              <a href="http://www.seeleit.com" target="_black">POWERED BY HT</a>
           </div>
-          <!-- Default to the left -->
           <strong>Copyright &copy; 2016 <a href="http://cnc.sjtu.edu.cn" target="_black">CNC</a>.</strong> All rights reserved.
       </footer>
-
-
-      <!-- Add the sidebar's background. This div must be placed
-           immediately after the control sidebar -->
-      <div class="control-sidebar-bg"></div>
-    </div><!-- ./wrapper -->
+    </div>
 
     <script src="/static/plugins/jQuery/jQuery-2.1.4.min.js"></script>
     <script src="/static/bootstrap/js/bootstrap.min.js"></script>
@@ -279,7 +232,10 @@
     <script src="/static/plugins/rollbar/js/jquery.mousewheel.js"></script>
     <script src="/static/plugins/rollbar/js/jquery.rollbar.min.js"></script>
     <script src="/static/lineme/js/rollbar.js"></script>
+    <script src="/static/lineme/js/autocomplete.js"></script>
     <script type="text/javascript">
+
+      var identifier = {{ group.identifier }};
 
       var emails = "{{ user.email }}".split("@");
       var births = "{{ user.extra.birth }}".split(",");
@@ -300,25 +256,16 @@
             return ($(window).height() / 6 - (modalHeight / 2));
           }
         });
-
       });
-
 
       $('input[type="checkbox"].flat-red, input[type="radio"].minimal').iCheck({
         checkboxClass: 'icheckbox_flat-green',
         radioClass: 'iradio_flat-green'
       });
 
-      function join(identifier) {
+      function join() {
 
-        $.ajax({
-          type: "POST",
-          url: '{% url 'join' group.id %}',
-          data: {
-            identifier: identifier
-          },
-          cache: false
-        }).done(function(result) {
+        $.get('{% url 'join' group.id %}', function(result) {
 
           switch (result) {
 
@@ -344,10 +291,23 @@
         });
       }
 
+      {# Todo: sc join #}
       $('#follow').click(function() {
-        join('')
+        if (identifier == 0) {
+
+          var $modal = $('#modal-content-wrong');
+          $modal.find('.modal-title').text('Identifier');
+          $modal.find('.modal-footer button').val('Follow');
+          $modal.find('input').attr('placeholder', '');
+          $modal.show();
+          $('#modal-content-notexist').hide();
+
+          $('#member-join-modal').modal('show');
+        }
+        else join();
       });
 
+      $('#search').autocomplete();
 
     </script>
   </body>

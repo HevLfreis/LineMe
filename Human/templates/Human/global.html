@@ -6,9 +6,8 @@
     <title>{{ project_name }} | Global Network</title>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
-
-    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css">
     <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
     <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
     <link rel="stylesheet" href="/static/lineme/css/graph.css">
@@ -16,25 +15,16 @@
     <link rel="stylesheet" href="/static/plugins/d3/css/d3-tip.css">
     <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
   </head>
-
   <body class="hold-transition skin-black sidebar-mini">
     <div class="wrapper">
-
-      <!-- Main Header -->
       <header class="main-header">
-
-        <!-- Logo -->
         <a href="{% url 'home' %}" class="logo">
           <span class="logo-lg"><b>{{ project_name }}</b></span>
         </a>
-
-        <!-- Header Navbar -->
         <nav class="navbar navbar-static-top" role="navigation">
-          <!-- Navbar Right Menu -->
           <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
               <li class="dropdown notifications-menu">
-                <!-- Menu toggle button -->
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                   <i class="fa fa-envelope-o"></i>
                   {% if msgs_count >= 99  %}
@@ -44,27 +34,20 @@
                   {% endif %}
                 </a>
                 <ul class="dropdown-menu">
-
                   <li>
-                    <!-- inner menu: contains the actual data -->
                     <ul class="menu">
                       <li>
                         <a href="{% url 'home' %}">
                           <i class="fa fa-users text-aqua"></i> You have {{ msgs_count }} messages
                         </a>
                       </li>
-
                     </ul>
                   </li>
-
                 </ul>
-
               </li>
-
               <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                     <img src="/static/images/user_avatars/{{ user.id }}.png" class="user-image" alt="User Image">
-                    <!-- hidden-xs hides the username on small devices so only the image appears. -->
                     <span class="hidden-xs">{{ user.username }}</span>
                     <span class="caret"></span>
                 </a>
@@ -75,43 +58,29 @@
                   <li><a href={% url 'settings' %}>Settings</a></li>
                   <li class="divider"></li>
                   <li><a href={% url 'logout' %}>Sign Out</a></li>
-
                 </ul>
               </li>
             </ul>
           </div>
         </nav>
       </header>
-      <!-- Left side column. contains the logo and sidebar -->
       <aside class="main-sidebar">
-
-        <!-- sidebar: style can be found in sidebar.less -->
         <section class="sidebar">
-
-          <!-- Sidebar user panel (optional) -->
           <div class="user-panel">
             <div class="pull-left image">
               <img onclick="window.location.href='{% url 'avatar' %}'" src="/static/images/user_avatars/{{ user.id }}.png" class="img-circle" alt="User Image" style="cursor:pointer">
             </div>
             <div class="pull-left info">
               <p>{{ user.username }}</p>
-              <!-- Status -->
               <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
             </div>
           </div>
-
-          <!-- search form (Optional) -->
-          <form action="#" method="get" class="sidebar-form">
-            <div class="input-group">
-              <input type="text" name="q" class="form-control" placeholder="Search...">
-              <span class="input-group-btn">
-                <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i></button>
-              </span>
-            </div>
-          </form>
-          <!-- /.search form -->
-
-
+          <div id="search" class="input-group sidebar-form">
+            <input type="text" name="q" class="form-control" placeholder="Search...">
+            <span class="input-group-btn">
+              <button class="btn btn-flat"><i class="fa fa-search"></i></button>
+            </span>
+          </div>
           <ul class="sidebar-menu" style="margin-left: 0px">
             <li class="header">My Groups</li>
             {% for group in rcmd_groups %}
@@ -119,7 +88,6 @@
                 <a href="{% url 'group' group.id %}">
                   <i class="fa fa-circle-o text-yellow"></i>
                   <span>{{ group.group_name }}</span>
-
                 </a>
               </li>
             {% endfor %}
@@ -127,28 +95,22 @@
               <li>
                 <a href="{% url 'globalId' group.id %}">
                   {% if group.creator == user %}
-
                     <i class="fa fa-circle-o text-aqua"></i>
                   {% else %}
                     <i class="fa fa-circle-o text-green"></i>
                   {% endif %}
-
                   <span>{{ group.group_name }}</span>
-
                 </a>
               </li>
             {% endfor %}
           </ul>
         </section>
       </aside>
-
-      <!-- Content Wrapper. Contains page content -->
       <div class="content-wrapper">
-        <!-- Content Header (Page header) -->
         <section class="content-header">
           {% if group %}
             <h1>
-              Group: {{ group.group_name }}
+              Global Network: <span class="text-bold">{{ group.group_name }}</span>
               <small>view your entire global networks here</small>
             </h1>
           {% else %}
@@ -162,14 +124,10 @@
             <li class="active">Global Network</li>
           </ol>
         </section>
-
-        <!-- Main content -->
         <section class="content">
-
           <div class="row">
             <div class="col-md-9 col-sm-12">
               <div class="box box-success">
-
                   <div id="main-panel" class="bg-gray-light cl-effect" style="height: 750px;">
                     {% if group %}
                       <a id="map-mode" class="map text-center" style="width: 200px;z-index: 100;position: absolute;bottom: 0px;margin:75px" hidden>MAP MODE</a>
@@ -182,15 +140,12 @@
             </div>
             <div class="col-md-3 col-sm-12" id="info-panel">
               <div class="box box-warning">
-
                 <div class="box-header with-border">
-
                   <h3 class="box-title">Information</h3>
-                </div><!-- /.box-header -->
+                </div>
                 <div class="box-body" style="height: 680px;overflow: scroll;font-size: 16px">
                   {% if group %}
                     <div id="info-degree" style="height: 350px"></div>
-
                     <table class="table no-margin">
                       <thead>
                         <tr>
@@ -199,15 +154,12 @@
                         </tr>
                       </thead>
                       <tbody>
-
                         {% for top, d in top3 %}
                           <tr>
                             <td>{{ forloop.counter }}</td>
                             <td><a href="#">{{ top.member_name }}</a></td>
                           </tr>
-
                         {% endfor %}
-
                         <tr>
                           <td>{{ my_rank }}</td>
                           <td>Me</td>
@@ -221,14 +173,16 @@
                           <th>Average Degree</th>
                           <td>{{ average_degree|floatformat:"2" }}</td>
                         </tr>
-
                       </thead>
                       <tbody>
                         <tr>
-                          <th>Average Distance</th>
-                          <td>{{ average_distance|floatformat:"2" }}</td>
+                          {% if average_distance == -1 %}
+                            <th>Network Not Connected</th>
+                          {% else %}
+                            <th>Average Distance</th>
+                            <td>{{ average_distance|floatformat:"2" }}</td>
+                          {% endif %}
                         </tr>
-
                       </tbody>
                     </table>
                     </br>
@@ -245,28 +199,20 @@
                         {% endif %}
                       </ul>
                     </blockquote>
-
                   {% endif %}
                 </div>
               </div>
             </div>
           </div>
-
-        </section><!-- /.content -->
-      </div><!-- /.content-wrapper -->
-
-      <!-- Main Footer -->
+        </section>
+      </div>
       <footer class="main-footer">
-          <!-- To the right -->
           <div class="pull-right hidden-xs">
-              POWERED BY HT
+            <a href="http://www.seeleit.com" target="_black">POWERED BY HT</a>
           </div>
-          <!-- Default to the left -->
           <strong>Copyright &copy; 2016 <a href="http://cnc.sjtu.edu.cn" target="_black">CNC</a>.</strong> All rights reserved.
       </footer>
-
-      <div class="control-sidebar-bg"></div>
-    </div><!-- ./wrapper -->
+    </div>
 
     <script src="/static/plugins/jQuery/jQuery-2.1.4.min.js"></script>
     <script src="/static/bootstrap/js/bootstrap.min.js"></script>
@@ -280,14 +226,18 @@
     <script src="/static/plugins/rollbar/js/jquery.mousewheel.js"></script>
     <script src="/static/plugins/rollbar/js/jquery.rollbar.min.js"></script>
     <script src="/static/lineme/js/rollbar.js"></script>
+    <script src="/static/lineme/js/autocomplete.js"></script>
+    <script type="text/javascript">
+      $('#search').autocomplete({
+        type: 'global'
+      });
+    </script>
     {% if group %}
       <script type="text/javascript">
-
         var groupid = {{ group.id }};
         var disData = {{ distribution|safe }};
       </script>
       <script src="/static/lineme/js/global.js"></script>
     {% endif %}
-
   </body>
 </html>

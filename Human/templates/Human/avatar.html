@@ -1,8 +1,4 @@
 <!DOCTYPE html>
-<!--
-This is a starter template page. Use this page to start your new project from
-scratch. This page gets rid of all links and provides the needed markup only.
--->
 <html>
   <head>
     <meta charset="utf-8">
@@ -11,12 +7,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css">
     <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
     <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
     <link rel="stylesheet" href="/static/plugins/bootstrap-slider/slider.css">
     <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
-
     <style>
 
       .pull-left {
@@ -28,6 +23,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         margin-right: auto;
         width: 180px;
       }
+
       .cropit-preview {
         background-color: #d2d6de;
         background-size: cover;
@@ -35,24 +31,18 @@ scratch. This page gets rid of all links and provides the needed markup only.
         border-radius: 3px;
         margin-top: 7px;
       }
-
-      /* Hide file input */
       input.cropit-image-input {
         visibility: hidden;
       }
-
       .cropit-image-zoom-input {
 {#        width: 300px;#}
       }
-
       .cropit-preview-image-container {
         cursor: move;
       }
-
       .image-size-label {
         margin-top: 10px;
       }
-
       input, .export {
         display: block;
       }
@@ -61,26 +51,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
   </head>
   <body class="hold-transition skin-black sidebar-mini">
     <div class="wrapper">
-
-      <!-- Main Header -->
       <header class="main-header">
-
-        <!-- Logo -->
         <a href="{% url 'home' %}" class="logo">
-          <!-- mini logo for sidebar mini 50x50 pixels -->
-          <span class="logo-mini"><b></b></span>
-          <!-- logo for regular state and mobile devices -->
           <span class="logo-lg"><b>{{ project_name }}</b></span>
         </a>
-
-        <!-- Header Navbar -->
         <nav class="navbar navbar-static-top" role="navigation">
-          <!-- Navbar Right Menu -->
           <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
-              <!-- Messages: style can be found in dropdown.less-->
               <li class="dropdown notifications-menu">
-                <!-- Menu toggle button -->
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                   <i class="fa fa-envelope-o"></i>
                   {% if msgs_count >= 99  %}
@@ -90,26 +68,20 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   {% endif %}
                 </a>
                 <ul class="dropdown-menu">
-
                   <li>
-                    <!-- inner menu: contains the actual data -->
                     <ul class="menu">
                       <li>
                         <a href="{% url 'home' %}">
                           <i class="fa fa-users text-aqua"></i> You have {{ msgs_count }} messages
                         </a>
                       </li>
-
                     </ul>
                   </li>
-
                 </ul>
-
               </li>
               <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                     <img src="/static/images/user_avatars/{{ user.id }}.png" class="user-image" alt="User Image">
-                    <!-- hidden-xs hides the username on small devices so only the image appears. -->
                     <span class="hidden-xs">{{ user.username }}</span>
                     <span class="caret"></span>
                 </a>
@@ -120,41 +92,29 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   <li><a href={% url 'settings' %}>Settings</a></li>
                   <li class="divider"></li>
                   <li><a href={% url 'logout' %}>Sign Out</a></li>
-
                 </ul>
               </li>
             </ul>
           </div>
         </nav>
       </header>
-      <!-- Left side column. contains the logo and sidebar -->
       <aside class="main-sidebar">
-
-        <!-- sidebar: style can be found in sidebar.less -->
         <section class="sidebar">
-
-          <!-- Sidebar user panel (optional) -->
           <div class="user-panel">
             <div class="pull-left image">
               <img onclick="window.location.href='{% url 'avatar' %}'" src="/static/images/user_avatars/{{ user.id }}.png" class="img-circle" alt="User Image" style="cursor:pointer">
             </div>
             <div class="pull-left info">
               <p>{{ user.username }}</p>
-              <!-- Status -->
               <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
             </div>
           </div>
-
-          <!-- search form (Optional) -->
-          <form action="#" method="get" class="sidebar-form">
-            <div class="input-group">
-              <input type="text" name="q" class="form-control" placeholder="Search...">
-              <span class="input-group-btn">
-                <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i></button>
-              </span>
-            </div>
-          </form>
-          <!-- /.search form -->
+          <div id="search" class="input-group sidebar-form">
+            <input type="text" name="q" class="form-control" placeholder="Search...">
+            <span class="input-group-btn">
+              <button class="btn btn-flat"><i class="fa fa-search"></i></button>
+            </span>
+          </div>
           <ul class="sidebar-menu">
             <li class="header">My Profile</li>
           </ul>
@@ -166,13 +126,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   <div class="menu-info">
                     <h3 class="control-sidebar-subheading">Female</h3>
                   </div>
-
                 {% else %}
                   <i class="menu-icon fa fa-mars bg-yellow"></i>
                   <div class="menu-info">
                     <h3 class="control-sidebar-subheading">Male</h3>
                   </div>
-
                 {% endif %}
               </a>
             </li>
@@ -222,12 +180,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </li>
           </ul>
         </section>
-        <!-- /.sidebar -->
       </aside>
-
-      <!-- Content Wrapper. Contains page content -->
       <div class="content-wrapper">
-        <!-- Content Header (Page header) -->
         <section class="content-header">
           <h1>
             Upload Your Avatar
@@ -238,27 +192,20 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <li class="active">Upload Avatar</li>
           </ol>
         </section>
-
-        <!-- Main content -->
         <section class="content">
           <div class="col-md-5">
             <div class="box box-info">
               <div class="box-body">
-
-
                 <div id="image-cropper">
                   <div class="row">
                     <div class="col-md-7 col-xs-7">
-                      <div class="cropit-preview">
-
-                      </div>
+                      <div class="cropit-preview"></div>
                       <div class="col-xs-12 text-center" style="padding-top: 5px">
                         <li class="fa fa-rotate-left fa-lg rotate-ccw" style="padding-right: 20px;cursor: pointer"></li>
                         <li class="fa fa-rotate-right fa-lg rotate-cw" style="cursor: pointer"></li>
                         <input type="range" class="cropit-image-zoom-input" style=""/>
                       </div>
                     </div>
-
                     <div class="col-md-5 col-xs-5 text-center" style="margin-top: 25%">
                       <div class="row" style="margin-bottom: 15px">
                         <button id="select" class="btn btn-primary" ><i class="fa fa-image pull-left"></i>Select New Image</button>
@@ -267,36 +214,21 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         <button id="upload" class="export btn btn-success disabled" style="" disabled><i class="fa fa-upload pull-left"></i>Upload</button>
                       </div>
                     </div>
-
                   </div>
-                  <!-- The actual file input will be hidden -->
                   <input type="file" class="cropit-image-input" />
-                  <!-- And clicking on this button will open up select file dialog -->
-
                 </div>
               </div>
             </div>
-
           </div>
-
-        </section><!-- /.content -->
-      </div><!-- /.content-wrapper -->
-
-      <!-- Main Footer -->
+        </section>
+      </div>
       <footer class="main-footer">
-          <!-- To the right -->
           <div class="pull-right hidden-xs">
-              POWERED BY HT
+            <a href="http://www.seeleit.com" target="_black">POWERED BY HT</a>
           </div>
-          <!-- Default to the left -->
           <strong>Copyright &copy; 2016 <a href="http://cnc.sjtu.edu.cn" target="_black">CNC</a>.</strong> All rights reserved.
       </footer>
-
-
-      <!-- Add the sidebar's background. This div must be placed
-           immediately after the control sidebar -->
-      <div class="control-sidebar-bg"></div>
-    </div><!-- ./wrapper -->
+    </div>
 
     <script src="/static/plugins/jQuery/jQuery-2.1.4.min.js"></script>
     <script src="/static/bootstrap/js/bootstrap.min.js"></script>
@@ -306,6 +238,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="/static/plugins/rollbar/js/jquery.rollbar.min.js"></script>
     <script src="/static/lineme/js/rollbar.js"></script>
     <script src="/static/plugins/cropit/js/jquery.cropit.js"></script>
+    <script src="/static/lineme/js/autocomplete.js"></script>
     <script type="text/javascript">
 
       var emails = "{{ user.email }}".split("@");
@@ -337,8 +270,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         }
 
       });
-      // When user clicks select image button,
-      // open select file dialog programmatically
+
       $('#select').click(function() {
         $('.cropit-image-input').click();
       });
@@ -362,15 +294,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
           }
         }).done(function(o) {
           alert(o);
-          location.reload();
-          console.log('saved');
-
+          location.reload()
         }).fail(function(){
           alert("Upload failed");
         });
       });
 
-    </script>
+      $('#search').autocomplete();
 
+    </script>
   </body>
 </html>
