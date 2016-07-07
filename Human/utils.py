@@ -17,6 +17,7 @@ import cStringIO
 from PIL import ImageFont
 from PIL import Image
 from PIL import ImageDraw
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.db.models import Q
 
@@ -25,6 +26,18 @@ from Human.models import Group, GroupMember
 from LineMe.settings import logger
 
 # Todo: separate to different files
+
+
+def login_user(request, username, password):
+    user = authenticate(username=username, password=password)
+    if user is not None:
+        if user.is_active:
+            login(request, user)
+            create_session_id(request)
+
+            return 0
+    else:
+        return -1
 
 
 def create_session_id(request):
@@ -73,6 +86,7 @@ def validate_passwd(password, password2):
     return True
 
 
+# Todo: change to validate
 def check_groupid(groupid):
     if groupid is None:
         return -2
@@ -82,12 +96,14 @@ def check_groupid(groupid):
         return 0
 
 
+# Todo: change to validate
 def group_name_existed(name):
     if Group.objects.filter(group_name=name).exists():
         return True
     return False
 
 
+# Todo: allow blank
 def check_profile(first_name, last_name, birth, sex, country, city, institution):
     if re.match("^[A-Za-z]+$", first_name) and re.match("^[A-Za-z]+$", last_name):
         if sex == 0 or sex == 1:

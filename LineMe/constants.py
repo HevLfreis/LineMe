@@ -13,7 +13,7 @@ from settings import STATICFILES_DIRS
 PROJECT_NAME = 'LineMe'
 STATIC_FOLDER = STATICFILES_DIRS[0]
 GROUP_MAXSIZE = 5000
-GROUP_CREATED_CREDITS_COST = 10
+GROUP_CREATED_CREDITS_COST = 100
 
 # Todo: implement identifier
 IDENTIFIER = {0: 'Special Code', 1: 'Email', 2: 'Institution'}

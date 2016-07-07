@@ -11,6 +11,7 @@ import re
 from collections import Counter
 
 import networkx as nx
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.db.models import Q, Count
 from django.shortcuts import get_object_or_404
@@ -21,7 +22,7 @@ from LineMe.constants import GROUP_MAXSIZE, GROUP_CREATED_CREDITS_COST, SOURCE_L
     TARGET_LINK_REJECT_STATUS_TRANSITION_TABLE, CITIES_TABLE
 from Human.models import Privacy, Extra, GroupMember, Link, Group, Credits
 from Human.utils import create_avatar, logger_join, validate_user, validate_email, validate_passwd, group_name_existed, \
-    get_session_id
+    get_session_id, create_session_id, login_user
 from LineMe.settings import logger
 
 
@@ -36,9 +37,12 @@ def create_user(request, name, email, password, password2):
     elif not validate_passwd(password, password2):
         return -3
     else:
+
+        # Todo: add finally
         try:
 
             u = User.objects.create_user(name, email, password)
+            login_user(request, name, password)
 
             # Todo: impl privacy module
             pri = Privacy(user=u, link_me=True, see_my_global=True)
@@ -52,7 +56,7 @@ def create_user(request, name, email, password, password2):
                           privacy=pri)
 
             extra.save()
-            create_avatar(u.id, name)
+            create_avatar(request, u.id, name)
         except Exception, e:
             # print 'Create user failed: ', e
             logger.error(logger_join('Create', get_session_id(request), 'failed', e=e))
@@ -315,6 +319,8 @@ def create_group(request, user, name, maxsize, identifier, gtype):
         c.save()
 
     except Exception, e:
+
+        # Todo: ????fix
         logger.error(logger_join('Create', get_session_id(request), 'failed', e=e))
         return -1
 
@@ -398,7 +404,7 @@ def member_recommender(user, groupid):
 
 ########################################################################
 
-# Todo: logger
+# Todo: logger and security
 def link_confirm(request, user, linkid):
     link = get_object_or_404(Link, id=linkid)
 
@@ -415,13 +421,13 @@ def link_confirm(request, user, linkid):
             link.status = TARGET_LINK_CONFIRM_STATUS_TRANSITION_TABLE[link.status]
 
         else:
-            logger.info(logger_join('Confirm', get_session_id(request), 'failed', uid=user.id))
+            logger.info(logger_join('Confirm', get_session_id(request), 'failed', lid=linkid))
             return -1
         link.save()
         logger.info(logger_join('Confirm', get_session_id(request), lid=linkid))
         return 0
     else:
-        logger.info(logger_join('Confirm', get_session_id(request), 'failed', uid=user.id))
+        logger.info(logger_join('Confirm', get_session_id(request), 'failed', lid=linkid))
         return -1
 
 
@@ -441,15 +447,14 @@ def link_reject(request, user, linkid):
             link.status = TARGET_LINK_REJECT_STATUS_TRANSITION_TABLE[link.status]
 
         else:
-            logger.info(logger_join('Reject', get_session_id(request), 'failed'))
+            logger.info(logger_join('Reject', get_session_id(request), 'failed', lid=linkid))
             return -1
 
-        # print 'reject: ', linkid, link.status
         link.save()
         logger.info(logger_join('Reject', get_session_id(request), lid=linkid))
         return 0
     else:
-        logger.info(logger_join('Reject', get_session_id(request), 'failed'))
+        logger.info(logger_join('Reject', get_session_id(request), 'failed', lid=linkid))
         return -1
 
 
