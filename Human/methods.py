@@ -20,7 +20,7 @@ from django.utils import timezone
 from LineMe.constants import GROUP_MAXSIZE, GROUP_CREATED_CREDITS_COST, SOURCE_LINK_CONFIRM_STATUS_TRANSITION_TABLE, \
     TARGET_LINK_CONFIRM_STATUS_TRANSITION_TABLE, SOURCE_LINK_REJECT_STATUS_TRANSITION_TABLE, \
     TARGET_LINK_REJECT_STATUS_TRANSITION_TABLE, CITIES_TABLE
-from Human.models import Privacy, Extra, GroupMember, Link, Group, Credits
+from Human.models import Privacy, Extra, GroupMember, Link, Group, Credits, MemberRequest
 from Human.utils import create_avatar, logger_join, validate_user, validate_email, validate_passwd, group_name_existed, \
     get_session_id, create_session_id, login_user
 from LineMe.settings import logger
@@ -255,6 +255,26 @@ def get_user_joined(user, group):
     return GroupMember.objects.filter(user=user, group=group, is_joined=True).exists()
 
 
+def get_user_join_status(request, user, group):
+
+    join_failed = request.session.get('join_failed')
+    if join_failed:
+        del request.session['join_failed']
+
+    joined = GroupMember.objects.filter(user=user, group=group, is_joined=True).exists()
+
+    requested = MemberRequest.objects.filter(user=user, group=group, is_valid=True).exists()
+
+    if joined:
+        return 1
+    elif join_failed:
+        return -2
+    elif requested:
+        return -1
+    else:
+        return 0
+
+
 ########################################################################
 
 
@@ -285,7 +305,7 @@ def update_profile(request, user, first_name, last_name, birth, sex, country, ci
 def create_group(request, user, name, maxsize, identifier, gtype):
     now = timezone.now()
 
-    # Todo: fix
+    # Todo: group validate fix
     if group_name_existed(name) or maxsize > GROUP_MAXSIZE or user.extra.credits < GROUP_CREATED_CREDITS_COST:
         return -1
     try:
@@ -343,15 +363,16 @@ def group_recommender(user):
 
 ########################################################################
 
-# Todo: token multiple check
-def create_group_member(request, group, name, identifier):
+# Todo: token multiple check, and fix same token
+def create_group_member(request, group, name, identifier, user=None):
     now = timezone.now()
 
-    if GroupMember.objects.filter(Q(member_name=name) | Q(token=identifier), group=group).exists():
+    if GroupMember.objects.filter(member_name=name, group=group).exists():
         return -1
 
     try:
         m = GroupMember(group=group,
+                        user=user,
                         member_name=name,
                         token=identifier,
                         is_creator=False,
@@ -361,9 +382,9 @@ def create_group_member(request, group, name, identifier):
     except Exception, e:
         # print 'Group member create: ', e
         logger.error(logger_join('Create', get_session_id(request), 'failed', e=e))
-        return -1
+        return None
     logger.info(logger_join('Create', get_session_id(request), mid=m.id))
-    return 0
+    return m
 
 
 def member_join(request, user, group, identifier):

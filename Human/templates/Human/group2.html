@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>{{ project_name }} | Group</title>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="shortcut icon" href="/static/favicon.ico">
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/plugins/iCheck/all.css">
     <link rel="stylesheet" href="//cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css">
@@ -47,12 +48,11 @@
               </div>
             </div>
             <div class="modal-footer">
-              <button id="modal-follow" type="submit" class="btn btn-primary">Follow</button>
+              <button type="submit" class="btn btn-primary">Follow</button>
             </div>
           </form>
 
-          {# Todo: not in group #}
-          <form method="post" class="modal-content" id="modal-content-notexist">
+          <form method="post" action="{% url 'joinRequest' group.id %}" class="modal-content" id="modal-content-notin">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
               <h4 class="modal-title">Attention</h4>
@@ -62,12 +62,10 @@
                 <h4>You are not in this group's list.</h4>
                 <h4>You can send a request to the group creator.</h4>
               </blockquote>
-
             </div>
             <div class="modal-footer">
               <div class="form-group has-feedback pull-left" style="margin-bottom: 0">
-{#                <label for="member-identifier">Message</label>#}
-                  <input type="text" class="form-control" name="identifier" placeholder="Message">
+                  <input type="text" class="form-control" name="message" placeholder="Message">
                 <span class="glyphicon glyphicon-info-sign form-control-feedback"></span>
               </div>
               <button type="submit" class="btn btn-primary">Send Request</button>
@@ -203,9 +201,11 @@
                     </a>
                     </li>
                   </ul>
-                  {% if is_member %}
+                  {% if follow_status == 1 %}
                     <button class="btn btn-success btn-block" disabled><b>Already in Group</b></button>
-                  {% elif join_failed %}
+                  {% elif follow_status == -1 %}
+                    <button class="btn btn-warning btn-block" disabled><b>Request Already Sent</b></button>
+                  {% elif follow_status == -2 %}
                     <button id="follow" class="btn btn-danger btn-block"><b>Follow Failed</b></button>
                   {% else %}
                     <button id="follow" class="btn btn-primary btn-block"><b>Follow</b></button>
@@ -275,13 +275,13 @@
               break;
             case '-1':
               $('#modal-content-wrong').show();
-              $('#modal-content-notexist').hide();
+              $('#modal-content-notin').hide();
 
               $('#member-join-modal').modal('show');
               break;
             case '-2':
               $('#modal-content-wrong').hide();
-              $('#modal-content-notexist').show();
+              $('#modal-content-notin').show();
 
               $('#member-join-modal').modal('show');
               break;
@@ -291,7 +291,6 @@
         });
       }
 
-      {# Todo: sc join #}
       $('#follow').click(function() {
         if (identifier == 0) {
 
@@ -300,7 +299,7 @@
           $modal.find('.modal-footer button').val('Follow');
           $modal.find('input').attr('placeholder', '');
           $modal.show();
-          $('#modal-content-notexist').hide();
+          $('#modal-content-notin').hide();
 
           $('#member-join-modal').modal('show');
         }

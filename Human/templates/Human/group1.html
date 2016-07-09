@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>{{ project_name }} | Group</title>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="shortcut icon" href="/static/favicon.ico">
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/plugins/iCheck/all.css">
     <link rel="stylesheet" href="//cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css">
@@ -150,7 +151,7 @@
       <div class="content-wrapper">
         <section class="content-header">
           <h1>
-            Manage Group : <span class="text-bold">{{ group.group_name }}</span>
+            My Created Group : <span class="text-bold">{{ group.group_name }}</span>
 {#            <small>Optional description</small>#}
           </h1>
           <ol class="breadcrumb">
@@ -165,17 +166,17 @@
                 <div class="box-body box-profile">
                   <div class="col-md-5">
                     <div class="form-group has-feedback">
-                      <label for="group-name">Group name</label>
+                      <label>Group name</label>
                       <input type="text" class="form-control" name="name" placeholder="{{ group.group_name }}" disabled>
                       <span class="glyphicon glyphicon-tags form-control-feedback"></span>
                     </div>
                     <div class="form-group has-feedback">
-                      <label for="group-maxsize">Num of Members</label>
+                      <label>Num of Members</label>
                       <input type="number" class="form-control" name="" placeholder="{{ members_count }}" disabled>
                       <span class="glyphicon glyphicon-asterisk form-control-feedback"></span>
                     </div>
                     <div class="form-group has-feedback">
-                      <label for="group-maxsize">Group Max Size</label>
+                      <label>Group Max Size</label>
                       <input type="number" class="form-control" name="maxsize" placeholder="{{ group.maxsize }}" disabled>
                       <span class="glyphicon glyphicon-asterisk form-control-feedback"></span>
                     </div>
@@ -254,13 +255,13 @@
                   <div class="box-tools pull-right">
                     <ul class="pagination pagination-sm inline">
                       {% if members.has_previous %}
-                        <li><a href="{% url 'groupPage' group.id members.previous_page_number %}">«</a></li>
+                        <li><a href="{% url 'group' group.id %}?mpage={{ members.previous_page_number }}">«</a></li>
                       {% else %}
                         <li class="disabled"><a href="#">«</a></li>
                       {% endif %}
                       <li><a>{{ members.number }}/{{ members.paginator.num_pages }}</a></li>
                       {% if members.has_next %}
-                        <li><a href="{% url 'groupPage' group.id members.next_page_number %}">»</a></li>
+                        <li><a href="{% url 'group' group.id %}?mpage={{ members.next_page_number }}">»</a></li>
                       {% else %}
                         <li class="disabled"><a href="#">»</a></li>
                       {% endif %}
@@ -269,6 +270,30 @@
                 </div>
               </div>
             </div>
+            {% if requests|length != 0 %}
+              <div class="col-md-4">
+                <div class="box box-warning">
+                  <div class="box-header with-border">
+                    <h3 class="box-title">Requests</h3>
+                  </div>
+                  <div class="box-footer box-comments">
+                    {% for req in requests %}
+                      <div class="box-comment">
+                        <img class="img-circle img-sm" src="/static/images/user_avatars/{{ req.user.id }}.png" alt="user image">
+                        <div class="comment-text">
+                          <span class="username">
+                            {{ req.user.first_name }} {{ req.user.last_name }}
+                            <span class="text-muted pull-right">8:03 PM Today</span>
+                          </span>
+                          {{ req.message }}
+                        </div>
+                        <a href="{% url 'joinConfirm' group.id req.id %}" class="btn bg-purple btn-xs pull-right"><i class="fa fa-flash"></i> Accept</a>
+                      </div>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+            {% endif %}
           </div>
         </section>
       </div>

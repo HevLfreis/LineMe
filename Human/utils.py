@@ -65,7 +65,7 @@ def get_session_id(request):
 #######################################################################
 
 def validate_user(name):
-    if re.match("^[a-zA-Z][a-zA-Z0-9]{6,16}$", name):
+    if re.match("^[a-zA-Z][a-zA-Z0-9]{5,16}$", name):
         if not User.objects.filter(username=name).exists():
             return True
     return False
@@ -103,6 +103,7 @@ def group_name_existed(name):
     return False
 
 
+# Todo: change to validate
 # Todo: allow blank
 def check_profile(first_name, last_name, birth, sex, country, city, institution):
     if re.match("^[A-Za-z]+$", first_name) and re.match("^[A-Za-z]+$", last_name):

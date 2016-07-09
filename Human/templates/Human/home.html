@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>{{ project_name }} | Home</title>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="shortcut icon" href="/static/favicon.ico">
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/plugins/iCheck/all.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
@@ -30,12 +31,12 @@
             </div>
             <div class="modal-body">
               <div class="form-group has-feedback">
-                <label for="group-name">Group name</label>
+                <label>Group name</label>
                 <input type="text" class="form-control" name="name" placeholder="Enter group name">
                 <span class="glyphicon glyphicon-tags form-control-feedback"></span>
               </div>
               <div class="form-group has-feedback">
-                <label for="group-maxsize">Group Max Size</label>
+                <label>Group Max Size</label>
                 <input type="number" class="form-control" name="maxsize" placeholder="Enter max group size, less than 5000">
                 <span class="glyphicon glyphicon-asterisk form-control-feedback"></span>
               </div>
@@ -212,56 +213,56 @@
           </ol>
         </section>
         <section class="content">
-            <div class="row">
-              <div class="col-md-3 col-sm-6 col-xs-12">
-                  <div class="info-box">
-                      <a href="{% url 'ego' %}" class="info-box-icon bg-red"><i class="ion ion-ios-color-filter-outline"></i></a>
-                      <div class="info-box-content">
-                          <span class="info-box-text">My Network</span>
-                          <span class="info-box-number">Create a friend network</span>
-                      </div>
-                  </div>
+          <div class="row">
+            <div class="col-md-3 col-sm-6 col-xs-12">
+              <div class="info-box">
+                <a href="{% url 'ego' %}" class="info-box-icon bg-blue"><i class="ion ion-ios-color-filter-outline"></i></a>
+                <div class="info-box-content">
+                  <span class="info-box-text">My Network</span>
+                  <span class="info-box-number">Create a friend network</span>
+                </div>
               </div>
-              <div class="clearfix visible-sm-block"></div>
-              <div class="col-md-3 col-sm-6 col-xs-12">
-                  <div class="info-box">
-                      <a href="{% url 'global' %}" class="info-box-icon bg-green"><i class="ion ion-ios-people-outline"></i></a>
-                      <div class="info-box-content">
-                          <span class="info-box-text">Global Network</span>
-                          <span class="info-box-number">See the global network of you</span>
-                      </div>
-                  </div>
+            </div>
+            <div class="clearfix visible-sm-block"></div>
+            <div class="col-md-3 col-sm-6 col-xs-12">
+              <div class="info-box">
+                <a href="{% url 'global' %}" class="info-box-icon bg-green"><i class="ion ion-ios-people-outline"></i></a>
+                <div class="info-box-content">
+                  <span class="info-box-text">Global Network</span>
+                  <span class="info-box-number">See the global network of you</span>
+                </div>
               </div>
-              <div class="col-md-3 col-sm-6 col-xs-12">
-                  <div class="info-box">
-                      <a href="{% url 'profile' %}" class="info-box-icon bg-yellow"><i class="ion ion-ios-albums-outline"></i></a>
-                      <div class="info-box-content">
-                          <span class="info-box-text">My Profile</span>
-                          <span class="info-box-number">Edit your personal infomation</span>
-                      </div>
-                  </div>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12">
+              <div class="info-box">
+                <a href="{% url 'profile' %}" class="info-box-icon bg-yellow"><i class="ion ion-ios-albums-outline"></i></a>
+                <div class="info-box-content">
+                  <span class="info-box-text">My Profile</span>
+                  <span class="info-box-number">Edit your personal infomation</span>
+                </div>
               </div>
-              <div class="col-md-3 col-sm-6 col-xs-12">
-                  <div class="info-box">
-                      <a href="{% url 'settings' %}" class="info-box-icon bg-aqua"><i class="ion ion-ios-gear-outline"></i></a>
-                      <div class="info-box-content">
-                          <span class="info-box-text">Settings</span>
-                          <span class="info-box-number">Change settings of {{ project_name }}</span>
-                      </div>
-                  </div>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12">
+              <div class="info-box">
+                <a href="{% url 'settings' %}" class="info-box-icon bg-red"><i class="ion ion-ios-gear-outline"></i></a>
+                <div class="info-box-content">
+                  <span class="info-box-text">Settings</span>
+                  <span class="info-box-number">Change settings of {{ project_name }}</span>
+                </div>
               </div>
+            </div>
           </div>
           <div class="row" style="margin-top: 10px">
             <div class="col-xs-7">
               <div id="box-msg" class="box box-primary">
                 <div class="box-header">
-                  <i class="ion ion-clipboard"></i>
+                  <i class="ion ion-paper-airplane"></i>
                   <h3 class="box-title">Link Request Messages</h3>
                 </div>
               </div>
               <div id="box-group" class="box box-warning">
                 <div class="box-header">
-                  <i class="ion ion-clipboard"></i>
+                  <i class="ion ion-crop"></i>
                   <h3 class="box-title">Manage Groups --- Group Recommendations</h3>
                   <div class="box-tools pull-right" title="">
                     <div class="btn-group" data-toggle="btn-toggle">

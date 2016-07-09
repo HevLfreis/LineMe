@@ -28,7 +28,7 @@ urlpatterns = [
 
     url(r'^home/$', views.home, name='home'),
     url(r'^msgpanel/(?P<page>[0-9]+)/$', views.msg_panel, name='homeMsg'),
-    url(r'^msghandle/(?P<type>[0-1])/(?P<linkid>[0-9]+)/$', views.msg_handle, name='msgHandle'),
+    url(r'^msghandle/(?P<mtype>[0-1])/(?P<linkid>[0-9]+)/$', views.msg_handle, name='msgHandle'),
 
     url(r'^invpanel/(?P<page>[0-9]+)/$', views.inv_panel, name='homeInv'),
     url(r'^sendemail/(?P<page>[0-9]+)/$', views.send_email2unconfirmed, name='email'),
@@ -53,8 +53,9 @@ urlpatterns = [
 
     #
     url(r'^group/(?P<groupid>[0-9]+)/$', views.manage_group, name='group'),
-    url(r'^group/(?P<groupid>[0-9]+)/(?P<page>[0-9]+)/$', views.manage_group, name='groupPage'),
-    url(r'^join/(?P<groupid>[0-9]+)$', views.join, name='join'),
+    url(r'^join/(?P<groupid>[0-9]+)/$', views.join, name='join'),
+    url(r'^jreq/(?P<groupid>[0-9]+)/$', views.join_request, name='joinRequest'),
+    url(r'^jcof/(?P<groupid>[0-9]+)/(?P<requestid>[0-9]+)/$', views.join_confirm, name='joinConfirm'),
     url(r'^upload/(?P<groupid>[0-9]+)/$', views.upload_members, name='uploadMembers'),
     #
     #

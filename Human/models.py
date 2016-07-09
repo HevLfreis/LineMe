@@ -6,7 +6,7 @@ from django.db import models
 
 class Privacy(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    # -----
+    # Todo: more privacy settings
     link_me = models.BooleanField()
     see_my_global = models.BooleanField()
 
@@ -33,25 +33,27 @@ class Group(models.Model):
 
 class GroupMember(models.Model):
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
-
-    # -----
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     member_name = models.CharField(max_length=50)
     token = models.CharField(max_length=50)
     is_creator = models.BooleanField()
-
-    # Todo: change to int, prepare for member join
     is_joined = models.BooleanField()
     created_time = models.DateTimeField()
     joined_time = models.DateTimeField(null=True)
 
 
+class MemberRequest(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    message = models.CharField(max_length=200)
+    created_time = models.DateTimeField()
+    is_valid = models.BooleanField()
+
+
 class Link(models.Model):
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
-
     source_member = models.ForeignKey(GroupMember, related_name='source_member')
     target_member = models.ForeignKey(GroupMember, related_name='target_member')
-
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
     status = models.IntegerField()
     confirmed_time = models.DateTimeField(null=True)

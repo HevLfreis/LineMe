@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>{{ project_name }} | Global Network</title>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="shortcut icon" href="/static/favicon.ico">
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="//cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css">
@@ -12,6 +13,7 @@
     <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
     <link rel="stylesheet" href="/static/lineme/css/graph.css">
     <link rel="stylesheet" href="/static/lineme/css/global.css">
+    <link rel="stylesheet" href="/static/lineme/css/animations.css">
     <link rel="stylesheet" href="/static/plugins/d3/css/d3-tip.css">
     <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
   </head>
@@ -133,7 +135,7 @@
                       <a id="map-mode" class="map text-center" style="width: 200px;z-index: 100;position: absolute;bottom: 0px;margin:75px" hidden>MAP MODE</a>
                       <a id="normal-mode" class="normal text-center" style="width: 200px;z-index: 100;position: absolute;bottom: 0px;margin:75px">NORMAL MODE</a>
                       <div id="network" style="position: absolute;z-index: 1;"></div>
-                      <div id="map" style="position: absolute;z-index: 1;" hidden></div>
+                      <div id="map" style="position: absolute;z-index: 1;visibility: hidden;"></div>
                     {% endif %}
                   </div>
               </div>

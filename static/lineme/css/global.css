@@ -1,8 +1,8 @@
 .cl-effect .normal {
-    color: #000;
+    color: #3e3e3e;
 }
 .cl-effect .map {
-    color: #fff;
+    color: #5f7e9c;
 }
 .cl-effect a {
     font-family: 'Consolas', 'Deja Vu Sans Mono', 'Bitstream Vera Sans Mono', monospace;
@@ -17,12 +17,12 @@
 
 .cl-effect .normal::before,
 .cl-effect .normal::after {
-    background: #000;
+    background: #3e3e3e;
 }
 
 .cl-effect .map::before,
 .cl-effect .map::after {
-    background: #fff;
+    background: #5f7e9c;
 }
 
 .cl-effect a::before,
@@ -58,12 +58,12 @@
 
 .cl-effect .normal:hover,
 .cl-effect .normal:focus {
-    color: #000;
+    color: #3e3e3e;
 }
 
 .cl-effect .map:hover,
 .cl-effect .map:focus {
-    color: #fff;
+    color: #5f7e9c;
 }
 
 .cl-effect a:hover::before,

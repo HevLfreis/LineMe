@@ -17,8 +17,8 @@ $('#normal-mode').mouseover(function(){
 }).mouseout(function(){
     $(this).text('NORMAL MODE');
 }).click(function(){
-    $('#network').hide();
-    $('#map').fadeIn().show();
+    $('#network').removeClass('pt-page-scaleUpDown pt-page-delay300').addClass('pt-page-scaleDown');
+    $('#map').addClass('pt-page-scaleUpDown pt-page-delay300').css('visibility', 'visible');
     $(this).hide();
     $('#map-mode').show();
 });
@@ -27,8 +27,8 @@ $('#map-mode').mouseover(function(){
 }).mouseout(function(){
     $(this).text('MAP MODE');
 }).click(function(){
-    $('#map').hide();
-    $('#network').fadeIn().show();
+    $('#map').removeClass('pt-page-scaleUpDown pt-page-delay300').addClass('pt-page-scaleDown');
+    $('#network').addClass('pt-page-scaleUpDown pt-page-delay300');
     $(this).hide();
     $('#normal-mode').show();
 });
@@ -313,7 +313,7 @@ $.get("/gmap/"+groupid+"/", function(result){
     //console.logs(result.nodes);
     //console.logs(result.links);
     var option2 = {
-        backgroundColor: '#404a59',
+        //backgroundColor: '#f7f7f7',
 
         tooltip : {
             trigger: 'item',
@@ -338,11 +338,11 @@ $.get("/gmap/"+groupid+"/", function(result){
             roam: true,
             itemStyle: {
                 normal: {
-                    areaColor: '#323c48',
-                    borderColor: '#111'
+                    areaColor: '#5f7e9c',
+                    borderColor: '#fff'
                 },
                 emphasis: {
-                    areaColor: '#2a333d'
+                    areaColor: '#49739B'
                 }
             }
         },
@@ -358,7 +358,7 @@ $.get("/gmap/"+groupid+"/", function(result){
                 //},
 
                 // Todo: size relate to num of friends
-                symbolSize: 20,
+                symbolSize: 25,
                 label: {
                     emphasis : {
                         show: false
@@ -367,6 +367,7 @@ $.get("/gmap/"+groupid+"/", function(result){
                 links: result.links,
                 lineStyle: {
                     normal: {
+                        color: '#ffd200',
                         opacity: 0.8,
                         width: 1.8,
                         curveness: 0.08,
@@ -380,8 +381,8 @@ $.get("/gmap/"+groupid+"/", function(result){
                         shadowOffsetY: 0,
                         shadowColor: 'rgba(0, 0, 0, 0.5)',
                         color: function(obj){
-                            if(obj.value[3] == 0) return '#80F1BE';
-                            else return '#61C0DE';
+                            if(obj.value[3] == 0) return '#f94040';
+                            else return '#4be7a1';
                         }
                     }
                 }
@@ -411,7 +412,7 @@ $.get("/gmap/"+groupid+"/", function(result){
                 },
                 itemStyle: {
                     normal: {
-                        color: '#f4e925',
+                        color: '#fff542',
                         opacity: 0.9,
                         shadowBlur: 30,
                         shadowOffsetX: 0,

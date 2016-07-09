@@ -7,20 +7,22 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Q
 from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone
 
 from Human.forms import LoginForm, RegisterForm, GroupCreateForm, GroupMemberCreateForm, ReJoinIdentifierForm, \
     FileUploadForm
 from Human.methods import create_user, get_user_groups, get_group_joined_num, \
     create_group, create_group_member, group_recommender, get_user_name, member_join, member_recommender, update_links, \
     link_confirm, link_reject, get_user_msgs, get_user_msgs_count, get_user_invs, get_user_ego_graph, \
-    get_user_global_info, get_user_global_graph, get_user_global_map, update_profile
-from Human.models import Group, GroupMember
+    get_user_global_info, get_user_global_graph, get_user_global_map, update_profile, get_user_join_status
+from Human.models import Group, GroupMember, MemberRequest
 from Human.utils import create_avatar, logger_join, check_groupid, check_profile, smart_search, handle_avatar, \
     get_session_id, create_session_id, login_user
 from LineMe.constants import PROJECT_NAME, IDENTIFIER, CITIES_TABLE
 from LineMe.settings import logger
 
 
+# Todo: check all places with user input
 def redirect2main(request):
     return redirect('home')
 
@@ -100,13 +102,14 @@ def home(request):
 
     user = request.user
     groups = get_user_groups(user)
+
     my_groups, in_groups = {}, {}
 
     for group in groups:
         if group.creator == user:
-            my_groups.setdefault(group, get_group_joined_num(group))
+            my_groups[group] = get_group_joined_num(group)
         else:
-            in_groups.setdefault(group, get_group_joined_num(group))
+            in_groups[group] = get_group_joined_num(group)
 
     msgs_count = get_user_msgs_count(user)
     rcmd_groups = group_recommender(user)
@@ -141,6 +144,7 @@ def home(request):
 @login_required
 def msg_panel(request, page):
     user = request.user
+
     if request.is_ajax():
 
         msgs = get_user_msgs(user)
@@ -162,7 +166,7 @@ def msg_panel(request, page):
         return render(request, 'Human/home_msg.html',
                       {'msgs': p, 'my_members': my_members, 'msg_creators': msg_creators})
     else:
-        raise Http404
+        return HttpResponse(status=403)
 
 
 @login_required
@@ -174,7 +178,7 @@ def msg_handle(request, mtype, linkid):
     elif mtype == '0':
         status = link_reject(request, user, int(linkid))
     else:
-        raise Http404
+        return HttpResponse(status=403)
 
     return HttpResponse(status)
 
@@ -182,6 +186,7 @@ def msg_handle(request, mtype, linkid):
 @login_required
 def inv_panel(request, page):
     user = request.user
+
     if request.is_ajax():
 
         # Todo: fix chinese 500
@@ -204,7 +209,7 @@ def inv_panel(request, page):
 
         return render(request, 'Human/home_inv.html', {'invs': p, 'my_members': my_members})
     else:
-        raise Http404
+        return HttpResponse(status=403)
 
 
 # Todo: implement email sender
@@ -252,6 +257,7 @@ def ego_graph(request, groupid=0):
 @login_required
 def rcmd_panel(request, groupid, page):
     user = request.user
+
     if request.is_ajax():
         if groupid == '0':
             return render(request, 'Human/ego_rcmd.html')
@@ -269,12 +275,13 @@ def rcmd_panel(request, groupid, page):
 
         return render(request, 'Human/ego_rcmd.html', {'members': p})
     else:
-        raise Http404
+        return HttpResponse(status=403)
 
 
 @login_required
 def update_graph(request, groupid):
     user = request.user
+
     if request.is_ajax():
         new_links = request.POST.get('links')
 
@@ -283,7 +290,7 @@ def update_graph(request, groupid):
         return HttpResponse("Link update successfully")
 
     else:
-        raise Http404
+        return HttpResponse(status=403)
 
 
 ########################################################################
@@ -403,14 +410,15 @@ def img_handle(request):
         else:
             HttpResponse('Upload failed')
     else:
-        raise Http404
+        return HttpResponse(status=403)
 
 
 ########################################################################
 
 
+# Todo: learn from ego and global
 @login_required
-def manage_group(request, groupid, page=1):
+def manage_group(request, groupid=0):
     logger.info(logger_join('Access', get_session_id(request), gid=groupid))
 
     user = request.user
@@ -422,16 +430,13 @@ def manage_group(request, groupid, page=1):
 
     msgs_count = get_user_msgs_count(user)
 
-    group = Group.objects.get(id=groupid)
+    group = get_object_or_404(Group, id=groupid)
 
     context = {"project_name": PROJECT_NAME, "user": user, "group": group, "groups": groups,
                "rcmd_groups": rcmd_groups, "upfile": ufs, "msgs_count": msgs_count}
 
     if ufs:
         del request.session['UpFileStat']
-
-    if groupid != check_groupid(groupid):
-        raise Http404
 
     if request.method == 'POST':
         gf = GroupMemberCreateForm(request.POST)
@@ -441,40 +446,36 @@ def manage_group(request, groupid, page=1):
             identifier = gf.cleaned_data['identifier']
 
             # Todo: dangerous need fix ->status
-            status = create_group_member(request, group, name, identifier)
+            m = create_group_member(request, group, name, identifier)
 
             return redirect('group', groupid=groupid)
-
-    join_failed = request.session.get('join_failed')
-    context.update({'join_failed': join_failed})
-    if join_failed:
-        del request.session['join_failed']
 
     if user != group.creator:
         members = GroupMember.objects.filter(group=group)
         members_count = members.count()
 
-        # Todo: unstable
-        if GroupMember.objects.filter(group=group, user=user, is_joined=True).count() == 1:
-            is_member = True
-        else:
-            is_member = False
-        context.update({'creator': group.creator, 'members_count': members_count, 'is_member': is_member})
+        follow_status = get_user_join_status(request, user, group)
+        context.update({'creator': group.creator, 'members_count': members_count, 'follow_status': follow_status})
         return render(request, 'Human/group2.html', context)
 
     else:
+
+        mpage = request.GET.get('mpage')
+        rpage = request.GET.get('rpage')
+
         members = GroupMember.objects.filter(group=group)
+        request_members = MemberRequest.objects.filter(group=group).exclude(is_valid=False)
         paginator = Paginator(members, 15)
 
         try:
-            p = paginator.page(page)
+            p = paginator.page(mpage)
         except PageNotAnInteger:
             p = paginator.page(1)
         except EmptyPage:
             p = paginator.page(paginator.num_pages)
 
         members_count = members.count()
-        context.update({'members': p, 'creator': user, 'members_count': members_count})
+        context.update({'members': p, 'creator': user, 'members_count': members_count, 'requests': request_members})
         return render(request, 'Human/group1.html', context)
 
 
@@ -483,10 +484,9 @@ def join(request, groupid):
     # Todo: spacial code join -----
 
     user = request.user
-    if request.is_ajax():
+    group = get_object_or_404(Group, id=groupid)
 
-        # print 'Join:', groupid, identifier
-        group = Group.objects.get(id=groupid)
+    if request.is_ajax():
         gm = GroupMember.objects.filter((Q(member_name=get_user_name(user)) | Q(member_name=user.username)),
                                         group=group)
 
@@ -511,8 +511,6 @@ def join(request, groupid):
         rf = ReJoinIdentifierForm(request.POST)
 
         if rf.is_valid():
-            # groupid = int(rf.cleaned_data['groupid'])
-            group = Group.objects.get(id=groupid)
             identifier = rf.cleaned_data['identifier']
             # print 'Rejoin: ', groupid, identifier
             if identifier != '':
@@ -529,7 +527,53 @@ def join(request, groupid):
         return redirect('group', groupid=groupid)
 
     else:
-        raise Http404
+        return HttpResponse(status=403)
+
+
+@login_required
+def join_request(request, groupid):
+    user = request.user
+    group = get_object_or_404(Group, id=groupid)
+
+    if request.method == 'POST':
+        mesg = request.POST.get('message')
+
+        mr = MemberRequest(user=user,
+                           group=group,
+                           message=mesg,
+                           created_time=timezone.now(),
+                           is_valid=True)
+        mr.save()
+
+        return redirect('group', groupid=groupid)
+
+    else:
+        return HttpResponse(status=403)
+
+
+@login_required
+def join_confirm(request, groupid, requestid):
+    user = request.user
+    group = get_object_or_404(Group, id=groupid)
+
+    if request.method == 'GET' and group.creator == user:
+
+        mr = get_object_or_404(MemberRequest, id=requestid, group=group)
+        mr.is_valid = False
+        mr.save()
+
+        m = create_group_member(request, group, get_user_name(mr.user), 'accepted', mr.user)
+
+        if m:
+            m.is_joined = True
+            m.save()
+            return redirect('group', groupid)
+        else:
+
+            # Todo: confirm failed
+            return redirect('group', groupid)
+    else:
+        return HttpResponse(status=403)
 
 
 @login_required
@@ -555,7 +599,7 @@ def upload_members(request, groupid):
                             members.append(kv)
 
                 for m in members:
-                    if create_group_member(request, group, m[0], m[1]) != 0:
+                    if not create_group_member(request, group, m[0], m[1]):
                         return redirect('group', groupid=groupid)
 
                 request.session['UpFileStat'] = True
