@@ -4,13 +4,16 @@
  * Time: 20:04
  */
 
-// Todo: fix select2 in profile
-$('body, .box-body').rollbar({
-  scroll: 'vertical',
-  sliderOpacity: 0,
-  zIndex: 2000,
-  blockGlobalScroll: true,
-  wheelSpeed: 50,
-  touchSpeed: 0.25,
-  sliderSize: '25%',
+$(function() {
+    // Todo: fix select2 in profile
+    $('body, .box-body').rollbar({
+        scroll: 'vertical',
+        sliderOpacity: 0,
+        zIndex: 2000,
+        blockGlobalScroll: true,
+        wheelSpeed: 50,
+        touchSpeed: 0.25,
+        sliderSize: '25%',
+    });
 });
+

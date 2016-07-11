@@ -80,7 +80,7 @@
                     <ul class="menu">
                       <li>
                         <a href="{% url 'home' %}">
-                          <i class="fa fa-users text-aqua"></i> You have {{ msgs_count }} messages
+                          <i class="fa fa-paper-plane text-aqua"></i> You have {{ msgs_count }} messages
                         </a>
                       </li>
                     </ul>
@@ -283,11 +283,11 @@
                         <div class="comment-text">
                           <span class="username">
                             {{ req.user.first_name }} {{ req.user.last_name }}
-                            <span class="text-muted pull-right">8:03 PM Today</span>
+                            <span class="text-muted pull-right">{{ req.created_time|date:'Y-m-d' }} {{ req.created_time|time:'H:i' }}</span>
                           </span>
                           {{ req.message }}
                         </div>
-                        <a href="{% url 'joinConfirm' group.id req.id %}" class="btn bg-purple btn-xs pull-right"><i class="fa fa-flash"></i> Accept</a>
+                        <a href="{% url 'joinConfirm' group.id req.id %}" class="btn bg-navy btn-xs pull-right"><i class="fa fa-flash"></i> Accept</a>
                       </div>
                     {% endfor %}
                   </div>

@@ -95,7 +95,7 @@
                     <ul class="menu">
                       <li>
                         <a href="{% url 'home' %}">
-                          <i class="fa fa-users text-aqua"></i> You have {{ msgs_count }} messages
+                          <i class="fa fa-paper-plane text-aqua"></i> You have {{ msgs_count }} messages
                         </a>
                       </li>
                     </ul>
@@ -274,10 +274,22 @@
               window.location.replace("{% url 'egoId' group.id%}");
               break;
             case '-1':
-              $('#modal-content-wrong').show();
-              $('#modal-content-notin').hide();
+              if (identifier == 0) {
+                var $modal = $('#modal-content-wrong');
+                $modal.find('.modal-title').text('Identifier');
+                $modal.find('.modal-footer button').val('Follow');
+                $modal.find('input').attr('placeholder', '');
+                $modal.show();
+                $('#modal-content-notin').hide();
 
-              $('#member-join-modal').modal('show');
+                $('#member-join-modal').modal('show');
+              }
+              else {
+                $('#modal-content-wrong').show();
+                $('#modal-content-notin').hide();
+
+                $('#member-join-modal').modal('show');
+              }
               break;
             case '-2':
               $('#modal-content-wrong').hide();
@@ -292,18 +304,7 @@
       }
 
       $('#follow').click(function() {
-        if (identifier == 0) {
-
-          var $modal = $('#modal-content-wrong');
-          $modal.find('.modal-title').text('Identifier');
-          $modal.find('.modal-footer button').val('Follow');
-          $modal.find('input').attr('placeholder', '');
-          $modal.show();
-          $('#modal-content-notin').hide();
-
-          $('#member-join-modal').modal('show');
-        }
-        else join();
+        join();
       });
 
       $('#search').autocomplete();

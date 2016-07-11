@@ -26,15 +26,15 @@
           {% endif %}
           <td>{{ inv.created_time|date:'M d, Y' }}</td>
           {% if inv.status == -3 %}
-            <td><span class="label label-danger"><span class="fa fa-close"></span></span></td>
+            <td><span class="label label-danger" title="both rejected"><span class="fa fa-close"></span></span></td>
           {% elif inv.status == 3 %}
-            <td><span class="label label-success"><span class="fa fa-check-square"></span></span></td>
+            <td><span class="label label-success" title="confirmed"><span class="fa fa-check-square"></span></span></td>
           {% elif inv.status > 0 %}
-            <td><span class="label label-primary"><span class="fa fa-circle"></span></span></td>
+            <td><span class="label label-primary" title="one side confirmed"><span class="fa fa-circle"></span></span></td>
           {% elif inv.status < 0 %}
-            <td><span class="label label-danger"><span class="fa fa-circle"></span></span></td>
+            <td><span class="label label-danger"title="one side rejected"><span class="fa fa-circle"></span></span></td>
           {% elif inv.status == 0 %}
-            <td><span class="label label-warning"><span class="fa fa-circle"></span></span></td>
+            <td><span class="label label-warning" title="both unconfirmed"><span class="fa fa-circle"></span></span></td>
           {% endif %} 
         </tr>
       {% endfor %}

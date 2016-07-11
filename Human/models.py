@@ -45,7 +45,7 @@ class GroupMember(models.Model):
 class MemberRequest(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
-    message = models.CharField(max_length=200)
+    message = models.CharField(max_length=200, null=True)
     created_time = models.DateTimeField()
     is_valid = models.BooleanField()
 

@@ -1,28 +1,34 @@
 import json
 
-from django.contrib.auth import authenticate, logout
-from django.contrib.auth import login
+from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.core.paginator import PageNotAnInteger
+from django.core.paginator import Paginator, EmptyPage
 from django.db.models import Q
-from django.http import HttpResponse, Http404, JsonResponse
-from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import redirect, render, get_object_or_404
 from django.utils import timezone
 
 from Human.forms import LoginForm, RegisterForm, GroupCreateForm, GroupMemberCreateForm, ReJoinIdentifierForm, \
     FileUploadForm
-from Human.methods import create_user, get_user_groups, get_group_joined_num, \
-    create_group, create_group_member, group_recommender, get_user_name, member_join, member_recommender, update_links, \
-    link_confirm, link_reject, get_user_msgs, get_user_msgs_count, get_user_invs, get_user_ego_graph, \
-    get_user_global_info, get_user_global_graph, get_user_global_map, update_profile, get_user_join_status
+from Human.methods.avatar import create_avatar, handle_avatar
+from Human.methods.lm_ego import get_user_ego_graph
+from Human.methods.group import get_group_joined_num, group_recommender, create_group, get_user_join_status
+from Human.methods.groupmember import member_recommender, create_group_member, member_join
+from Human.methods.link import link_confirm, update_links
+from Human.methods.link import link_reject
+from Human.methods.lm_global import get_user_global_info, get_user_global_graph, get_user_global_map
+from Human.methods.profile import update_profile
+from Human.methods.sessionid import get_session_id
+from Human.methods.user import create_user, get_user_groups, get_user_msgs_count, get_user_msgs, get_user_invs, \
+    get_user_name
+from Human.methods.utils import smart_search, login_user, logger_join
+from Human.methods.validation import check_groupid, check_profile
 from Human.models import Group, GroupMember, MemberRequest
-from Human.utils import create_avatar, logger_join, check_groupid, check_profile, smart_search, handle_avatar, \
-    get_session_id, create_session_id, login_user
 from LineMe.constants import PROJECT_NAME, IDENTIFIER, CITIES_TABLE
 from LineMe.settings import logger
 
 
-# Todo: check all places with user input
 def redirect2main(request):
     return redirect('home')
 
@@ -229,7 +235,7 @@ def ego_network(request, groupid=0):
     rcmd_groups = group_recommender(user)
     msgs_count = get_user_msgs_count(user)
 
-    groupid = check_groupid(groupid)
+    groupid = check_groupid(user, groupid)
     if groupid == 0:
         group = None
     else:
@@ -246,6 +252,7 @@ def ego_graph(request, groupid=0):
     logger.info(logger_join('Access', get_session_id(request), gid=groupid))
 
     user = request.user
+    groupid = check_groupid(user, groupid)
     if groupid == 0:
         return JsonResponse({"nodes": None, "links": None}, safe=False)
 
@@ -259,7 +266,9 @@ def rcmd_panel(request, groupid, page):
     user = request.user
 
     if request.is_ajax():
-        if groupid == '0':
+
+        groupid = check_groupid(user, groupid)
+        if groupid == 0:
             return render(request, 'Human/ego_rcmd.html')
 
         rcmd_gms = member_recommender(user, groupid)
@@ -285,7 +294,7 @@ def update_graph(request, groupid):
     if request.is_ajax():
         new_links = request.POST.get('links')
 
-        # Todo: success link ???
+        # Todo: success link ??? and security
         update_links(request, new_links, groupid, user)
         return HttpResponse("Link update successfully")
 
@@ -302,7 +311,7 @@ def global_network(request, groupid=0):
     user = request.user
     groups = get_user_groups(user)
     msgs_count = get_user_msgs_count(user)
-    groupid = check_groupid(groupid)
+    groupid = check_groupid(user, groupid)
 
     if groupid == 0:
         group = None
@@ -322,6 +331,8 @@ def global_graph(request, groupid=0):
     logger.info(logger_join('Access', get_session_id(request), gid=groupid))
 
     user = request.user
+    groupid = check_groupid(user, groupid)
+
     if groupid == 0:
         return JsonResponse({"nodes": None, "links": None}, safe=False)
 
@@ -335,6 +346,8 @@ def global_map(request, groupid=0):
     logger.info(logger_join('Access', get_session_id(request), gid=groupid))
 
     user = request.user
+    groupid = check_groupid(user, groupid)
+
     if groupid == 0:
         return JsonResponse({"nodes": None, "links": None}, safe=False)
 
@@ -421,22 +434,19 @@ def img_handle(request):
 def manage_group(request, groupid=0):
     logger.info(logger_join('Access', get_session_id(request), gid=groupid))
 
-    user = request.user
-
     ufs = request.session.get('UpFileStat')
+    if ufs:
+        del request.session['UpFileStat']
 
+    user = request.user
     groups = get_user_groups(user)
     rcmd_groups = group_recommender(user)
-
     msgs_count = get_user_msgs_count(user)
 
     group = get_object_or_404(Group, id=groupid)
 
     context = {"project_name": PROJECT_NAME, "user": user, "group": group, "groups": groups,
                "rcmd_groups": rcmd_groups, "upfile": ufs, "msgs_count": msgs_count}
-
-    if ufs:
-        del request.session['UpFileStat']
 
     if request.method == 'POST':
         gf = GroupMemberCreateForm(request.POST)
@@ -461,9 +471,11 @@ def manage_group(request, groupid=0):
     else:
 
         mpage = request.GET.get('mpage')
+
+        # Todo: implement request paginator
         rpage = request.GET.get('rpage')
 
-        members = GroupMember.objects.filter(group=group)
+        members = GroupMember.objects.filter(group=group).order_by('-created_time')
         request_members = MemberRequest.objects.filter(group=group).exclude(is_valid=False)
         paginator = Paginator(members, 15)
 
@@ -498,12 +510,12 @@ def join(request, groupid):
             if gm.filter(token=user.email).count() == 1:
                 status = member_join(request, user, group, user.email)
             else:
-                logger.warning(logger_join('Join', get_session_id(request), 'multiple'))
+                logger.warning(logger_join('Join', get_session_id(request), 'failed or scode'))
         elif group.identifier == 2:
             if gm.filter(token=user.extra.institution).count() == 1:
                 status = member_join(request, user, group, user.institution)
             else:
-                logger.warning(logger_join('Join', get_session_id(request), 'multiple'))
+                logger.warning(logger_join('Join', get_session_id(request), 'failed or scode'))
 
         return HttpResponse(status)
 
@@ -517,11 +529,10 @@ def join(request, groupid):
                 gm = GroupMember.objects.filter((Q(member_name=get_user_name(user)) | Q(member_name=user.username)),
                                                 group=group, token=identifier)
                 if gm.count() == 1:
-                    print '1'
                     status = member_join(request, user, group, identifier)
                     if status == 0:
                         logger.info(logger_join('Join', get_session_id(request), mid=gm[0].id))
-                        return redirect('group', groupid=groupid)
+                        return redirect('egoId', groupid=groupid)
 
         request.session['join_failed'] = True
         return redirect('group', groupid=groupid)
@@ -535,14 +546,19 @@ def join_request(request, groupid):
     user = request.user
     group = get_object_or_404(Group, id=groupid)
 
-    if request.method == 'POST':
+    if request.method == 'POST' and not GroupMember.objects.filter(user=user, group=group).exists():
         mesg = request.POST.get('message')
 
-        mr = MemberRequest(user=user,
-                           group=group,
-                           message=mesg,
-                           created_time=timezone.now(),
-                           is_valid=True)
+        if MemberRequest.objects.filter(user=user, group=group).exists():
+
+            mr = get_object_or_404(MemberRequest, user=user, group=group)
+            mr.message = mesg
+        else:
+            mr = MemberRequest(user=user,
+                               group=group,
+                               message=mesg,
+                               created_time=timezone.now(),
+                               is_valid=True)
         mr.save()
 
         return redirect('group', groupid=groupid)
