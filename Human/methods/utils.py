@@ -22,9 +22,9 @@ def login_user(request, username, password):
         if user.is_active:
             login(request, user)
             create_session_id(request)
-            return 0
+            return True
     else:
-        return -1
+        return False
 
 
 def smart_search(request, kw, groupid, limit):

@@ -10,7 +10,7 @@ from Human.methods.groupmember import create_group_member
 from Human.methods.sessionid import get_session_id
 from Human.methods.user import get_user_name
 from Human.methods.utils import logger_join
-from Human.methods.validation import group_name_existed
+from Human.methods.validation import validate_groupname
 from Human.models import Group, Credits, MemberRequest, Link
 from Human.models import GroupMember
 from LineMe.constants import GROUP_CREATED_CREDITS_COST
@@ -18,18 +18,19 @@ from LineMe.constants import GROUP_MAXSIZE
 from LineMe.settings import logger
 
 
-def create_group(request, user, name, maxsize, identifier, gtype):
+def create_group(request, user, name, identifier, gtype):
     now = timezone.now()
 
-    # Todo: group validate fix
-    if group_name_existed(name) or maxsize > GROUP_MAXSIZE or user.extra.credits < GROUP_CREATED_CREDITS_COST:
+    if not validate_groupname(name):
         return -1
+    elif user.extra.credits < GROUP_CREATED_CREDITS_COST:
+        return -2
+
     try:
 
-        g = Group(group_name=name,
+        g = Group(group_name=name.upper(),
                   creator=user,
                   type=gtype,
-                  maxsize=maxsize,
                   identifier=identifier,
                   created_time=now,
                   deprecated=False)
@@ -55,10 +56,9 @@ def create_group(request, user, name, maxsize, identifier, gtype):
         c.save()
 
     except Exception, e:
-
         # Todo: ????fix
         logger.error(logger_join('Create', get_session_id(request), 'failed', e=e))
-        return -1
+        return -4
 
     # create dummy members
     # create_dummy_members(g, u, 20)
@@ -85,8 +85,12 @@ def get_group_joined_num(group):
     return str(joined) + '/' + str(total)
 
 
-def get_user_joined(user, group):
-    return GroupMember.objects.filter(user=user, group=group, is_joined=True).exists()
+def get_user_joined_member(user, groupid):
+    gm = GroupMember.objects.filter(user=user, group__id=groupid, is_joined=True)
+    if gm.exists():
+        return gm
+    else:
+        return None
 
 
 def get_user_join_status(request, user, group):

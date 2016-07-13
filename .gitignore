@@ -109,4 +109,5 @@ $RECYCLE.BIN/
 *.lnk
 
 static/images/user_avatars/*.png
+*.ids
 

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>{{ project_name }} | My Network</title>
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+{#    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">#}
     <link rel="shortcut icon" href="/static/favicon.ico">
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
     <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
     <link rel="stylesheet" href="/static/lineme/css/graph.css">
+    <link rel="stylesheet" href="/static/lineme/css/ego.css">
     <link rel="stylesheet" href="/static/lineme/css/borderMenu.css">
     <link rel="stylesheet" href="/static/plugins/d3/css/d3-tip.css">
     <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
@@ -25,8 +26,8 @@
         <nav class="navbar navbar-static-top" role="navigation">
           <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
-              <li class="dropdown notifications-menu">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <li class="notifications-menu">
+                <a href="{% url 'home' %}">
                   <i class="fa fa-envelope-o"></i>
                   {% if msgs_count >= 99  %}
                     <span class="label label-danger">99</span>
@@ -34,23 +35,17 @@
                     <span class="label label-success">{{ msgs_count }}</span>
                   {% endif %}
                 </a>
-                <ul class="dropdown-menu">
-                  <li>
-                    <ul class="menu">
-                      <li>
-                        <a href="{% url 'home' %}">
-                          <i class="fa fa-paper-plane text-aqua"></i> You have {{ msgs_count }} messages
-                        </a>
-                      </li>
-                    </ul>
-                  </li>
-                </ul>
+              </li>
+              <li class="notifications-menu">
+                <a href="{% url 'howTo' %}">
+                  <i class="fa fa-question"></i>
+                </a>
               </li>
               <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                    <img src="/static/images/user_avatars/{{ user.id }}.png" class="user-image" alt="User Image">
-                    <span class="hidden-xs">{{ user.username }}</span>
-                    <span class="caret"></span>
+                  <img src="/static/images/user_avatars/{{ user.id }}.png" class="user-image" alt="User Image">
+                  <span class="hidden-xs">{{ user.username }}</span>
+                  <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu" role="menu">
                   <li><a href={% url 'ego' %}>My Network</a></li>
@@ -77,7 +72,7 @@
             </div>
           </div>
           <div id="search" class="input-group sidebar-form">
-            <input type="text" name="q" class="form-control" placeholder="Search...">
+            <input type="text" name="q" class="form-control" placeholder="{% if group %}Member Search...{% else %}Group Search...{% endif %}">
             <span class="input-group-btn">
               <button class="btn btn-flat"><i class="fa fa-search"></i></button>
             </span>
@@ -129,20 +124,20 @@
           <div class="row">
             <div class="col-md-9 col-sm-12">
               <div class="box box-primary">
-                  <div id="main-panel" class="bg-gray-light" style="height: 750px;">
-                    <div id="network" style="position: absolute;z-index: 1;"></div>
-                    <div id="bt-menu" class="bt-menu">
-                      <a href="#" class="bt-menu-trigger"><span>Menu</span></a>
-                      <ul>
-                        <li><a id="lineme">Lineme</a></li>
-                        <li><a id="submit">Submit</a></li>
-                        <li><a id="reset">Reset</a></li>
-                        <li><a id="clear">Clear</a></li>
-                        <li><a id="info">Info</a></li>
-                        <li><a id="howto">Howto</a></li>
-                      </ul>
-                    </div>
+                <div id="main-panel" class="bg-gray-light" style="height: 750px;">
+                  <div id="network" style="position: absolute;z-index: 1;"></div>
+                  <div id="bt-menu" class="bt-menu">
+                    <a href="#" class="bt-menu-trigger"><span>Menu</span></a>
+                    <ul>
+                      <li><a id="lineme">Lineme</a></li>
+                      <li><a id="submit">Submit</a></li>
+                      <li><a id="reset">Reset</a></li>
+                      <li><a id="clear">Clear</a></li>
+                      <li><a id="info">Info</a></li>
+                      <li><a id="howto">Howto</a></li>
+                    </ul>
                   </div>
+                </div>
               </div>
             </div>
             <div class="col-md-3 col-sm-12" id="rcmd-panel">
@@ -156,10 +151,10 @@
         </section>
       </div>
       <footer class="main-footer">
-          <div class="pull-right hidden-xs">
-            <a href="http://www.seeleit.com" target="_black">POWERED BY HT</a>
-          </div>
-          <strong>Copyright &copy; 2016 <a href="http://cnc.sjtu.edu.cn" target="_black">CNC</a>.</strong> All rights reserved.
+        <div class="pull-right hidden-xs">
+          <a href="http://www.seeleit.com" target="_black">POWERED BY HT</a>
+        </div>
+        <strong>Copyright &copy; 2016 <a href="http://cnc.sjtu.edu.cn" target="_black">CNC</a>.</strong> All rights reserved.
       </footer>
     </div>
 

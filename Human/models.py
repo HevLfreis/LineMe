@@ -21,11 +21,11 @@ class Extra(models.Model):
     credits = models.IntegerField()
 
 
+# Todo: need a new group def
 class Group(models.Model):
     group_name = models.CharField(max_length=50)
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
     type = models.IntegerField()
-    maxsize = models.IntegerField()
     identifier = models.IntegerField()
     created_time = models.DateTimeField()
     deprecated = models.BooleanField()
@@ -35,7 +35,7 @@ class GroupMember(models.Model):
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     member_name = models.CharField(max_length=50)
-    token = models.CharField(max_length=50)
+    token = models.CharField(max_length=50, null=True)
     is_creator = models.BooleanField()
     is_joined = models.BooleanField()
     created_time = models.DateTimeField()

@@ -12,7 +12,7 @@ $(function() {
         zIndex: 2000,
         blockGlobalScroll: true,
         wheelSpeed: 50,
-        touchSpeed: 0.25,
+        touchSpeed: 0.4,
         sliderSize: '25%',
     });
 });

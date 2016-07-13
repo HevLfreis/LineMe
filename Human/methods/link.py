@@ -9,6 +9,7 @@
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
+from Human.methods.group import get_user_joined_member
 from Human.methods.sessionid import get_session_id
 from Human.methods.utils import logger_join
 from Human.models import GroupMember
@@ -20,78 +21,75 @@ from LineMe.settings import logger
 
 
 def link_confirm(request, user, linkid):
+
     link = get_object_or_404(Link, id=linkid)
+    gm = get_object_or_404(GroupMember, user=user, group=link.group, is_joined=True)
 
-    gm = GroupMember.objects.get(user=user, group=link.group)
+    now = timezone.now()
+    link.confirmed_time = now
 
-    if gm is not None:
-        now = timezone.now()
-        link.confirmed_time = now
+    if link.source_member == gm:
+        link.status = SOURCE_LINK_CONFIRM_STATUS_TRANSITION_TABLE[link.status]
 
-        if link.source_member == gm:
-            link.status = SOURCE_LINK_CONFIRM_STATUS_TRANSITION_TABLE[link.status]
+    elif link.target_member == gm:
+        link.status = TARGET_LINK_CONFIRM_STATUS_TRANSITION_TABLE[link.status]
 
-        elif link.target_member == gm:
-            link.status = TARGET_LINK_CONFIRM_STATUS_TRANSITION_TABLE[link.status]
-
-        else:
-            logger.info(logger_join('Confirm', get_session_id(request), 'failed', lid=linkid))
-            return -1
-        link.save()
-        logger.info(logger_join('Confirm', get_session_id(request), lid=linkid))
-        return 0
     else:
         logger.info(logger_join('Confirm', get_session_id(request), 'failed', lid=linkid))
         return -1
 
+    link.save()
+    logger.info(logger_join('Confirm', get_session_id(request), lid=linkid))
+    return 0
+
 
 def link_reject(request, user, linkid):
+
     link = get_object_or_404(Link, id=linkid)
+    gm = get_object_or_404(GroupMember, user=user, group=link.group, is_joined=True)
 
-    gm = GroupMember.objects.get(user=user, group=link.group)
+    now = timezone.now()
+    link.confirmed_time = now
 
-    if gm is not None:
-        now = timezone.now()
-        link.confirmed_time = now
+    if link.source_member == gm:
+        link.status = SOURCE_LINK_REJECT_STATUS_TRANSITION_TABLE[link.status]
 
-        if link.source_member == gm:
-            link.status = SOURCE_LINK_REJECT_STATUS_TRANSITION_TABLE[link.status]
+    elif link.target_member == gm:
+        link.status = TARGET_LINK_REJECT_STATUS_TRANSITION_TABLE[link.status]
 
-        elif link.target_member == gm:
-            link.status = TARGET_LINK_REJECT_STATUS_TRANSITION_TABLE[link.status]
-
-        else:
-            logger.info(logger_join('Reject', get_session_id(request), 'failed', lid=linkid))
-            return -1
-
-        link.save()
-        logger.info(logger_join('Reject', get_session_id(request), lid=linkid))
-        return 0
     else:
         logger.info(logger_join('Reject', get_session_id(request), 'failed', lid=linkid))
         return -1
 
+    link.save()
+    logger.info(logger_join('Reject', get_session_id(request), lid=linkid))
+    return 0
+
 
 def update_links(request, new_links, groupid, creator):
+
+    if not GroupMember.objects.filter(user=creator, group__id=groupid, is_joined=True).exists():
+        return -1
+        
     now = timezone.now()
 
     old_links = Link.objects.filter(creator=creator, group__id=groupid)
-    linksIndex = {}
+    links_index = {}
 
     for link in old_links:
-        linksIndex[str(link.source_member.id) + ',' + str(link.target_member.id)] = link
+        links_index[str(link.source_member.id) + ',' + str(link.target_member.id)] = link
 
     for link in eval(new_links):
-        if link["source"] + ',' + link["target"] in linksIndex:
-            linksIndex[link["source"] + ',' + link["target"]] = 0
-        elif link["target"] + ',' + link["source"] in linksIndex:
-            linksIndex[link["target"] + ',' + link["source"]] = 0
+        if link["source"] + ',' + link["target"] in links_index:
+            links_index[link["source"] + ',' + link["target"]] = 0
+        elif link["target"] + ',' + link["source"] in links_index:
+            links_index[link["target"] + ',' + link["source"]] = 0
         else:
-            linksIndex[link["source"] + ',' + link["target"]] = 1
+            links_index[link["source"] + ',' + link["target"]] = 1
 
     my_member = GroupMember.objects.get(group__id=groupid, user=creator)
 
-    for k, v in linksIndex.items():
+    for k, v in links_index.items():
         if v is 0:
             continue
         elif v is 1:

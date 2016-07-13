@@ -395,12 +395,14 @@ $(function() {
         $.ajax({
             type: "POST",
             data: { links: data },
-            url: "/updategraph/"+groupid+"/",
+            url: "/upgraph/"+groupid+"/",
             success: function(msg){
                 nodesCopy = nodes.slice(0);
                 linksCopy = links.slice(0);
                 linkedIndexCopy = $.extend({}, linkedIndex);
-                alert(msg);
+
+                if (msg == 0) alert("Update Links Successfully");
+                else alert("Update Failed");
                 updateRcmdPanel(1);
                 resetMenu();
             }

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>{{ project_name }} | Group</title>
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+{#    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">#}
     <link rel="shortcut icon" href="/static/favicon.ico">
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/plugins/iCheck/all.css">
@@ -44,8 +44,6 @@
                 <label for="member-identifier">Identifier</label>
                 {% if group.identifier == 0 %}
                   <input type="text" class="form-control" name="identifier" placeholder="Enter identifier for this member">
-                {% elif group.identifier == 2 %}
-                  <input type="text" class="form-control" name="identifier" placeholder="Enter institution for this member">
                 {% elif group.identifier == 1 %}
                   <input type="text" class="form-control" name="identifier" placeholder="Enter email for this member">
                 {% endif %}
@@ -66,8 +64,8 @@
         <nav class="navbar navbar-static-top" role="navigation">
           <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
-              <li class="dropdown notifications-menu">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <li class="notifications-menu">
+                <a href="{% url 'home' %}">
                   <i class="fa fa-envelope-o"></i>
                   {% if msgs_count >= 99  %}
                     <span class="label label-danger">99</span>
@@ -75,17 +73,11 @@
                     <span class="label label-success">{{ msgs_count }}</span>
                   {% endif %}
                 </a>
-                <ul class="dropdown-menu">
-                  <li>
-                    <ul class="menu">
-                      <li>
-                        <a href="{% url 'home' %}">
-                          <i class="fa fa-paper-plane text-aqua"></i> You have {{ msgs_count }} messages
-                        </a>
-                      </li>
-                    </ul>
-                  </li>
-                </ul>
+              </li>
+              <li class="notifications-menu">
+                <a href="{% url 'howTo' %}">
+                  <i class="fa fa-question"></i>
+                </a>
               </li>
               <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -118,7 +110,7 @@
             </div>
           </div>
           <div id="search" class="input-group sidebar-form">
-            <input type="text" name="q" class="form-control" placeholder="Search...">
+            <input type="text" name="q" class="form-control" placeholder="Group Search...">
             <span class="input-group-btn">
               <button class="btn btn-flat"><i class="fa fa-search"></i></button>
             </span>
@@ -161,7 +153,7 @@
         </section>
         <section class="content">
           <div class="row">
-            <div class="col-md-8">
+            <div class="col-md-8 col-sm-12">
               <div class="box box-primary">
                 <div class="box-body box-profile">
                   <div class="col-md-5">
@@ -175,47 +167,44 @@
                       <input type="number" class="form-control" name="" placeholder="{{ members_count }}" disabled>
                       <span class="glyphicon glyphicon-asterisk form-control-feedback"></span>
                     </div>
-                    <div class="form-group has-feedback">
-                      <label>Group Max Size</label>
-                      <input type="number" class="form-control" name="maxsize" placeholder="{{ group.maxsize }}" disabled>
-                      <span class="glyphicon glyphicon-asterisk form-control-feedback"></span>
-                    </div>
                     <div class="form-group">
                       <label>Group Identifier</label>
                       <select class="form-control select2" name="identifier" disabled>
-                        <option value="0" {% if group.identifier == 1 %}selected="selected"{% endif %}>Email</option>
-                        <option value="1" {% if group.identifier == 2 %}selected="selected"{% endif %}>Institution</option>
-                        <option value="2" {% if group.identifier == 0 %}selected="selected"{% endif %}>Special Code</option>
+                        <option value="0" {% if group.identifier == 0 %}selected="selected"{% endif %}>Special Code</option>
+                        <option value="1" {% if group.identifier == 1 %}selected="selected"{% endif %}>Email</option>
+                        <option value="2" {% if group.identifier == 2 %}selected="selected"{% endif %}>No Validation</option>
                       </select>
                     </div>
                     <label>Group Type</label>
                     <div class="form-group">
-                      <label style="padding-right: 10px">
-                        <input type="radio" name="r1" class="minimal" {% if group.type == 0 %}checked{% endif %}>
-                        Normal
+                      <label style="padding-right: 15px">
+                        <input type="radio" name="gtype" class="minimal" {% if group.type == 0 %}checked{% else %}disabled{% endif %}>
+                        Public
                       </label>
                       <label>
-                        <input type="radio" name="r1" class="minimal" {% if group.type == 1 %}checked{% endif %}>
-                        RealTime
+                        <input type="radio" name="gtype" class="minimal" {% if group.type == 1 %}checked{% else %}disabled{% endif %}>
+                        Private
                       </label>
                     </div>
-                    <div class="form-group">
-                      <label>Create New Members</label>
-                      <div class="btn-group">
-                        <button type="button" class="btn bg-navy btn-flat" data-toggle="modal" data-target="#member-create-modal">Add One</button>
-                        <button type="button" class="btn bg-purple btn-flat" onclick="chooseFile();">From File</button>
-                        <form id="from-file" method="post" action="{% url 'uploadMembers' group.id %}" enctype="multipart/form-data" hidden>
-                          <input id="from-file-input" type="file" name="members"/>
-                        </form>
-                      </div>
-                      {% if upfile != None %}
-                        {% if not upfile %}
-                          <p class="text-center bg-red" style="margin-top: 5px">Update failed</p>
-                        {% else %}
-                          <p class="text-center bg-green" style="margin-top: 5px">Update members successfully</p>
+                    {% if group.identifier != 2 %}
+                      <div class="form-group">
+                        <label>Create New Members</label>
+                        <div class="btn-group">
+                          <button type="button" class="btn bg-navy btn-flat" data-toggle="modal" data-target="#member-create-modal">Add One</button>
+                          <button type="button" class="btn bg-purple btn-flat" onclick="chooseFile();">From File</button>
+                          <form id="from-file" method="post" action="{% url 'uploadMembers' group.id %}" enctype="multipart/form-data" hidden>
+                            <input id="from-file-input" type="file" name="members"/>
+                          </form>
+                        </div>
+                        {% if update_status != None %}
+                          {% if not update_status or update_status != 0 %}
+                            <p class="text-center bg-red" style="margin-top: 5px">Update failed</p>
+                          {% else %}
+                            <p class="text-center bg-green" style="margin-top: 5px">Update members successfully</p>
+                          {% endif %}
                         {% endif %}
-                      {% endif %}
-                    </div>
+                      </div>
+                    {% endif %}
                   </div>
                   <div class="col-md-7">
                     <table class="table no-margin">
@@ -271,7 +260,7 @@
               </div>
             </div>
             {% if requests|length != 0 %}
-              <div class="col-md-4">
+              <div class="col-md-4 col-sm-12">
                 <div class="box box-warning">
                   <div class="box-header with-border">
                     <h3 class="box-title">Requests</h3>
@@ -337,8 +326,7 @@
         });
       });
 
-      $('input[type="checkbox"].flat-red, input[type="radio"].minimal').iCheck({
-        checkboxClass: 'icheckbox_flat-green',
+      $('input[type="radio"].minimal').iCheck({
         radioClass: 'iradio_flat-green'
       });
 

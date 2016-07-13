@@ -44,8 +44,8 @@
         <nav class="navbar navbar-static-top" role="navigation">
           <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
-              <li class="dropdown notifications-menu">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <li class="notifications-menu">
+                <a href="{% url 'home' %}">
                   <i class="fa fa-envelope-o"></i>
                   {% if msgs_count >= 99  %}
                     <span class="label label-danger">99</span>
@@ -53,23 +53,17 @@
                     <span class="label label-success">{{ msgs_count }}</span>
                   {% endif %}
                 </a>
-                <ul class="dropdown-menu">
-                  <li>
-                    <ul class="menu">
-                      <li>
-                        <a href="{% url 'home' %}">
-                          <i class="fa fa-paper-plane text-aqua"></i> You have {{ msgs_count }} messages
-                        </a>
-                      </li>
-                    </ul>
-                  </li>
-                </ul>
+              </li>
+              <li class="notifications-menu">
+                <a href="{% url 'howTo' %}">
+                  <i class="fa fa-question"></i>
+                </a>
               </li>
               <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                    <img src="/static/images/user_avatars/{{ user.id }}.png" class="user-image" alt="User Image">
-                    <span class="hidden-xs">{{ user.username }}</span>
-                    <span class="caret"></span>
+                  <img src="/static/images/user_avatars/{{ user.id }}.png" class="user-image" alt="User Image">
+                  <span class="hidden-xs">{{ user.username }}</span>
+                  <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu" role="menu">
                   <li><a href={% url 'ego' %}>My Network</a></li>
@@ -97,7 +91,7 @@
         </section>
         <section class="content">
           <div class="row">
-            <div class="col-md-4 col-md-offset-4">
+            <div class="col-md-4 col-md-offset-4 col-sm-12">
               <div class="box-body">
                 <div class="box box-widget widget-user-2">
                   <div class="widget-user-header bg-purple">
@@ -163,7 +157,7 @@
                       <div class="form-group">
                         <label>Sex</label>
                         <div class="input-group">
-                          <label style="padding-right: 10px">
+                          <label style="padding-right: 15px">
                             <input type="radio" name="sex" class="minimal" value="0" {% if user.extra.sex == 0 %}checked{% endif %}>
                             Male
                           </label>
@@ -193,10 +187,10 @@
         </section>
       </div>
       <footer class="main-footer">
-          <div class="pull-right hidden-xs">
-            <a href="http://www.seeleit.com" target="_black">POWERED BY HT</a>
-          </div>
-          <strong>Copyright &copy; 2016 <a href="http://cnc.sjtu.edu.cn" target="_black">CNC</a>.</strong> All rights reserved.
+        <div class="pull-right hidden-xs">
+          <a href="http://www.seeleit.com" target="_black">POWERED BY HT</a>
+        </div>
+        <strong>Copyright &copy; 2016 <a href="http://cnc.sjtu.edu.cn" target="_black">CNC</a>.</strong> All rights reserved.
       </footer>
     </div>
 
@@ -220,9 +214,9 @@
         minimumResultsForSearch: 5
       }).on("change", function (e) {
          $("#city-form").children("span").hide();
-         $("#"+ country).attr("disabled", true);
+         $("#" + country).attr("disabled", true);
          country = $(this).select2("val");
-         $("#"+ country).attr("disabled",false).next("span").show();
+         $("#" + country).attr("disabled",false).next("span").show();
       });
 
       $("#city-form").children(".select2").select2({
@@ -239,8 +233,7 @@
 
       $("#birth").inputmask("yyyy/mm/dd", {"placeholder": "yyyy/mm/dd"});
 
-      $('input[type="checkbox"].flat-red, input[type="radio"].minimal').iCheck({
-        checkboxClass: 'icheckbox_flat-blue',
+      $('input[type="radio"].minimal').iCheck({
         radioClass: 'iradio_flat-blue'
       });
 

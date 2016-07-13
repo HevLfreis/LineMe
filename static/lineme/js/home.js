@@ -33,9 +33,8 @@ $(function() {
         });
     });
 
-    $('input[type="checkbox"].flat-red, input[type="radio"].minimal').iCheck({
-        checkboxClass: 'icheckbox_flat-green',
-        radioClass: 'iradio_flat-green'
+    $('input[type="radio"].minimal').iCheck({
+        radioClass: 'iradio_flat-green',
     });
 
     window.msgConfirmed = function(url, type, linkid) {

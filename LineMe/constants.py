@@ -16,8 +16,8 @@ GROUP_MAXSIZE = 5000
 GROUP_CREATED_CREDITS_COST = 100
 
 # Todo: implement identifier
-IDENTIFIER = {0: 'Special Code', 1: 'Email', 2: 'Institution'}
-GROUP_TYPE = {0: 'Normal', 1: 'RealTime'}
+IDENTIFIER = {0: 'Special Code', 1: 'Email', 2: 'No Validation'}
+GROUP_TYPE = {0: 'Public', 1: 'Private'}
 GROUP_REALTIME_ACTIVE_TIME = 0
 LINK_STATUS = {-3: 'Both Reject', -21: 'Target Reject Source Confirmed', -12: 'Source Reject Target Confirmed',
                -2: 'Target Reject', -1: 'Source Reject', 0: 'Both Unconfirmed',

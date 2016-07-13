@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>{{ project_name }} | Group</title>
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+{#    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">#}
     <link rel="shortcut icon" href="/static/favicon.ico">
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/plugins/iCheck/all.css">
@@ -39,8 +39,6 @@
                 <label for="member-identifier">Identifier</label>
                 {% if group.identifier == 0 %}
                   <input type="text" class="form-control" name="identifier" placeholder="Re-enter identifier">
-                {% elif group.identifier == 2 %}
-                  <input type="text" class="form-control" name="identifier" placeholder="Re-enter institution">
                 {% elif group.identifier == 1 %}
                   <input type="text" class="form-control" name="identifier" placeholder="Re-enter email">
                 {% endif %}
@@ -81,8 +79,8 @@
         <nav class="navbar navbar-static-top" role="navigation">
           <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
-              <li class="dropdown notifications-menu">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <li class="notifications-menu">
+                <a href="{% url 'home' %}">
                   <i class="fa fa-envelope-o"></i>
                   {% if msgs_count >= 99  %}
                     <span class="label label-danger">99</span>
@@ -90,17 +88,11 @@
                     <span class="label label-success">{{ msgs_count }}</span>
                   {% endif %}
                 </a>
-                <ul class="dropdown-menu">
-                  <li>
-                    <ul class="menu">
-                      <li>
-                        <a href="{% url 'home' %}">
-                          <i class="fa fa-paper-plane text-aqua"></i> You have {{ msgs_count }} messages
-                        </a>
-                      </li>
-                    </ul>
-                  </li>
-                </ul>
+              </li>
+              <li class="notifications-menu">
+                <a href="{% url 'howTo' %}">
+                  <i class="fa fa-question"></i>
+                </a>
               </li>
               <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -133,7 +125,7 @@
             </div>
           </div>
           <div id="search" class="input-group sidebar-form">
-            <input type="text" name="q" class="form-control" placeholder="Search...">
+            <input type="text" name="q" class="form-control" placeholder="Group Search...">
             <span class="input-group-btn">
               <button class="btn btn-flat"><i class="fa fa-search"></i></button>
             </span>
@@ -176,7 +168,7 @@
         </section>
         <section class="content">
           <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-3 col-sm-12">
               <div class="box box-primary">
                 <div class="box-body box-profile">
                   <img class="profile-user-img img-responsive img-circle" src="/static/images/user_avatars/{{ creator.id }}.png" alt="User profile picture">
@@ -190,15 +182,16 @@
                       <b>Created Time</b> <a class="pull-right">{{ group.created_time }}</a>
                     </li>
                     <li class="list-group-item">
-                      <b>Identifier</b> <a class="pull-right">
-                      {% if group.identifier == 1 %}
-                        Email
-                      {% elif group.identifier == 2 %}
-                        Institution
-                      {% else %}
-                        Special Code
-                      {% endif %}
-                    </a>
+                      <b>Identifier</b>
+                      <a class="pull-right">
+                        {% if group.identifier == 0 %}
+                          Special Code
+                        {% elif group.identifier == 1 %}
+                          Email
+                        {% else %}
+                          No Validation
+                        {% endif %}
+                      </a>
                     </li>
                   </ul>
                   {% if follow_status == 1 %}
@@ -217,10 +210,10 @@
         </section>
       </div>
       <footer class="main-footer">
-          <div class="pull-right hidden-xs">
-              <a href="http://www.seeleit.com" target="_black">POWERED BY HT</a>
-          </div>
-          <strong>Copyright &copy; 2016 <a href="http://cnc.sjtu.edu.cn" target="_black">CNC</a>.</strong> All rights reserved.
+        <div class="pull-right hidden-xs">
+          <a href="http://www.seeleit.com" target="_black">POWERED BY HT</a>
+        </div>
+        <strong>Copyright &copy; 2016 <a href="http://cnc.sjtu.edu.cn" target="_black">CNC</a>.</strong> All rights reserved.
       </footer>
     </div>
 
@@ -263,7 +256,7 @@
         radioClass: 'iradio_flat-green'
       });
 
-      function join() {
+      function joinGroup() {
 
         $.get('{% url 'join' group.id %}', function(result) {
 
@@ -304,7 +297,7 @@
       }
 
       $('#follow').click(function() {
-        join();
+        joinGroup();
       });
 
       $('#search').autocomplete();

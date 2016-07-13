@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>{{ project_name }} | Home</title>
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+{#    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">#}
     <link rel="shortcut icon" href="/static/favicon.ico">
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/plugins/iCheck/all.css">
@@ -32,13 +32,8 @@
             <div class="modal-body">
               <div class="form-group has-feedback">
                 <label>Group name</label>
-                <input type="text" class="form-control" name="name" placeholder="Enter group name">
+                <input type="text" class="form-control" name="name" placeholder="Enter Group Name">
                 <span class="glyphicon glyphicon-tags form-control-feedback"></span>
-              </div>
-              <div class="form-group has-feedback">
-                <label>Group Max Size</label>
-                <input type="number" class="form-control" name="maxsize" placeholder="Enter max group size, less than 5000">
-                <span class="glyphicon glyphicon-asterisk form-control-feedback"></span>
               </div>
               <div class="form-group">
                 <label>Group Identifier</label>
@@ -52,15 +47,15 @@
                   {% endfor %}
                 </select>
               </div>
-              <label>Group Type</label>
               <div class="form-group">
-                <label style="padding-right: 10px">
-                  <input type="radio" name="type" class="minimal" value="0" checked>
-                  Normal
+                <label>Group Type</label></br>
+                <label style="padding-right: 15px">
+                  <input type="radio" name="gtype" class="minimal" value="0" checked>
+                  Public
                 </label>
                 <label>
-                  <input type="radio" name="type" class="minimal" value="1">
-                  RealTime
+                  <input type="radio" name="gtype" class="minimal" value="1">
+                  Private
                 </label>
               </div>
             </div>
@@ -78,8 +73,8 @@
         <nav class="navbar navbar-static-top" role="navigation">
           <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
-              <li class="dropdown notifications-menu">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <li class="notifications-menu">
+                <a href="{% url 'home' %}">
                   <i class="fa fa-envelope-o"></i>
                   {% if msgs_count >= 99  %}
                     <span class="label label-danger">99</span>
@@ -87,23 +82,17 @@
                     <span class="label label-success">{{ msgs_count }}</span>
                   {% endif %}
                 </a>
-                <ul class="dropdown-menu">
-                  <li>
-                    <ul class="menu">
-                      <li>
-                        <a href="{% url 'home' %}">
-                          <i class="fa fa-paper-plane text-aqua"></i> You have {{ msgs_count }} messages
-                        </a>
-                      </li>
-                    </ul>
-                  </li>
-                </ul>
+              </li>
+              <li class="notifications-menu">
+                <a href="{% url 'howTo' %}">
+                  <i class="fa fa-question"></i>
+                </a>
               </li>
               <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                    <img src="/static/images/user_avatars/{{ user.id }}.png" class="user-image" alt="User Image">
-                    <span class="hidden-xs">{{ user.username }}</span>
-                    <span class="caret"></span>
+                  <img src="/static/images/user_avatars/{{ user.id }}.png" class="user-image" alt="User Image">
+                  <span class="hidden-xs">{{ user.username }}</span>
+                  <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu" role="menu">
                   <li><a href={% url 'ego' %}>My Network</a></li>
@@ -130,7 +119,7 @@
             </div>
           </div>
           <div id="search" class="input-group sidebar-form">
-            <input type="text" name="q" class="form-control" placeholder="Search...">
+            <input type="text" name="q" class="form-control" placeholder="Group Search...">
             <span class="input-group-btn">
               <button class="btn btn-flat"><i class="fa fa-search"></i></button>
             </span>
@@ -223,7 +212,6 @@
                 </div>
               </div>
             </div>
-            <div class="clearfix visible-sm-block"></div>
             <div class="col-md-3 col-sm-6 col-xs-12">
               <div class="info-box">
                 <a href="{% url 'global' %}" class="info-box-icon bg-green"><i class="ion ion-ios-people-outline"></i></a>
@@ -233,6 +221,7 @@
                 </div>
               </div>
             </div>
+            <div class="clearfix visible-sm-block"></div>
             <div class="col-md-3 col-sm-6 col-xs-12">
               <div class="info-box">
                 <a href="{% url 'profile' %}" class="info-box-icon bg-yellow"><i class="ion ion-ios-albums-outline"></i></a>
@@ -291,19 +280,20 @@
                           <td>{{ group.created_time|date:'M d, Y' }}</td>
                           <td>
                             {% if group.type == 0 %}
-                              Normal
+                              Public
                             {% else %}
-                              RealTime
+                              Private
                             {% endif %}
                           </td>
                           <td>
-                            {% if group.identifier == 1 %}
+                            {% if group.identifier == 0 %}
+                              Special Code
+                            {% elif group.identifier == 1 %}
                               Email
                             {% elif group.identifier == 2 %}
-                              Institution
-                            {% elif group.identifier == 0 %}
-                              Special Code
-                            {% endif %}</td>
+                              No Validation
+                            {% endif %}
+                          </td>
                           <td><span class="label label-info">{{ v }}</span></td>
                         </tr>
                       {% endfor %}
@@ -328,19 +318,20 @@
                           <td>{{ group.created_time|date:'M d, Y' }}</td>
                           <td>
                             {% if group.type == 0 %}
-                              Normal
+                              Public
                             {% else %}
-                              RealTime
+                              Private
                             {% endif %}
                           </td>
                           <td>
-                            {% if group.identifier == 1 %}
+                            {% if group.identifier == 0 %}
+                              Special Code
+                            {% elif group.identifier == 1 %}
                               Email
                             {% elif group.identifier == 2 %}
-                              Institution
-                            {% elif group.identifier == 0 %}
-                              Special Code
-                            {% endif %}</td>
+                              No Validation
+                            {% endif %}
+                          </td>
                           <td><span class="label label-success">{{ v }}</span></td>
                         </tr>
                       {% endfor %}
@@ -366,19 +357,20 @@
                           <td>{{ group.created_time|date:'M d, Y' }}</td>
                           <td>
                             {% if group.type == 0 %}
-                              Normal
+                              Public
                             {% else %}
-                              RealTime
+                              Private
                             {% endif %}
                           </td>
                           <td>
-                            {% if group.identifier == 1 %}
+                            {% if group.identifier == 0 %}
+                              Special Code
+                            {% elif group.identifier == 1 %}
                               Email
                             {% elif group.identifier == 2 %}
-                              Institution
-                            {% elif group.identifier == 0 %}
-                              Special Code
-                            {% endif %}</td>
+                              No Validation
+                            {% endif %}
+                          </td>
                           <td><span class="label label-info">{{ v }}</span></td>
                         </tr>
                       {% endfor %}
@@ -388,10 +380,14 @@
                 </div>
                 <div class="box-footer clearfix no-border">
                   <div class="box-tools pull-right">
-                    {% if status == 0 %}
+                    {% if group_created_status == 0 %}
                       <a class="btn bg-aqua btn-flat" data-toggle="modal" data-target="#group-create-modal" style=""><i class="fa fa-plus pull-left"></i>Create New Group</a>
+                    {% elif group_created_status == -1 %}
+                      <a class="btn bg-yellow btn-flat" data-toggle="modal" data-target="#group-create-modal" style=""><i class="fa fa-info pull-left"></i>Invalid Group Name</a>
+                    {% elif group_created_status == -2 %}
+                      <a class="btn bg-yellow btn-flat" data-toggle="modal" data-target="#group-create-modal" style=""><i class="fa fa-info pull-left"></i>Low Credits</a>
                     {% else %}
-                      <a class="btn bg-yellow btn-flat" data-toggle="modal" data-target="#group-create-modal" style=""><i class="fa fa-info pull-left"></i>Try Again</a>
+                      <a class="btn bg-red btn-flat" data-toggle="modal" data-target="#group-create-modal" style=""><i class="fa fa-info pull-left"></i>Try Again</a>
                     {% endif %}
                   </div>
                   <div class="box-tools pull-left">
@@ -429,10 +425,10 @@
         </section>
       </div>
       <footer class="main-footer">
-          <div class="pull-right hidden-xs">
-            <a href="http://www.seeleit.com" target="_black">POWERED BY HT</a>
-          </div>
-          <strong>Copyright &copy; 2016 <a href="http://cnc.sjtu.edu.cn" target="_black">CNC</a>.</strong> All rights reserved.
+        <div class="pull-right hidden-xs">
+          <a href="http://www.seeleit.com" target="_black">POWERED BY HT</a>
+        </div>
+        <strong>Copyright &copy; 2016 <a href="http://cnc.sjtu.edu.cn" target="_black">CNC</a>.</strong> All rights reserved.
       </footer>
     </div>
 

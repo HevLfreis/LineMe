@@ -39,7 +39,7 @@ urlpatterns = [
 
     url(r'^egraph/(?P<groupid>[0-9]+)/$', views.ego_graph, name='egraph'),
     url(r'^rcmdpanel/(?P<groupid>[0-9]+)/(?P<page>[0-9]+)/$', views.rcmd_panel, name='rcmd'),
-    url(r'^updategraph/(?P<groupid>[0-9]+)/$', views.update_graph, name='updateGraph'),
+    url(r'^upgraph/(?P<groupid>[0-9]+)/$', views.update_graph, name='updateGraph'),
 
     url(r'^global/$', views.global_network, name='global'),
     url(r'^global/(?P<groupid>[0-9]+)/$', views.global_network, name='globalId'),
@@ -61,6 +61,8 @@ urlpatterns = [
     #
     url(r'^avatar/$', views.avatar, name='avatar'),
     url(r'^imghandle/$', views.img_handle, name='imgHandle'),
+
+    url(r'^howto/$', views.home, name='howTo'),
     #
     # url(r'^admin/', include(admin.site.urls)),
 ]

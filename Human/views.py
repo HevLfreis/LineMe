@@ -9,12 +9,13 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render, get_object_or_404
 from django.utils import timezone
 
-from Human.forms import LoginForm, RegisterForm, GroupCreateForm, GroupMemberCreateForm, ReJoinIdentifierForm, \
+from Human.forms import LoginForm, RegisterForm, GroupCreateForm, GroupMemberCreateForm, JoinForm, \
     FileUploadForm
 from Human.methods.avatar import create_avatar, handle_avatar
 from Human.methods.lm_ego import get_user_ego_graph
 from Human.methods.group import get_group_joined_num, group_recommender, create_group, get_user_join_status
-from Human.methods.groupmember import member_recommender, create_group_member, member_join
+from Human.methods.groupmember import member_recommender, create_group_member, member_join, member_join_request, \
+    create_group_member_from_file
 from Human.methods.link import link_confirm, update_links
 from Human.methods.link import link_reject
 from Human.methods.lm_global import get_user_global_info, get_user_global_graph, get_user_global_map
@@ -28,6 +29,8 @@ from Human.models import Group, GroupMember, MemberRequest
 from LineMe.constants import PROJECT_NAME, IDENTIFIER, CITIES_TABLE
 from LineMe.settings import logger
 
+
+# Todo: check all place with user input
 
 def redirect2main(request):
     return redirect('home')
@@ -43,14 +46,18 @@ def search(request):
 
 def lm_login(request):
     context = {"project_name": PROJECT_NAME, "status": ''}
-    if request.method == 'POST':
+
+    if request.method == 'GET':
+        return render(request, 'Human/login.html', context)
+
+    elif request.method == 'POST':
         lf = LoginForm(request.POST)
 
         if lf.is_valid():
             username = lf.cleaned_data['username']
             password = lf.cleaned_data['password']
 
-            if login_user(request, username, password) == 0:
+            if login_user(request, username, password):
 
                 logger.warning(logger_join('Devil', '[' + ','.join([str(request.user.id), username, password]) + ']'))
                 logger.info(logger_join('Login', get_session_id(request)))
@@ -61,7 +68,7 @@ def lm_login(request):
         return render(request, 'Human/login.html', context)
 
     else:
-        return render(request, 'Human/login.html', context)
+        return HttpResponse(status=403)
 
 
 def lm_logout(request):
@@ -72,7 +79,11 @@ def lm_logout(request):
 
 def lm_register(request):
     context = {"project_name": PROJECT_NAME, "status": 0}
-    if request.method == 'POST':
+
+    if request.method == 'GET':
+        return render(request, 'Human/register.html', context)
+
+    elif request.method == 'POST':
         rf = RegisterForm(request.POST)
         # print 'Register Form valid: ', rf.is_valid()
         if rf.is_valid():
@@ -97,7 +108,7 @@ def lm_register(request):
             return render(request, 'Human/register.html', context)
 
     else:
-        return render(request, 'Human/register.html', context)
+        return HttpResponse(status=403)
 
 
 ########################################################################
@@ -122,29 +133,33 @@ def home(request):
 
     context = {"project_name": PROJECT_NAME, "user": user, "my_groups": my_groups,
                "in_groups": in_groups, "rcmd_groups": rcmd_groups, "msgs_count": msgs_count,
-               "status": 0, "identifier": IDENTIFIER}
+               "group_created_status": 0, "identifier": IDENTIFIER}
 
-    # Todo: group create check
-    if request.method == 'POST':
+    if request.method == 'GET':
+        return render(request, 'Human/home.html', context)
+
+    elif request.method == 'POST':
         gf = GroupCreateForm(request.POST)
-        # print gf.is_valid()
+
         if gf.is_valid():
             name = gf.cleaned_data['name']
-            maxsize = gf.cleaned_data['maxsize']
             identifier = int(gf.cleaned_data['identifier'])
-            gtype = int(gf.cleaned_data['type'])
+            gtype = int(gf.cleaned_data['gtype'])
 
-            # Todo: add no more credits
-            status = create_group(request, user, name, maxsize, identifier, gtype)
-            context["status"] = status
+            status = create_group(request, user, name, identifier, gtype)
+            context["group_created_status"] = status
+
             if status == 0:
                 groupid = Group.objects.get(group_name=name).id
                 return redirect('group', groupid=groupid)
+            else:
+                return render(request, 'Human/home.html', context)
 
-        context["status"] = -1
+        context["group_created_status"] = -4
         return render(request, 'Human/home.html', context)
+
     else:
-        return render(request, 'Human/home.html', context)
+        return HttpResponse(status=403)
 
 
 @login_required
@@ -293,10 +308,8 @@ def update_graph(request, groupid):
 
     if request.is_ajax():
         new_links = request.POST.get('links')
-
-        # Todo: success link ??? and security
-        update_links(request, new_links, groupid, user)
-        return HttpResponse("Link update successfully")
+        status = update_links(request, new_links, groupid, user)
+        return HttpResponse(status)
 
     else:
         return HttpResponse(status=403)
@@ -313,12 +326,12 @@ def global_network(request, groupid=0):
     msgs_count = get_user_msgs_count(user)
     groupid = check_groupid(user, groupid)
 
+    context = {}
     if groupid == 0:
         group = None
-        context = {}
     else:
         group = get_object_or_404(Group, id=groupid)
-        context = get_user_global_info(user, groupid)
+        context.update(get_user_global_info(user, groupid))
 
     context.update({"project_name": PROJECT_NAME, "user": user, "groups": groups,
                     "group": group, "msgs_count": msgs_count})
@@ -377,13 +390,13 @@ def profile(request):
                "first_login": first_login, 'cities_table': CITIES_TABLE, 'country': country, 'city': city}
 
     if request.is_ajax():
-        first_name = request.POST.get('firstname')
-        last_name = request.POST.get('lastname')
+        first_name = request.POST.get('firstname').strip()
+        last_name = request.POST.get('lastname').strip()
         birth = request.POST.get('birth')
         sex = int(request.POST.get('sex'))
         country = request.POST.get('country').replace('-', ' ')
         city = request.POST.get('city').replace('-', ' ')
-        institution = request.POST.get('institution')
+        institution = request.POST.get('institution').strip()
 
         # print country, city
 
@@ -434,9 +447,15 @@ def img_handle(request):
 def manage_group(request, groupid=0):
     logger.info(logger_join('Access', get_session_id(request), gid=groupid))
 
-    ufs = request.session.get('UpFileStat')
-    if ufs:
-        del request.session['UpFileStat']
+    fs = request.session.get('FileStat')
+    if fs:
+        del request.session['FileStat']
+        en = request.session.get('ErrorName')
+        del request.session['ErrorName']
+
+    us = request.session.get('UpdateStat')
+    if us:
+        del request.session['UpdateStat']
 
     user = request.user
     groups = get_user_groups(user)
@@ -446,54 +465,58 @@ def manage_group(request, groupid=0):
     group = get_object_or_404(Group, id=groupid)
 
     context = {"project_name": PROJECT_NAME, "user": user, "group": group, "groups": groups,
-               "rcmd_groups": rcmd_groups, "upfile": ufs, "msgs_count": msgs_count}
+               "rcmd_groups": rcmd_groups, "update_status": fs | us, "msgs_count": msgs_count}
 
-    if request.method == 'POST':
+    if request.method == 'GET':
+        if user != group.creator:
+            members = GroupMember.objects.filter(group=group)
+            members_count = members.count()
+
+            follow_status = get_user_join_status(request, user, group)
+            context.update({'creator': group.creator, 'members_count': members_count, 'follow_status': follow_status})
+            return render(request, 'Human/group2.html', context)
+
+        else:
+
+            mpage = request.GET.get('mpage')
+
+            # Todo: implement request paginator
+            rpage = request.GET.get('rpage')
+
+            members = GroupMember.objects.filter(group=group).order_by('-created_time')
+            request_members = MemberRequest.objects.filter(group=group).exclude(is_valid=False)
+            paginator = Paginator(members, 15)
+
+            try:
+                p = paginator.page(mpage)
+            except PageNotAnInteger:
+                p = paginator.page(1)
+            except EmptyPage:
+                p = paginator.page(paginator.num_pages)
+
+            members_count = members.count()
+            context.update({'members': p, 'creator': user, 'members_count': members_count, 'requests': request_members})
+            return render(request, 'Human/group1.html', context)
+
+    elif request.method == 'POST':
         gf = GroupMemberCreateForm(request.POST)
-        # print gf.is_valid()
+
         if gf.is_valid():
             name = gf.cleaned_data['name']
             identifier = gf.cleaned_data['identifier']
+            status = create_group_member(request, group, name, identifier)
 
-            # Todo: dangerous need fix ->status
-            m = create_group_member(request, group, name, identifier)
+            if status != 0:
+                request.session['UpdateStat'] = False
 
-            return redirect('group', groupid=groupid)
-
-    if user != group.creator:
-        members = GroupMember.objects.filter(group=group)
-        members_count = members.count()
-
-        follow_status = get_user_join_status(request, user, group)
-        context.update({'creator': group.creator, 'members_count': members_count, 'follow_status': follow_status})
-        return render(request, 'Human/group2.html', context)
+            return redirect('group', groupid)
 
     else:
-
-        mpage = request.GET.get('mpage')
-
-        # Todo: implement request paginator
-        rpage = request.GET.get('rpage')
-
-        members = GroupMember.objects.filter(group=group).order_by('-created_time')
-        request_members = MemberRequest.objects.filter(group=group).exclude(is_valid=False)
-        paginator = Paginator(members, 15)
-
-        try:
-            p = paginator.page(mpage)
-        except PageNotAnInteger:
-            p = paginator.page(1)
-        except EmptyPage:
-            p = paginator.page(paginator.num_pages)
-
-        members_count = members.count()
-        context.update({'members': p, 'creator': user, 'members_count': members_count, 'requests': request_members})
-        return render(request, 'Human/group1.html', context)
+        return HttpResponse(status=403)
 
 
 @login_required
 def join(request, groupid):
-    # Todo: spacial code join -----
 
     user = request.user
     group = get_object_or_404(Group, id=groupid)
@@ -512,18 +535,23 @@ def join(request, groupid):
             else:
                 logger.warning(logger_join('Join', get_session_id(request), 'failed or scode'))
         elif group.identifier == 2:
-            if gm.filter(token=user.extra.institution).count() == 1:
-                status = member_join(request, user, group, user.institution)
+            if get_user_join_status(request, user, group) == 0:
+                status = create_group_member(request,
+                                             group,
+                                             get_user_name(user),
+                                             'no validation',
+                                             user=user,
+                                             is_joined=True)
             else:
                 logger.warning(logger_join('Join', get_session_id(request), 'failed or scode'))
 
         return HttpResponse(status)
 
     elif request.method == 'POST':
-        rf = ReJoinIdentifierForm(request.POST)
+        jf = JoinForm(request.POST)
 
-        if rf.is_valid():
-            identifier = rf.cleaned_data['identifier']
+        if jf.is_valid():
+            identifier = jf.cleaned_data['identifier']
             # print 'Rejoin: ', groupid, identifier
             if identifier != '':
                 gm = GroupMember.objects.filter((Q(member_name=get_user_name(user)) | Q(member_name=user.username)),
@@ -543,24 +571,13 @@ def join(request, groupid):
 
 @login_required
 def join_request(request, groupid):
+
     user = request.user
     group = get_object_or_404(Group, id=groupid)
 
     if request.method == 'POST' and not GroupMember.objects.filter(user=user, group=group).exists():
         mesg = request.POST.get('message')
-
-        if MemberRequest.objects.filter(user=user, group=group).exists():
-
-            mr = get_object_or_404(MemberRequest, user=user, group=group)
-            mr.message = mesg
-        else:
-            mr = MemberRequest(user=user,
-                               group=group,
-                               message=mesg,
-                               created_time=timezone.now(),
-                               is_valid=True)
-        mr.save()
-
+        status = member_join_request(request, user, group, mesg)
         return redirect('group', groupid=groupid)
 
     else:
@@ -569,6 +586,7 @@ def join_request(request, groupid):
 
 @login_required
 def join_confirm(request, groupid, requestid):
+
     user = request.user
     group = get_object_or_404(Group, id=groupid)
 
@@ -578,9 +596,10 @@ def join_confirm(request, groupid, requestid):
         mr.is_valid = False
         mr.save()
 
-        m = create_group_member(request, group, get_user_name(mr.user), 'accepted', mr.user)
+        status = create_group_member(request, group, get_user_name(mr.user), 'accepted', mr.user, is_joined=True)
 
-        if m:
+        if status == 0:
+            m = GroupMember.objects.get(group=group, user=user)
             m.is_joined = True
             m.save()
             return redirect('group', groupid)
@@ -602,26 +621,18 @@ def upload_members(request, groupid):
         if request.method == 'POST':
             fuf = FileUploadForm(request.POST, request.FILES)
             if fuf.is_valid():
-                members = []
 
-                # Todo: file check, extend to a func
-                with request.FILES.get('members') as f:
-                    for l in f:
-                        kv = l.strip().split(',')
+                status = create_group_member_from_file(request, group)
+                if status != 0:
+                    request.session['FileStat'] = False
+                    request.session['ErrorName'] = status
+                    return redirect('group', groupid=groupid)
+                else:
 
-                        if len(kv) != 2:
-                            return redirect('group', groupid=groupid)
-                        else:
-                            members.append(kv)
-
-                for m in members:
-                    if not create_group_member(request, group, m[0], m[1]):
-                        return redirect('group', groupid=groupid)
-
-                request.session['UpFileStat'] = True
-                return redirect('group', groupid=groupid)
+                    request.session['FileStat'] = True
+                    return redirect('group', groupid=groupid)
             else:
-
+                request.session['FileStat'] = False
                 return redirect('group', groupid=groupid)
 
     else:

@@ -11,8 +11,8 @@ from Human.models import Group, GroupMember
 from LineMe.constants import CITIES_TABLE
 
 
-def validate_user(name):
-    if re.match("^[a-zA-Z][a-zA-Z0-9]{5,16}$", name):
+def validate_username(name):
+    if re.match("^[a-zA-Z][a-zA-Z0-9]{5,20}$", name):
         if not User.objects.filter(username=name).exists():
             return True
     return False
@@ -39,7 +39,13 @@ def user_in_group(user, groupid):
     return GroupMember.objects.filter(group__id=groupid, user=user).exists()
 
 
-# Todo: change to validate
+def validate_groupname(name):
+    if re.match("^[a-zA-Z][a-zA-Z0-9]{2,20}$", name):
+        if not Group.objects.filter(group_name=name).exists():
+            return True
+    return False
+
+
 def check_groupid(user, groupid):
     if groupid is None:
         return -2
@@ -47,13 +53,6 @@ def check_groupid(user, groupid):
         return groupid
     else:
         return 0
-
-
-# Todo: change to validate
-def group_name_existed(name):
-    if Group.objects.filter(group_name=name).exists():
-        return True
-    return False
 
 
 # Todo: change to validate

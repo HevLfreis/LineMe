@@ -11,14 +11,15 @@ from Human.methods.avatar import create_avatar
 from Human.methods.sessionid import get_session_id
 from Human.methods.utils import login_user, logger_join
 from Human.methods.validation import validate_email
-from Human.methods.validation import validate_user, validate_passwd
+from Human.methods.validation import validate_username, validate_passwd
 from Human.models import Privacy, Extra, GroupMember, Link
 from LineMe.settings import logger
 
 
 def create_user(request, name, email, password, password2):
 
-    if not validate_user(name):
+    # Todo: user to lowercase and case insensitive
+    if not validate_username(name):
         return -1
     elif not validate_email(email):
         return -2

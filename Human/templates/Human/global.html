@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>{{ project_name }} | Global Network</title>
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+{#    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">#}
     <link rel="shortcut icon" href="/static/favicon.ico">
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
@@ -26,8 +26,8 @@
         <nav class="navbar navbar-static-top" role="navigation">
           <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
-              <li class="dropdown notifications-menu">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <li class="notifications-menu">
+                <a href="{% url 'home' %}">
                   <i class="fa fa-envelope-o"></i>
                   {% if msgs_count >= 99  %}
                     <span class="label label-danger">99</span>
@@ -35,23 +35,17 @@
                     <span class="label label-success">{{ msgs_count }}</span>
                   {% endif %}
                 </a>
-                <ul class="dropdown-menu">
-                  <li>
-                    <ul class="menu">
-                      <li>
-                        <a href="{% url 'home' %}">
-                          <i class="fa fa-paper-plane text-aqua"></i> You have {{ msgs_count }} messages
-                        </a>
-                      </li>
-                    </ul>
-                  </li>
-                </ul>
+              </li>
+              <li class="notifications-menu">
+                <a href="{% url 'howTo' %}">
+                  <i class="fa fa-question"></i>
+                </a>
               </li>
               <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                    <img src="/static/images/user_avatars/{{ user.id }}.png" class="user-image" alt="User Image">
-                    <span class="hidden-xs">{{ user.username }}</span>
-                    <span class="caret"></span>
+                  <img src="/static/images/user_avatars/{{ user.id }}.png" class="user-image" alt="User Image">
+                  <span class="hidden-xs">{{ user.username }}</span>
+                  <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu" role="menu">
                   <li><a href={% url 'ego' %}>My Network</a></li>
@@ -78,7 +72,7 @@
             </div>
           </div>
           <div id="search" class="input-group sidebar-form">
-            <input type="text" name="q" class="form-control" placeholder="Search...">
+            <input type="text" name="q" class="form-control" placeholder="Group Search...">
             <span class="input-group-btn">
               <button class="btn btn-flat"><i class="fa fa-search"></i></button>
             </span>
@@ -130,14 +124,14 @@
           <div class="row">
             <div class="col-md-9 col-sm-12">
               <div class="box box-success">
-                  <div id="main-panel" class="bg-gray-light cl-effect" style="height: 750px;">
-                    {% if group %}
-                      <a id="map-mode" class="map text-center" style="width: 200px;z-index: 100;position: absolute;bottom: 0px;margin:75px" hidden>MAP MODE</a>
-                      <a id="normal-mode" class="normal text-center" style="width: 200px;z-index: 100;position: absolute;bottom: 0px;margin:75px">NORMAL MODE</a>
-                      <div id="network" style="position: absolute;z-index: 1;"></div>
-                      <div id="map" style="position: absolute;z-index: 1;visibility: hidden;"></div>
-                    {% endif %}
-                  </div>
+                <div id="main-panel" class="bg-gray-light cl-effect" style="height: 750px;">
+                  {% if group %}
+                    <a id="map-mode" class="map text-center" style="width: 200px;z-index: 100;position: absolute;bottom: 0px;margin:75px" hidden>MAP MODE</a>
+                    <a id="normal-mode" class="normal text-center" style="width: 200px;z-index: 100;position: absolute;bottom: 0px;margin:75px">NORMAL MODE</a>
+                    <div id="network" style="position: absolute;z-index: 1;"></div>
+                    <div id="map" style="position: absolute;z-index: 1;visibility: hidden;"></div>
+                  {% endif %}
+                </div>
               </div>
             </div>
             <div class="col-md-3 col-sm-12" id="info-panel">
@@ -209,10 +203,10 @@
         </section>
       </div>
       <footer class="main-footer">
-          <div class="pull-right hidden-xs">
-            <a href="http://www.seeleit.com" target="_black">POWERED BY HT</a>
-          </div>
-          <strong>Copyright &copy; 2016 <a href="http://cnc.sjtu.edu.cn" target="_black">CNC</a>.</strong> All rights reserved.
+        <div class="pull-right hidden-xs">
+          <a href="http://www.seeleit.com" target="_black">POWERED BY HT</a>
+        </div>
+        <strong>Copyright &copy; 2016 <a href="http://cnc.sjtu.edu.cn" target="_black">CNC</a>.</strong> All rights reserved.
       </footer>
     </div>
 

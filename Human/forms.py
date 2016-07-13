@@ -22,11 +22,10 @@ class RegisterForm(forms.Form):
 
 class GroupCreateForm(forms.Form):
     name = forms.CharField()
-    maxsize = forms.IntegerField()
     CHOICES1 = tuple(IDENTIFIER.items())
     CHOICES2 = tuple(GROUP_TYPE.items())
     identifier = forms.CharField(widget=forms.Select(choices=CHOICES1))
-    type = forms.ChoiceField(widget=forms.RadioSelect, choices=CHOICES2)
+    gtype = forms.ChoiceField(widget=forms.RadioSelect, choices=CHOICES2)
 
 
 class GroupMemberCreateForm(forms.Form):
@@ -34,7 +33,7 @@ class GroupMemberCreateForm(forms.Form):
     identifier = forms.CharField()
 
 
-class ReJoinIdentifierForm(forms.Form):
+class JoinForm(forms.Form):
     identifier = forms.CharField(required=True)
 
 

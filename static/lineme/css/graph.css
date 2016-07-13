@@ -37,22 +37,6 @@ circle {
     stroke-opacity: 0.8;
 }
 
-.box .box-widget {
-    margin-bottom: 10px;
-    cursor: pointer;
-}
-
-.box-success {
-    min-height: 650px;
-    margin: 0 auto -25px;
-}
-
-.box-footer {
-    margin-top: 30px;
-    height: 50px; /* .push must be the same height as .footer */
-
-}
-
 @keyframes fade-in {
     0% {opacity: 0;}
     40% {opacity: 0;}

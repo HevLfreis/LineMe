@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>{{ project_name }} | Upload Avatar</title>
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+{#    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">#}
     <link rel="shortcut icon" href="/static/favicon.ico">
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
@@ -59,8 +59,8 @@
         <nav class="navbar navbar-static-top" role="navigation">
           <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
-              <li class="dropdown notifications-menu">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <li class="notifications-menu">
+                <a href="{% url 'home' %}">
                   <i class="fa fa-envelope-o"></i>
                   {% if msgs_count >= 99  %}
                     <span class="label label-danger">99</span>
@@ -68,23 +68,17 @@
                     <span class="label label-success">{{ msgs_count }}</span>
                   {% endif %}
                 </a>
-                <ul class="dropdown-menu">
-                  <li>
-                    <ul class="menu">
-                      <li>
-                        <a href="{% url 'home' %}">
-                          <i class="fa fa-paper-plane text-aqua"></i> You have {{ msgs_count }} messages
-                        </a>
-                      </li>
-                    </ul>
-                  </li>
-                </ul>
+              </li>
+              <li class="notifications-menu">
+                <a href="{% url 'howTo' %}">
+                  <i class="fa fa-question"></i>
+                </a>
               </li>
               <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                    <img src="/static/images/user_avatars/{{ user.id }}.png" class="user-image" alt="User Image">
-                    <span class="hidden-xs">{{ user.username }}</span>
-                    <span class="caret"></span>
+                  <img src="/static/images/user_avatars/{{ user.id }}.png" class="user-image" alt="User Image">
+                  <span class="hidden-xs">{{ user.username }}</span>
+                  <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu" role="menu">
                   <li><a href={% url 'ego' %}>My Network</a></li>
@@ -194,12 +188,12 @@
           </ol>
         </section>
         <section class="content">
-          <div class="col-md-5">
+          <div class="col-md-5 col-sm-12">
             <div class="box box-info">
               <div class="box-body">
                 <div id="image-cropper">
                   <div class="row">
-                    <div class="col-md-7 col-xs-7">
+                    <div class="col-md-7">
                       <div class="cropit-preview"></div>
                       <div class="col-xs-12 text-center" style="padding-top: 5px">
                         <li class="fa fa-rotate-left fa-lg rotate-ccw" style="padding-right: 20px;cursor: pointer"></li>
@@ -207,7 +201,7 @@
                         <input type="range" class="cropit-image-zoom-input" style=""/>
                       </div>
                     </div>
-                    <div class="col-md-5 col-xs-5 text-center" style="margin-top: 25%">
+                    <div class="col-md-5 text-center" style="margin-top: 25%">
                       <div class="row" style="margin-bottom: 15px">
                         <button id="select" class="btn btn-primary" ><i class="fa fa-image pull-left"></i>Select New Image</button>
                       </div>
@@ -224,10 +218,10 @@
         </section>
       </div>
       <footer class="main-footer">
-          <div class="pull-right hidden-xs">
-            <a href="http://www.seeleit.com" target="_black">POWERED BY HT</a>
-          </div>
-          <strong>Copyright &copy; 2016 <a href="http://cnc.sjtu.edu.cn" target="_black">CNC</a>.</strong> All rights reserved.
+        <div class="pull-right hidden-xs">
+          <a href="http://www.seeleit.com" target="_black">POWERED BY HT</a>
+        </div>
+        <strong>Copyright &copy; 2016 <a href="http://cnc.sjtu.edu.cn" target="_black">CNC</a>.</strong> All rights reserved.
       </footer>
     </div>
 
