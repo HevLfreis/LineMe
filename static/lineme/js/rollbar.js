@@ -5,15 +5,19 @@
  */
 
 $(function() {
-    // Todo: fix select2 in profile
-    $('body, .box-body').rollbar({
-        scroll: 'vertical',
-        sliderOpacity: 0,
-        zIndex: 2000,
-        blockGlobalScroll: true,
-        wheelSpeed: 50,
-        touchSpeed: 0.4,
-        sliderSize: '25%',
-    });
+
+    var isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0;
+
+    if (!isSafari)
+        // Todo: fix select2 in profile
+        $('body, .box-body').rollbar({
+            scroll: 'vertical',
+            sliderOpacity: 0,
+            zIndex: 2000,
+            blockGlobalScroll: true,
+            wheelSpeed: 50,
+            touchSpeed: 0.4,
+            sliderSize: '25%',
+        });
 });
 

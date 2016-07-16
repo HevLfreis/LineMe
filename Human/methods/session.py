@@ -25,3 +25,10 @@ def get_session_id(request):
     else:
         return '(' + request.META.get('REMOTE_ADDR') + ')' \
                     + request.COOKIES.get('sessionid')
+
+
+def get_session_consume(request, kw):
+    val = request.session.get(kw)
+    if val:
+        del request.session[kw]
+    return val

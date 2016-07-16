@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="//cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css">
     <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
-    <link rel="stylesheet" href="/static/plugins/iCheck/square/blue.css">
+    <link rel="stylesheet" href="/static/plugins/icheck/square/blue.css">
   </head>
   <body class="hold-transition register-page">
     <div class="register-box">
@@ -21,15 +21,16 @@
         <p class="login-box-msg">Register a new membership</p>
         <form method="post">
           {% if status == -4 %}
-            <p class="text-center bg-red">Register Info Incorrect </p>
+            <p class="text-center bg-red">Register Failed </p>
           {% endif %}
           {% if status == -1 %}
             <div class="form-group has-error has-feedback">
             <label class="control-label"><i class="fa fa-times"></i> Invalid Username</label>
+            <input name="username" type="text" class="form-control" placeholder="Longer than 6, letters and nums">
           {% else %}
             <div class="form-group has-feedback">
-          {% endif %}
             <input name="username" type="text" class="form-control" placeholder="Username">
+          {% endif %}
             <span class="glyphicon glyphicon-user form-control-feedback"></span>
           </div>
           {% if status == -2 %}
@@ -44,10 +45,11 @@
           {% if status == -3 %}
             <div class="form-group has-error has-feedback">
             <label class="control-label"><i class="fa fa-times"></i> Invalid Password</label>
+            <input name="password" type="password" class="form-control" placeholder="Longer than 6, letters and nums">
           {% else %}
             <div class="form-group has-feedback">
-          {% endif %}
             <input name="password" type="password" class="form-control" placeholder="Password">
+          {% endif %}
             <span class="glyphicon glyphicon-lock form-control-feedback"></span>
           </div>
           <div class="form-group has-feedback">
@@ -68,8 +70,9 @@
 
     <script src="/static/plugins/jQuery/jQuery-2.1.4.min.js"></script>
     <script src="/static/bootstrap/js/bootstrap.min.js"></script>
-    <script src="/static/plugins/iCheck/icheck.min.js"></script>
+    <script src="/static/plugins/icheck/icheck.min.js"></script>
     <script type="text/javascript">
+      {#Todo: icheck#}
       $(function () {
         $('input').iCheck({
           checkboxClass: 'icheckbox_square-blue',

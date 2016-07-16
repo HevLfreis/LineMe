@@ -7,7 +7,7 @@
 {#    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">#}
     <link rel="shortcut icon" href="/static/favicon.ico">
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/static/plugins/iCheck/all.css">
+    <link rel="stylesheet" href="/static/plugins/icheck/all.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="//cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css">
     <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
@@ -27,7 +27,7 @@
           <form method="post" class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-              <h4 class="modal-title">Create a New Group</h4>
+              <h4 class="modal-title">New Group</h4>
             </div>
             <div class="modal-body">
               <div class="form-group has-feedback">
@@ -47,7 +47,7 @@
                   {% endfor %}
                 </select>
               </div>
-              <div class="form-group">
+              <div class="form-group" style="margin-bottom: 0">
                 <label>Group Type</label></br>
                 <label style="padding-right: 15px">
                   <input type="radio" name="gtype" class="minimal" value="0" checked>
@@ -60,6 +60,7 @@
               </div>
             </div>
             <div class="modal-footer">
+              <h4 class="pull-left text-red">Create group will cost {{ group_cost }} credits</h4>
               <button type="submit" class="btn btn-primary">Create</button>
             </div>
           </form>
@@ -130,30 +131,30 @@
           <ul class="control-sidebar-menu">
             <li>
               <a href="#">
-                {% if user.extra.sex  %}
-                  <i class="menu-icon fa fa-venus bg-yellow"></i>
+                {% if user.extra.gender  %}
+                  <i class="menu-icon fa fa-venus bg-yellow" title="gender"></i>
                   <div class="menu-info">
-                    <h3 class="control-sidebar-subheading">Female</h3>
+                    <h4 class="control-sidebar-subheading">Female</h4>
                   </div>
                 {% else %}
-                  <i class="menu-icon fa fa-mars bg-yellow"></i>
+                  <i class="menu-icon fa fa-mars bg-yellow" title="gender"></i>
                   <div class="menu-info">
-                    <h3 class="control-sidebar-subheading">Male</h3>
+                    <h4 class="control-sidebar-subheading">Male</h4>
                   </div>
                 {% endif %}
               </a>
             </li>
             <li>
               <a href="#">
-                <i class="menu-icon fa fa-birthday-cake bg-red"></i>
+                <i class="menu-icon fa fa-birthday-cake bg-red" title="birth"></i>
                 <div class="menu-info">
-                  <h2 id="profile-birth" class="control-sidebar-subheading">{{ user.extra.birth }}</h2>
+                  <h4 id="profile-birth" class="control-sidebar-subheading">{{ user.extra.birth }}</h4>
                 </div>
               </a>
             </li>
             <li>
               <a href="#">
-                <i class="menu-icon fa fa-envelope-o bg-light-blue"></i>
+                <i class="menu-icon fa fa-envelope-o bg-light-blue" title="email"></i>
                 <div class="menu-info">
                   <h4 id="profile-email1" class="control-sidebar-subheading"></h4>
                   <p id="profile-email2"></p>
@@ -162,7 +163,7 @@
             </li>
             <li>
               <a href="#">
-                <i class="menu-icon fa fa-location-arrow bg-green"></i>
+                <i class="menu-icon fa fa-location-arrow bg-green" title="location"></i>
                 <div class="menu-info">
                   <h4 id="profile-location1" class="control-sidebar-subheading"></h4>
                   <p id="profile-location2"></p>
@@ -172,16 +173,16 @@
             <li>
             <li>
               <a href="#">
-                <i class="menu-icon fa fa-institution bg-maroon"></i>
+                <i class="menu-icon fa fa-institution bg-maroon" title="institution"></i>
                 <div class="menu-info">
-                  <h3 id="profile-institution1" class="control-sidebar-subheading"></h3>
+                  <h4 id="profile-institution1" class="control-sidebar-subheading"></h4>
                   <p id="profile-institution2"></p>
                 </div>
               </a>
             </li>
             <li>
               <a href="#">
-                <i class="menu-icon fa fa-star bg-teal"></i>
+                <i class="menu-icon fa fa-star bg-teal" title="credits"></i>
                 <div class="menu-info">
                   <h4 class="control-sidebar-subheading">{{ user.extra.credits }}</h4>
                 </div>
@@ -381,7 +382,7 @@
                 <div class="box-footer clearfix no-border">
                   <div class="box-tools pull-right">
                     {% if group_created_status == 0 %}
-                      <a class="btn bg-aqua btn-flat" data-toggle="modal" data-target="#group-create-modal" style=""><i class="fa fa-plus pull-left"></i>Create New Group</a>
+                      <a class="btn bg-aqua btn-flat" data-toggle="modal" data-target="#group-create-modal" style=""><i class="fa fa-plus pull-left"></i>New Group</a>
                     {% elif group_created_status == -1 %}
                       <a class="btn bg-yellow btn-flat" data-toggle="modal" data-target="#group-create-modal" style=""><i class="fa fa-info pull-left"></i>Invalid Group Name</a>
                     {% elif group_created_status == -2 %}
@@ -414,7 +415,7 @@
                   <h3 class="box-title">My Link Invitations</h3>
                   <div class="box-tools pull-right">
                     <div class="has-feedback">
-                      <input id="search-group" type="text" class="form-control input-sm" placeholder="Search Group">
+                      <input id="search-group" type="text" class="form-control input-sm" placeholder="Group Search">
                       <span class="glyphicon glyphicon-search form-control-feedback"></span>
                     </div>
                   </div>
@@ -435,7 +436,7 @@
     <script src="/static/plugins/jQuery/jQuery-2.1.4.min.js"></script>
     <script src="/static/bootstrap/js/bootstrap.min.js"></script>
     <script src="/static/dist/js/app.min.js"></script>
-    <script src="/static/plugins/iCheck/icheck.min.js"></script>
+    <script src="/static/plugins/icheck/icheck.min.js"></script>
     <script src="/static/plugins/rollbar/js/jquery.easing.1.3.js"></script>
     <script src="/static/plugins/rollbar/js/jquery.mousewheel.js"></script>
     <script src="/static/plugins/rollbar/js/jquery.rollbar.min.js"></script>
@@ -447,6 +448,10 @@
       var births = "{{ user.extra.birth }}".split(",");
       var locations = "{{ user.extra.location|safe }}".split("-");
       var institutions = "{{ user.extra.institution }}".split(" ");
+
+      var msgPanelUrl = "{% url 'homeMsg' %}";
+      var invPanelUrl = "{% url 'homeInv' %}";
+
       $('#profile-email1').text(emails[0]);
       $('#profile-email2').text('@'+emails[1]);
       $('#profile-birth').text(births[0]);

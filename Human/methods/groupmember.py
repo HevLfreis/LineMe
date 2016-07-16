@@ -3,25 +3,26 @@
 # created by hevlhayt@foxmail.com 
 # Date: 2016/7/9
 # Time: 13:50
-
-
-# Todo: token multiple check, and fix same token
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
-from Human.methods.sessionid import get_session_id
+from Human.methods.session import get_session_id
 from Human.methods.user import get_user_name
 from Human.methods.utils import logger_join
 from Human.models import GroupMember, Link, MemberRequest
+from LineMe.constants import GROUP_MAXSIZE
 from LineMe.settings import logger
 
 
+# Todo: token multiple check, and fix same token, token can be same ?
 def create_group_member(request, group, name, identifier, user=None, is_creator=False, is_joined=False):
     now = timezone.now()
 
     if GroupMember.objects.filter(member_name=name, group=group).exists():
         return -1
+    elif GroupMember.objects.filter(group=group).count() >= GROUP_MAXSIZE:
+        return -3
 
     try:
 
@@ -43,7 +44,6 @@ def create_group_member(request, group, name, identifier, user=None, is_creator=
 
 
 def create_group_member_from_file(request, group):
-
     members = []
     with request.FILES.get('members') as f:
 
@@ -65,7 +65,12 @@ def create_group_member_from_file(request, group):
     return 0
 
 
+# Todo: fix the func
 def member_join(request, user, group, identifier):
+    if not GroupMember.objects.filter((Q(member_name=get_user_name(user)) | Q(member_name=user.username)),
+                                      group=group, token=identifier).exists():
+        return -1
+
     now = timezone.now()
     try:
         m = GroupMember.objects.get((Q(member_name=get_user_name(user)) | Q(member_name=user.username)),
@@ -83,7 +88,6 @@ def member_join(request, user, group, identifier):
 
 
 def member_join_request(request, user, group, mesg):
-
     try:
         if MemberRequest.objects.filter(user=user, group=group).exists():
 

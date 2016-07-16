@@ -4,13 +4,15 @@
 # Date: 2016/7/9
 # Time: 13:51
 import datetime
+
+from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.db.models import Q
 
 from Human.methods.avatar import create_avatar
-from Human.methods.sessionid import get_session_id
+from Human.methods.session import get_session_id
 from Human.methods.utils import login_user, logger_join
-from Human.methods.validation import validate_email
+from Human.methods.validation import validate_email, validate_username_exist
 from Human.methods.validation import validate_username, validate_passwd
 from Human.models import Privacy, Extra, GroupMember, Link
 from LineMe.settings import logger
@@ -18,8 +20,9 @@ from LineMe.settings import logger
 
 def create_user(request, name, email, password, password2):
 
-    # Todo: user to lowercase and case insensitive
-    if not validate_username(name):
+    name = name.lower()
+
+    if not validate_username_exist(name):
         return -1
     elif not validate_email(email):
         return -2
@@ -27,7 +30,6 @@ def create_user(request, name, email, password, password2):
         return -3
     else:
 
-        # Todo: add finally
         try:
 
             u = User.objects.create_user(name, email, password)
@@ -37,7 +39,7 @@ def create_user(request, name, email, password, password2):
             pri = Privacy(user=u, link_me=True, see_my_global=True)
             pri.save()
             extra = Extra(user=u,
-                          sex=False,
+                          gender=False,
 
                           # Todo: django timezone?
                           birth=datetime.date.today(),
@@ -47,7 +49,7 @@ def create_user(request, name, email, password, password2):
             extra.save()
             create_avatar(request, u.id, name)
         except Exception, e:
-            # print 'Create user failed: ', e
+            logout(request)
             logger.error(logger_join('Create', get_session_id(request), 'failed', e=e))
             return -4
 

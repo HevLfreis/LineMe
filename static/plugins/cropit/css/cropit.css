@@ -1,0 +1,60 @@
+.cropit-image-zoom-input {
+    width:130px;
+    margin-top:10px;
+}
+.cropit-image-zoom-input.custom {
+    -webkit-appearance:none;
+    -moz-appearance:none;
+    appearance:none;
+    height:5px;
+    background:#eee;
+    -webkit-border-radius:5px;
+    border-radius:5px;
+    outline:none;
+}
+.cropit-image-zoom-input.custom::-moz-range-track {
+    -webkit-appearance:none;
+    -moz-appearance:none;
+    appearance:none;
+    height:5px;
+    background:#eee;
+    -webkit-border-radius:5px;
+    border-radius:5px;
+    outline:none
+}
+.cropit-image-zoom-input.custom::-webkit-slider-thumb {
+    -webkit-appearance:none;
+    -moz-appearance:none;
+    appearance:none;
+    width:15px;
+    height:15px;
+    background: #58bcee;
+    /*-webkit-border-radius:50%;*/
+    /*border-radius:50%;*/
+    -webkit-transition:background 0.25s;
+    -moz-transition:background 0.25s;
+    -o-transition:background 0.25s;
+    -ms-transition:background 0.25s;
+    transition:background 0.25s;
+}
+.cropit-image-zoom-input.custom::-webkit-slider-thumb:hover.cropit-image-zoom-input.custom::-webkit-slider-thumb:hover,.splash .controls-wrapper .slider-wrapper .cropit-image-zoom-input.custom::-webkit-slider-thumb:active {
+    background: #4faddc;
+}
+.cropit-image-zoom-input.custom::-moz-range-thumb {
+    -webkit-appearance:none;
+    -moz-appearance:none;
+    appearance:none;
+    width:15px;
+    height:15px;
+    background:#888;
+    /*-webkit-border-radius:50%;*/
+    /*border-radius:50%;*/
+    -webkit-transition:background 0.25s;
+    -moz-transition:background 0.25s;
+    -o-transition:background 0.25s;
+    -ms-transition:background 0.25s;
+    transition:background 0.25s;
+}
+.cropit-image-zoom-input.custom::-moz-range-thumb:hover, .cropit-image-zoom-input.custom::-moz-range-thumb:active {
+    background:#bbb
+}

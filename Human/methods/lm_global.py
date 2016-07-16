@@ -13,7 +13,6 @@ from LineMe.constants import CITIES_TABLE
 
 
 def get_user_global_graph(user, groupid):
-
     # Todo: status should =3
     ls = Link.objects.filter(group__id=groupid)
 
@@ -23,6 +22,7 @@ def get_user_global_graph(user, groupid):
     nodes.append({'id': self.id, 'userid': self.user.id, 'name': self.member_name,
                   'self': True, 'group': 0})
 
+    # Todo: implement group color
     gms = GroupMember.objects.filter(group__id=groupid).exclude(user=user)
     for gm in gms:
         nodes.append({'id': gm.id, 'userid': (-1 if gm.user is None else gm.user.id), 'name': gm.member_name,
@@ -39,7 +39,6 @@ def get_user_global_graph(user, groupid):
 
 
 def get_user_global_map(user, groupid):
-
     # Todo: status should =3
     ls = Link.objects.filter(group__id=groupid)
     gms = GroupMember.objects.filter(group__id=groupid)
@@ -85,7 +84,7 @@ def get_user_global_map(user, groupid):
         # print d
         country, city = node.split('-')
         nodes.append({"name": city, "value": CITIES_TABLE[country][city][-1::-1] + [d['weight'], d['friends']],
-                      "self": True if d.has_key('self') else False})
+                      "self": True if 'self' in d else False})
 
     # print nodes
 

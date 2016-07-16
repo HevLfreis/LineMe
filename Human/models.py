@@ -13,7 +13,7 @@ class Privacy(models.Model):
 
 class Extra(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    sex = models.BooleanField()
+    gender = models.BooleanField()
     birth = models.DateField()
     location = models.CharField(max_length=50, null=True)
     institution = models.CharField(max_length=150, null=True)
@@ -21,7 +21,6 @@ class Extra(models.Model):
     credits = models.IntegerField()
 
 
-# Todo: need a new group def
 class Group(models.Model):
     group_name = models.CharField(max_length=50)
     creator = models.ForeignKey(User, on_delete=models.CASCADE)

@@ -14,7 +14,7 @@ def get_user_ego_graph(user, groupid):
 
     gms, nodes, links = [], [], []
 
-    self = GroupMember.objects.get(group__id=groupid, user=user)
+    self = GroupMember.objects.get(group__id=groupid, user=user, is_joined=True)
     nodes.append({'id': self.id, 'userid': self.user.id, 'name': self.member_name,
                   'self': True, 'group': 0})
 
@@ -27,6 +27,7 @@ def get_user_ego_graph(user, groupid):
             if link.target_member not in gms and link.target_member != self:
                 gms.append(link.target_member)
 
+        # Todo: implement group color
         for gm in gms:
             nodes.append({'id': gm.id, 'userid': (-1 if gm.user is None else gm.user.id), 'name': gm.member_name,
                           'self': False, 'group': random.randint(1, 4)})

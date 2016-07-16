@@ -49,28 +49,28 @@ $(function() {
                     $('#msg-'+linkid+' > small').attr('class', 'label label-danger').text('Rejected');
             }
         });
-    }
+    };
 
-    function updateMsgPanel(page) {
-        $.get('/msgpanel/'+page+'/', function(data){
+    window.updateMsgPanel = function(page) {
+        $.get(msgPanelUrl+'?page='+page, function(data){
             var msg = $('#box-msg');
             msg.find('.box-body').detach();
             msg.find('.box-footer').detach();
             msg.append(data);
         });
-    }
+    };
 
     var timeout;
-    function updateInvPanel(page, groupname) {
+    window.updateInvPanel = function(page, groupname) {
         if(groupname)
-            $.get('/invpanel/'+page+'/?groupname='+groupname, function(data) {
+            $.get(invPanelUrl+'?page='+page+'&groupname='+groupname, function(data) {
                 onUpdateInvSucceess(data);
             });
         else
-            $.get('/invpanel/'+page+'/', function(data){
+            $.get(invPanelUrl+'?page='+page, function(data){
                 onUpdateInvSucceess(data);
             });
-    }
+    };
 
     function onUpdateInvSucceess(data) {
         var inv = $('#box-inv');

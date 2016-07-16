@@ -174,6 +174,9 @@
     {% if group %}
       <script type="text/javascript">
         var groupid = {{ group.id }};
+        var rcmdUrl = "{% url 'rcmd' group.id %}";
+        var eGraphUrl = "{% url 'eGraph' group.id %}";
+        var updateGraphUrl = "{% url 'updateGraph' group.id %}";
       </script>
       <script src="/static/lineme/js/ego.js"></script>
     {% else %}

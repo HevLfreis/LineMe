@@ -7,11 +7,15 @@
 // Todo: check
 $(function() {
 
+    /**
+        rcmd panel
+     */
+
     var rcmdAddedNode = {};
 
     window.updateRcmdPanel = function(page) {
 
-        $.get("/rcmdpanel/"+groupid+"/"+page, function(data) {
+        $.get(rcmdUrl+'?page='+page, function(data) {
             $('#rcmd-panel').html(data);
 
             $('#refresh').click(function() {
@@ -57,6 +61,11 @@ $(function() {
 
     updateRcmdPanel(1);
 
+
+    /**
+        d3 graph
+     */
+
     var tip = d3.tip()
         .attr({'class': 'd3-tip'})
         .html(function(d) {
@@ -75,7 +84,12 @@ $(function() {
         .domain([0,height]).range([0, height]);
 
     var charge = -800;
+
     var color = d3.scale.category10();
+    //var color = function(i){
+    //    var c = ['#3498db','#1abc9c','#f1c40f','#9588b2','#ec7063','#9cc2cb','#af7ac5','#f39c12','#95a5a6'];
+    //    return c[i%c.length]
+    //};
 
 
     var zoomer = d3.behavior.zoom()
@@ -89,6 +103,7 @@ $(function() {
         .charge(charge)
         .linkDistance(200)
         .size([width, height]);
+
 
     var drag = force.drag()
         .origin(function(d) { return d; })
@@ -130,7 +145,6 @@ $(function() {
 
     }
 
-
     var vis = svg.append("svg:g");
 
     vis.attr('fill', 'red')
@@ -145,9 +159,9 @@ $(function() {
 
     var defs = vis.append("defs").attr("id", "imgdefs");
     //d3.json("/static/data/miserables.json", function(error, graph) {
-    d3.json("/egraph/"+groupid+"/", function(error, graph) {
+    d3.json(eGraphUrl, function(error, graph) {
         if (error) {
-            alert("Network error");
+            alert("Server Internal Error");
             throw error;
         }
 
@@ -205,10 +219,7 @@ $(function() {
             node.attr("transform", function(d) {
                 return "translate(" + d.x + "," + d.y + ")";
             });
-
-
         });
-
     });
 
 
@@ -330,7 +341,6 @@ $(function() {
         //console.logs(d);
         tip.attr('class', 'd3-tip animate').show(d);
         node.style("stroke", function(n) {
-
             if (linkedIndex[d.id + "," + n.id]||linkedIndex[n.id + "," + d.id])
                 return "#38363a";
             else
@@ -352,7 +362,6 @@ $(function() {
         tip.hide();
         node.style("stroke", function(n) { return color(n.group); });
         link.classed("link-selected", false);
-
     }
 
 
@@ -395,8 +404,8 @@ $(function() {
         $.ajax({
             type: "POST",
             data: { links: data },
-            url: "/upgraph/"+groupid+"/",
-            success: function(msg){
+            url: updateGraphUrl,
+            success: function(msg) {
                 nodesCopy = nodes.slice(0);
                 linksCopy = links.slice(0);
                 linkedIndexCopy = $.extend({}, linkedIndex);
@@ -405,6 +414,9 @@ $(function() {
                 else alert("Update Failed");
                 updateRcmdPanel(1);
                 resetMenu();
+            },
+            error: function() {
+                alert("Update Failed");
             }
         });
     });
@@ -442,7 +454,7 @@ $(function() {
     $('#search').autocomplete({
         type: 'member',
         groupid: groupid,
-        onclick: f = function(d) {
+        onclick: function(d) {
 
             var id = $(d).attr("id"),
                 nid = 'sug-'+id.substring(4, id.length),

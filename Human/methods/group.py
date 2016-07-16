@@ -4,13 +4,14 @@
 # Date: 2016/7/9
 # Time: 13:50
 import networkx as nx
+from django.db.models import Q
 from django.utils import timezone
 
 from Human.methods.groupmember import create_group_member
-from Human.methods.sessionid import get_session_id
+from Human.methods.session import get_session_id
 from Human.methods.user import get_user_name
 from Human.methods.utils import logger_join
-from Human.methods.validation import validate_groupname
+from Human.methods.validation import validate_group_info, user_in_group
 from Human.models import Group, Credits, MemberRequest, Link
 from Human.models import GroupMember
 from LineMe.constants import GROUP_CREATED_CREDITS_COST
@@ -21,7 +22,7 @@ from LineMe.settings import logger
 def create_group(request, user, name, identifier, gtype):
     now = timezone.now()
 
-    if not validate_groupname(name):
+    if not validate_group_info(name, identifier, gtype):
         return -1
     elif user.extra.credits < GROUP_CREATED_CREDITS_COST:
         return -2
@@ -56,7 +57,6 @@ def create_group(request, user, name, identifier, gtype):
         c.save()
 
     except Exception, e:
-        # Todo: ????fix
         logger.error(logger_join('Create', get_session_id(request), 'failed', e=e))
         return -4
 
@@ -72,7 +72,7 @@ def create_group(request, user, name, identifier, gtype):
 def group_recommender(user):
     gms = GroupMember.objects.filter(member_name=get_user_name(user), is_joined=False)
 
-    sug = [gm.group for gm in gms]
+    sug = set(gm.group for gm in gms if not user_in_group(user, gm.group.id))
 
     return sug
 
@@ -85,8 +85,9 @@ def get_group_joined_num(group):
     return str(joined) + '/' + str(total)
 
 
-def get_user_joined_member(user, groupid):
-    gm = GroupMember.objects.filter(user=user, group__id=groupid, is_joined=True)
+def get_user_member_in_group(user, group):
+    gm = GroupMember.objects.filter(
+        (Q(member_name=get_user_name(user)) | Q(member_name=user.username)), group=group)
     if gm.exists():
         return gm
     else:
@@ -112,8 +113,8 @@ def get_user_join_status(request, user, group):
     else:
         return 0
 
-########################################################################
 
+########################################################################
 
 def create_dummy_members(group, u, num):
     for i in range(num):

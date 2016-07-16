@@ -27,25 +27,25 @@ urlpatterns = [
     url(r'^search/$', views.search, name='search'),
 
     url(r'^home/$', views.home, name='home'),
-    url(r'^msgpanel/(?P<page>[0-9]+)/$', views.msg_panel, name='homeMsg'),
+    url(r'^msgpanel/$', views.msg_panel, name='homeMsg'),
     url(r'^msghandle/(?P<mtype>[0-1])/(?P<linkid>[0-9]+)/$', views.msg_handle, name='msgHandle'),
 
-    url(r'^invpanel/(?P<page>[0-9]+)/$', views.inv_panel, name='homeInv'),
+    url(r'^invpanel/$', views.inv_panel, name='homeInv'),
     url(r'^sendemail/(?P<page>[0-9]+)/$', views.send_email2unconfirmed, name='email'),
 
     #
     url(r'^ego/$', views.ego_network, name='ego'),
     url(r'^ego/(?P<groupid>[0-9]+)/$', views.ego_network, name='egoId'),
 
-    url(r'^egraph/(?P<groupid>[0-9]+)/$', views.ego_graph, name='egraph'),
-    url(r'^rcmdpanel/(?P<groupid>[0-9]+)/(?P<page>[0-9]+)/$', views.rcmd_panel, name='rcmd'),
+    url(r'^egraph/(?P<groupid>[0-9]+)/$', views.ego_graph, name='eGraph'),
+    url(r'^rcmdpanel/(?P<groupid>[0-9]+)/$', views.rcmd_panel, name='rcmd'),
     url(r'^upgraph/(?P<groupid>[0-9]+)/$', views.update_graph, name='updateGraph'),
 
     url(r'^global/$', views.global_network, name='global'),
     url(r'^global/(?P<groupid>[0-9]+)/$', views.global_network, name='globalId'),
 
-    url(r'^ggraph/(?P<groupid>[0-9]+)/$', views.global_graph, name='ggraph'),
-    url(r'^gmap/(?P<groupid>[0-9]+)/$', views.global_map, name='gmap'),
+    url(r'^ggraph/(?P<groupid>[0-9]+)/$', views.global_graph, name='gGraph'),
+    url(r'^gmap/(?P<groupid>[0-9]+)/$', views.global_map, name='gMap'),
 
     #
     url(r'^profile/$', views.profile, name='profile'),

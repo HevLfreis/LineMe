@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="//cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css">
     <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
     <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
-    <link rel="stylesheet" href="/static/plugins/bootstrap-slider/slider.css">
+    <link rel="stylesheet" href="/static/plugins/cropit/css/cropit.css">
     <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
     <style>
 
@@ -116,30 +116,30 @@
           <ul class="control-sidebar-menu">
             <li>
               <a href="#">
-                {% if user.extra.sex  %}
-                  <i class="menu-icon fa fa-venus bg-yellow"></i>
+                {% if user.extra.gender  %}
+                  <i class="menu-icon fa fa-venus bg-yellow" title="gender"></i>
                   <div class="menu-info">
-                    <h3 class="control-sidebar-subheading">Female</h3>
+                    <h4 class="control-sidebar-subheading">Female</h4>
                   </div>
                 {% else %}
-                  <i class="menu-icon fa fa-mars bg-yellow"></i>
+                  <i class="menu-icon fa fa-mars bg-yellow" title="gender"></i>
                   <div class="menu-info">
-                    <h3 class="control-sidebar-subheading">Male</h3>
+                    <h4 class="control-sidebar-subheading">Male</h4>
                   </div>
                 {% endif %}
               </a>
             </li>
             <li>
               <a href="#">
-                <i class="menu-icon fa fa-birthday-cake bg-red"></i>
+                <i class="menu-icon fa fa-birthday-cake bg-red" title="birth"></i>
                 <div class="menu-info">
-                  <h2 id="profile-birth" class="control-sidebar-subheading">{{ user.extra.birth }}</h2>
+                  <h4 id="profile-birth" class="control-sidebar-subheading">{{ user.extra.birth }}</h4>
                 </div>
               </a>
             </li>
             <li>
               <a href="#">
-                <i class="menu-icon fa fa-envelope-o bg-light-blue"></i>
+                <i class="menu-icon fa fa-envelope-o bg-light-blue" title="email"></i>
                 <div class="menu-info">
                   <h4 id="profile-email1" class="control-sidebar-subheading"></h4>
                   <p id="profile-email2"></p>
@@ -148,7 +148,7 @@
             </li>
             <li>
               <a href="#">
-                <i class="menu-icon fa fa-location-arrow bg-green"></i>
+                <i class="menu-icon fa fa-location-arrow bg-green" title="location"></i>
                 <div class="menu-info">
                   <h4 id="profile-location1" class="control-sidebar-subheading"></h4>
                   <p id="profile-location2"></p>
@@ -158,16 +158,16 @@
             <li>
             <li>
               <a href="#">
-                <i class="menu-icon fa fa-institution bg-maroon"></i>
+                <i class="menu-icon fa fa-institution bg-maroon" title="institution"></i>
                 <div class="menu-info">
-                  <h3 id="profile-institution1" class="control-sidebar-subheading"></h3>
+                  <h4 id="profile-institution1" class="control-sidebar-subheading"></h4>
                   <p id="profile-institution2"></p>
                 </div>
               </a>
             </li>
             <li>
               <a href="#">
-                <i class="menu-icon fa fa-star bg-teal"></i>
+                <i class="menu-icon fa fa-star bg-teal" title="credits"></i>
                 <div class="menu-info">
                   <h4 class="control-sidebar-subheading">{{ user.extra.credits }}</h4>
                 </div>
@@ -188,29 +188,31 @@
           </ol>
         </section>
         <section class="content">
-          <div class="col-md-5 col-sm-12">
-            <div class="box box-info">
-              <div class="box-body">
-                <div id="image-cropper">
-                  <div class="row">
-                    <div class="col-md-7">
-                      <div class="cropit-preview"></div>
-                      <div class="col-xs-12 text-center" style="padding-top: 5px">
-                        <li class="fa fa-rotate-left fa-lg rotate-ccw" style="padding-right: 20px;cursor: pointer"></li>
-                        <li class="fa fa-rotate-right fa-lg rotate-cw" style="cursor: pointer"></li>
-                        <input type="range" class="cropit-image-zoom-input" style=""/>
+          <div class="row">
+            <div class="col-md-5 col-sm-12">
+              <div class="box box-info">
+                <div class="box-body">
+                  <div id="image-cropper">
+                    <div class="row">
+                      <div class="col-md-7">
+                        <div class="cropit-preview"></div>
+                        <div class="col-xs-12 text-center" style="padding-top: 5px">
+                          <li class="fa fa-rotate-left fa-lg rotate-ccw" style="padding-right: 20px;cursor: pointer"></li>
+                          <li class="fa fa-rotate-right fa-lg rotate-cw" style="cursor: pointer"></li>
+                          <input type="range" class="cropit-image-zoom-input custom">
+                        </div>
+                      </div>
+                      <div class="col-md-5 text-center" style="margin-top: 25%">
+                        <div class="row" style="margin-bottom: 15px">
+                          <button id="select" class="btn btn-primary" ><i class="fa fa-image pull-left"></i>Select New Image</button>
+                        </div>
+                        <div class="row">
+                          <button id="upload" class="export btn btn-success disabled" style="" disabled><i class="fa fa-upload pull-left"></i>Upload</button>
+                        </div>
                       </div>
                     </div>
-                    <div class="col-md-5 text-center" style="margin-top: 25%">
-                      <div class="row" style="margin-bottom: 15px">
-                        <button id="select" class="btn btn-primary" ><i class="fa fa-image pull-left"></i>Select New Image</button>
-                      </div>
-                      <div class="row">
-                        <button id="upload" class="export btn btn-success disabled" style="" disabled><i class="fa fa-upload pull-left"></i>Upload</button>
-                      </div>
-                    </div>
+                    <input type="file" class="cropit-image-input" />
                   </div>
-                  <input type="file" class="cropit-image-input" />
                 </div>
               </div>
             </div>
@@ -281,17 +283,12 @@
       $('#upload').click(function() {
         var imageData = $('#image-cropper').cropit('export');
 
-        $.ajax({
-          type: "POST",
-          url: {% url 'imgHandle' %},
-          data: {
-            imgBase64:imageData
+        $.post('{% url 'imgHandle' %}', {imgBase64:imageData}, function(result) {
+          if (result == '0') {
+            alert('Upload Successfully');
+            window.location.reload();
           }
-        }).done(function(o) {
-          alert(o);
-          location.reload()
-        }).fail(function(){
-          alert("Upload failed");
+          else alert('Upload Failed');
         });
       });
 

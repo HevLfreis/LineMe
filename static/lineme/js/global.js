@@ -53,7 +53,12 @@ $(function() {
         .domain([0,height]).range([0, height]);
 
     var charge = -800;
+
     var color = d3.scale.category10();
+    //var color = function(i){
+    //    var c = ['#3498db','#1abc9c','#f1c40f','#9588b2','#ec7063','#9cc2cb','#af7ac5','#f39c12','#95a5a6'];
+    //    return c[i%c.length]
+    //};
 
 
     var zoomer = d3.behavior.zoom()
@@ -67,6 +72,7 @@ $(function() {
         .charge(charge)
         .linkDistance(200)
         .size([width, height]);
+
 
     var drag = force.drag()
         .origin(function(d) { return d; })
@@ -122,9 +128,9 @@ $(function() {
 
     var defs = vis.append("defs").attr("id", "imgdefs");
     //d3.json("/static/data/miserables.json", function(error, graph) {
-    d3.json("/ggraph/"+groupid+"/", function(error, graph) {
+    d3.json(gGraphUrl, function(error, graph) {
         if (error) {
-            alert("Network error");
+            alert("Server Internal Error");
             throw error;
         }
 
@@ -222,7 +228,6 @@ $(function() {
 
     }
 
-
     function nodeMouseover(d, i) {
         //console.logs(d);
         tip.attr('class', 'd3-tip animate').show(d);
@@ -263,7 +268,6 @@ $(function() {
     function dragended(d) {
         d3.select(this).classed("dragging", false);
     }
-
 
 
 
@@ -309,7 +313,7 @@ $(function() {
 
     var myMap = echarts.init(document.getElementById('map'), 'roma');
 
-    $.get("/gmap/"+groupid+"/", function(result){
+    $.get(gMapUrl, function(result){
 
         //console.logs(result.nodes);
         //console.logs(result.links);

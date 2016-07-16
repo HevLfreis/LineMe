@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="//cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css">
-    <link rel="stylesheet" href="/static/plugins/iCheck/all.css">
+    <link rel="stylesheet" href="/static/plugins/icheck/all.css">
     <link rel="stylesheet" href="/static/plugins/select2/select2.min.css">
     <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
     <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
@@ -123,7 +123,8 @@
                       {% load filters %}
                       <div class="form-group" id="country-form">
                         <label>Country</label>
-                        <select name="country" class="form-control elect2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                        <input type="text" class="form-control form-dummy" placeholder="Country">
+                        <select name="country" class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true">
                           {% for c in cities_table.keys|sort_list %}
                             {% if c == country %}
                               <option selected="selected" value="{{ c.split|join:'-'|safe }}">{{ c|safe }}</option>
@@ -138,6 +139,7 @@
                       <div class="form-group" id="city-form">
                         {% load filters %}
                         <label>Hometown</label>
+                        <input type="text" class="form-control form-dummy" placeholder="Hometown">
                         {% for country in cities_table.keys %}
                           <select name="city" id="{{ country.split|join:'-'|safe }}" class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true" disabled>
                             {% for c in cities_table|get_value_dict_keys:country|sort_list %}
@@ -155,14 +157,14 @@
                         <input name="institution" type="text" class="form-control" {% if user.extra.institution %}value="{{ user.extra.institution }}"{% endif %}>
                       </div>
                       <div class="form-group">
-                        <label>Sex</label>
+                        <label>Gender</label>
                         <div class="input-group">
                           <label style="padding-right: 15px">
-                            <input type="radio" name="sex" class="minimal" value="0" {% if user.extra.sex == 0 %}checked{% endif %}>
+                            <input type="radio" name="gender" class="minimal" value="0" {% if user.extra.gender == 0 %}checked{% endif %}>
                             Male
                           </label>
                           <label>
-                            <input type="radio" name="sex" class="minimal" value="1" {% if user.extra.sex == 1 %}checked{% endif %}>
+                            <input type="radio" name="gender" class="minimal" value="1" {% if user.extra.gender == 1 %}checked{% endif %}>
                             Female
                           </label>
                         </div>
@@ -201,7 +203,7 @@
     <script src="/static/plugins/input-mask/jquery.inputmask.js"></script>
     <script src="/static/plugins/input-mask/jquery.inputmask.date.extensions.js"></script>
     <script src="/static/plugins/input-mask/jquery.inputmask.extensions.js"></script>
-    <script src="/static/plugins/iCheck/icheck.min.js"></script>
+    <script src="/static/plugins/icheck/icheck.min.js"></script>
     <script src="/static/plugins/rollbar/js/jquery.easing.1.3.js"></script>
     <script src="/static/plugins/rollbar/js/jquery.mousewheel.js"></script>
     <script src="/static/plugins/rollbar/js/jquery.rollbar.js"></script>
@@ -209,27 +211,6 @@
     <script type="text/javascript">
 
       var country = "{{ country }}".replace(' ', '-'), city = "{{ city }}";
-
-      $("#country-form").children("select").select2({
-        minimumResultsForSearch: 5
-      }).on("change", function (e) {
-         $("#city-form").children("span").hide();
-         $("#" + country).attr("disabled", true);
-         country = $(this).select2("val");
-         $("#" + country).attr("disabled",false).next("span").show();
-      });
-
-      $("#city-form").children(".select2").select2({
-        minimumResultsForSearch: 5
-      });
-
-      $("#city-form").children("span").hide();
-      if(country == "") {
-        $("#China").attr("disabled",false).next("span").show();
-      }
-      else {
-        $("#"+ country).attr("disabled",false).next("span").show();
-      }
 
       $("#birth").inputmask("yyyy/mm/dd", {"placeholder": "yyyy/mm/dd"});
 
@@ -239,10 +220,35 @@
 
       $('#submit').click(function() {
         $.post('{% url 'profile' %}', $("form").serialize(), function(data) {
-           if(data == -1) alert("There're some mistakes in your submission");
+           if(data == -1) alert("There're some mistakes / missings in your submission");
            else window.location.href="{% url 'home' %}";
         });
       });
+
+      var $cityFrom = $("#city-form");
+
+      $("#country-form").children("select").select2({
+        minimumResultsForSearch: 5
+      }).on("change", function(e) {
+         $cityFrom.children("span").hide();
+         $("#" + country).attr("disabled", true);
+         country = $(this).select2("val");
+         $("#" + country).attr("disabled",false).next("span").show();
+      });
+
+      $cityFrom.children(".select2").select2({
+        minimumResultsForSearch: 5
+      });
+
+      $cityFrom.children("span").hide();
+      if(country == "") {
+        $("#China").attr("disabled",false).next("span").show();
+      }
+      else {
+        $("#"+ country).attr("disabled",false).next("span").show();
+      }
+
+      $('.form-dummy').hide();
 
     </script>
   </body>

@@ -5,19 +5,19 @@
 # Time: 13:38
 import datetime
 
-from Human.methods.sessionid import get_session_id
+from Human.methods.session import get_session_id
 from Human.methods.utils import logger_join
 from Human.models import Extra
 from LineMe.settings import logger
 
 
-def update_profile(request, user, first_name, last_name, birth, sex, country, city, institution):
+def update_profile(request, user, first_name, last_name, birth, gender, country, city, institution):
     try:
         user.first_name = first_name
         user.last_name = last_name
 
         ue = Extra.objects.get(user=user)
-        ue.sex = sex
+        ue.gender = gender
         ue.birth = datetime.datetime.strptime(birth, '%Y/%m/%d').date()
         ue.location = country + '-' + city
         ue.institution = institution

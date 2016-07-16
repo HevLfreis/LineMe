@@ -111,7 +111,7 @@
                 });
             }
 
-            function showField() {console.log($ac.is(":hidden"));
+            function showField() {
                 if ($ac.is(":hidden"))
                     $ac.fadeIn("slow").show();
             }

@@ -1,0 +1,2 @@
+blue,green,yellow,purple,red,aero,pink,orange,grey
+#3498db,#1abc9c,#f1c40f,#9588b2,#ec7063,#9cc2cb,#af7ac5,#f39c12,#95a5a6

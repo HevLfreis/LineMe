@@ -232,6 +232,9 @@
       <script type="text/javascript">
         var groupid = {{ group.id }};
         var disData = {{ distribution|safe }};
+
+        var gGraphUrl = "{% url 'gGraph' group.id %}";
+        var gMapUrl = "{% url 'gMap' group.id %}";
       </script>
       <script src="/static/lineme/js/global.js"></script>
     {% endif %}

@@ -10,10 +10,13 @@ from django.test import TestCase
 #
 # print j["People's Republic of China"]
 
-a = {}
 
-if not a:
-    print 'a'
-else:
-    print 'na'
 
+def b(a):
+    a = a + 'm'
+
+
+
+a = 'm'
+b(a)
+print a

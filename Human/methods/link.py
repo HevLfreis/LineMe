@@ -3,14 +3,12 @@
 # created by hevlhayt@foxmail.com 
 # Date: 2016/7/9
 # Time: 13:52
+import ast
 
-
-# Todo: logger and security
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
-from Human.methods.group import get_user_joined_member
-from Human.methods.sessionid import get_session_id
+from Human.methods.session import get_session_id
 from Human.methods.utils import logger_join
 from Human.models import GroupMember
 from Human.models import Link
@@ -20,6 +18,7 @@ from LineMe.constants import TARGET_LINK_CONFIRM_STATUS_TRANSITION_TABLE
 from LineMe.settings import logger
 
 
+# Todo: logger and security
 def link_confirm(request, user, linkid):
 
     link = get_object_or_404(Link, id=linkid)
@@ -66,7 +65,7 @@ def link_reject(request, user, linkid):
     return 0
 
 
-def update_links(request, new_links, groupid, creator):
+def update_links(request, new_links, creator, groupid):
 
     if not GroupMember.objects.filter(user=creator, group__id=groupid, is_joined=True).exists():
         return -1
@@ -79,7 +78,7 @@ def update_links(request, new_links, groupid, creator):
     for link in old_links:
         links_index[str(link.source_member.id) + ',' + str(link.target_member.id)] = link
 
-    for link in eval(new_links):
+    for link in ast.literal_eval(new_links):
         if link["source"] + ',' + link["target"] in links_index:
             links_index[link["source"] + ',' + link["target"]] = 0
         elif link["target"] + ',' + link["source"] in links_index:
@@ -97,20 +96,21 @@ def update_links(request, new_links, groupid, creator):
                 source = int(k.split(',')[0])
                 target = int(k.split(',')[1])
 
-                # link safety check
                 if source == my_member.id:
-                    if not GroupMember.objects.get(id=target, group__id=groupid):
+                    if not GroupMember.objects.filter(id=target, group__id=groupid).exists():
                         continue
                     else:
                         status = 1
                 elif target == my_member.id:
-                    if not GroupMember.objects.get(id=source, group__id=groupid):
+                    if not GroupMember.objects.filter(id=source, group__id=groupid).exists():
                         continue
                     else:
                         status = 2
                 else:
-                    if not (GroupMember.objects.get(id=source, group__id=groupid) and
-                            GroupMember.objects.get(id=source, group__id=groupid)):
+
+                    # Todo: maybe wrong ?
+                    if not (GroupMember.objects.filter(id=source, group__id=groupid).exists() or
+                            GroupMember.objects.filter(id=target, group__id=groupid).exists()):
                         continue
                     else:
                         status = 0
