@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>{{ project_name }} | Upload Avatar</title>
+    <title>{{ project_name }} | Settings</title>
 {#    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">#}
     <link rel="shortcut icon" href="/static/favicon.ico">
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
@@ -13,39 +13,15 @@
     <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
     <link rel="stylesheet" href="/static/plugins/cropit/css/cropit.css">
     <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
+    <link rel="stylesheet" href="/static/plugins/switchery/css/switchery.min.css">
     <style>
 
-      .pull-left {
-        margin-top: 3px;
+      .form-group input {
+        margin-bottom: 10px;
       }
 
-      .btn.btn-primary, .btn.btn-success{
-        margin-left: auto;
-        margin-right: auto;
-        width: 180px;
-      }
-
-      .cropit-preview {
-        background-color: #d2d6de;
-        background-size: cover;
-        border: 1px solid #ccc;
-        border-radius: 3px;
-        margin-top: 7px;
-      }
-      input.cropit-image-input {
-        visibility: hidden;
-      }
-      .cropit-image-zoom-input {
-{#        width: 300px;#}
-      }
-      .cropit-preview-image-container {
-        cursor: move;
-      }
-      .image-size-label {
-        margin-top: 10px;
-      }
-      input, .export {
-        display: block;
+      .switchery {
+        float: right;
       }
 
     </style>
@@ -179,42 +155,142 @@
       <div class="content-wrapper">
         <section class="content-header">
           <h1>
-            Upload Your Avatar
+            LineMe Settings
 {#            <small>Optional description</small>#}
           </h1>
           <ol class="breadcrumb">
             <li><a href="{% url 'home' %}"><i class="fa fa-home"></i>{{ project_name }}</a></li>
-            <li class="active">Upload Avatar</li>
+            <li class="active">Settings</li>
           </ol>
         </section>
         <section class="content">
           <div class="row">
             <div class="col-md-5 col-sm-12">
-              <div class="box box-info">
-                <div class="box-body">
-                  <div id="image-cropper">
-                    <div class="row">
-                      <div class="col-md-7">
-                        <div class="cropit-preview"></div>
-                        <div class="col-xs-12 text-center" style="padding-top: 5px">
-                          <li class="fa fa-rotate-left fa-lg rotate-ccw" style="padding-right: 20px;cursor: pointer"></li>
-                          <li class="fa fa-rotate-right fa-lg rotate-cw" style="cursor: pointer"></li>
-                          <input type="range" class="cropit-image-zoom-input custom">
+              <ul class="timeline">
+{#                <li class="time-label">#}
+{#                  <span class="bg-navy">#}
+{#                    Basic#}
+{#                  </span>#}
+{#                </li>#}
+                <li>
+                  <i class="fa fa-user bg-yellow"></i>
+                  <div class="timeline-item">
+                    <h3 class="timeline-header no-border">Basic Infomation</h3>
+                    <div class="timeline-body">
+                      <table class="table table-bordered">
+                        <tbody>
+                          <tr>
+                            <th>Account</th>
+                            <td>{{ user.username }}</td>
+                          </tr>
+                          <tr>
+                            <th>Email</th>
+                            <td>{{ user.email }}</td>
+                          </tr>
+                          <tr>
+                            <th>Credits</th>
+                            <td>{{ user.extra.credits }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </li>
+                <li>
+                  <i class="fa fa-lock bg-blue"></i>
+                  <div class="timeline-item">
+                    <h3 class="timeline-header">Reset Password</h3>
+                    <div class="timeline-body">
+                      <div class="row">
+                         <form method="post">
+                          <div class="form-group">
+                            <label class="col-sm-4 control-label">Original Password</label>
+                            <div class="col-sm-8">
+                              <input type="email" name="orig-pw" class="form-control">
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label class="col-sm-4 control-label">New Password</label>
+                            <div class="col-sm-8">
+                              <input type="password" name="new-pw" class="form-control">
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label class="col-sm-4 control-label">Re-enter Password</label>
+                            <div class="col-sm-8">
+                              <input type="password" name="new-pw2" class="form-control">
+                            </div>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                    <div class="timeline-footer">
+                      <a href="#" class="btn bg-blue btn-flat btn-xs"> Reset Password</a>
+                    </div>
+                  </div>
+                </li>
+{#                <li class="time-label">#}
+{#                  <span class="bg-red">#}
+{#                    Privacy#}
+{#                  </span>#}
+{#                </li>#}
+                <li>
+                  <i class="fa fa-exclamation-triangle bg-red"></i>
+                  <div class="timeline-item">
+{#                    <h3 class="timeline-header">Privacy 1</h3>#}
+                    <div class="timeline-body">
+                      <div class="row">
+                        <div class="col-sm-10">
+                          <h4>Hello</h4>
+                        </div>
+                        <div class="col-sm-2">
+                          <input type="checkbox" class="js-switch" style="margin-left: 5px" checked>
                         </div>
                       </div>
-                      <div class="col-md-5 text-center" style="margin-top: 25%">
-                        <div class="row" style="margin-bottom: 15px">
-                          <button id="select" class="btn btn-primary" ><i class="fa fa-image pull-left"></i>Select New Image</button>
+                      <div class="row">
+                        <div class="col-sm-10">
+                          <h4>Hello</h4>
                         </div>
-                        <div class="row">
-                          <button id="upload" class="export btn btn-success disabled" style="" disabled><i class="fa fa-upload pull-left"></i>Upload</button>
+                        <div class="col-sm-2">
+                          <input type="checkbox" class="js-switch" checked>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-sm-10">
+                          <h4>Hello</h4>
+                        </div>
+                        <div class="col-sm-2">
+                          <input type="checkbox" class="js-switch" checked>
                         </div>
                       </div>
                     </div>
-                    <input type="file" class="cropit-image-input" />
+                    <div class="timeline-footer">
+                      <a href="#" class="btn btn-flat btn-xs bg-red"> Save Privacy</a>
+                    </div>
                   </div>
-                </div>
-              </div>
+                </li>
+{#                <li class="time-label">#}
+{#                  <span class="bg-yellow">#}
+{#                    About#}
+{#                  </span>#}
+{#                </li>#}
+                <li>
+                  <i class="fa fa-video-camera bg-maroon"></i>
+                  <div class="timeline-item">
+                    <h3 class="timeline-header">About LineMe</h3>
+                    <div class="timeline-body">
+                      <div class="embed-responsive embed-responsive-16by9">
+                      </div>
+                    </div>
+{#                    <div class="timeline-footer">#}
+{#                      <a href="#" class="btn btn-xs bg-maroon">See comments</a>#}
+{#                    </div>#}
+                  </div>
+                </li>
+                <li>
+                  <i class="fa fa-circle-o-notch bg-gray"></i>
+                </li>
+              </ul>
             </div>
           </div>
         </section>
@@ -234,7 +310,7 @@
     <script src="/static/plugins/rollbar/js/jquery.mousewheel.js"></script>
     <script src="/static/plugins/rollbar/js/jquery.rollbar.min.js"></script>
     <script src="/static/lineme/js/rollbar.js"></script>
-    <script src="/static/plugins/cropit/js/jquery.cropit.js"></script>
+    <script src="/static/plugins/switchery/js/switchery.min.js"></script>
     <script src="/static/lineme/js/autocomplete.js"></script>
     <script type="text/javascript">
 
@@ -255,41 +331,8 @@
       $('#profile-institution2').text(institutions[1]);
 
 
-      $('.cropit-preview').height($('.col-md-7').width());
-      $('.cropit-preview').width($('.col-md-7').width());
-      $('#image-cropper').cropit({
-        imageState: {
-          src: '/static/images/user_avatars/{{ user.id }}.png'
-        },
-        smallImage: 'stretch',
-        onFileChange: function() {
-          $('#upload').removeClass('disabled').removeAttr('disabled');
-        }
-
-      });
-
-      $('#select').click(function() {
-        $('.cropit-image-input').click();
-      });
-
-      // Handle rotation
-      $('.rotate-cw').click(function() {
-        $('#image-cropper').cropit('rotateCW');
-      });
-      $('.rotate-ccw').click(function() {
-        $('#image-cropper').cropit('rotateCCW');
-      });
-
-      $('#upload').click(function() {
-        var imageData = $('#image-cropper').cropit('export');
-
-        $.post('{% url 'imgHandle' %}', {imgBase64:imageData}, function(result) {
-          if (result == '0') {
-            alert('Upload Successfully');
-            window.location.reload();
-          }
-          else alert('Upload Failed');
-        });
+      $('.js-switch').each(function() {
+        var init = new Switchery(this);
       });
 
       $('#search').autocomplete();

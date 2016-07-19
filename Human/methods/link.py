@@ -4,6 +4,7 @@
 # Date: 2016/7/9
 # Time: 13:52
 import ast
+import json
 
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -78,7 +79,8 @@ def update_links(request, new_links, creator, groupid):
     for link in old_links:
         links_index[str(link.source_member.id) + ',' + str(link.target_member.id)] = link
 
-    for link in ast.literal_eval(new_links):
+    # Todo: ast.literal_eval
+    for link in json.loads(new_links):
         if link["source"] + ',' + link["target"] in links_index:
             links_index[link["source"] + ',' + link["target"]] = 0
         elif link["target"] + ',' + link["source"] in links_index:

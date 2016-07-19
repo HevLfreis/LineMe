@@ -113,7 +113,8 @@
 	
 	
 	// main scroll method (v,h are absolute slider positions, e is event) 
-	RollBar.prototype.scroll = function(v,h,e){	
+	RollBar.prototype.scroll = function(v,h,e){
+
 		var hs = 0; var vs = 0;
 		//vertical slider scroll
 		if(v < 0){ v = 0; }
@@ -266,6 +267,7 @@
     	//slider position adjustments during window resize     	
 		var vtrack = this.vpath.height(), htrack = this.hpath.width();
     	this.bindEvent($(window),'resize',function(){
+
     	   	this.pathSize(); //adjust path size first
     	   	this.checkScroll(); //calculate diffs    	   	
     	   	

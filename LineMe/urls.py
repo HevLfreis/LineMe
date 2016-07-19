@@ -28,6 +28,7 @@ urlpatterns = [
 
     url(r'^home/$', views.home, name='home'),
     url(r'^msgpanel/$', views.msg_panel, name='homeMsg'),
+    url(r'^msghandle/$', views.msg_handle, name='msgPost'),
     url(r'^msghandle/(?P<mtype>[0-1])/(?P<linkid>[0-9]+)/$', views.msg_handle, name='msgHandle'),
 
     url(r'^invpanel/$', views.inv_panel, name='homeInv'),
@@ -49,7 +50,7 @@ urlpatterns = [
 
     #
     url(r'^profile/$', views.profile, name='profile'),
-    url(r'^settings/$', views.ego_network, name='settings'),
+    url(r'^settings/$', views.settings, name='settings'),
 
     #
     url(r'^group/(?P<groupid>[0-9]+)/$', views.manage_group, name='group'),

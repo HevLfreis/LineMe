@@ -2,7 +2,7 @@
   <ul class="todo-list ui-sortable">
     {% for msg in msgs %}
       <li id="msg-{{ msg.id }}">
-        <input type="checkbox" value="" name="">
+        <input type="checkbox" value="{{ msg.id }}" name="">
           <span class="text">
             {% load filters %}
             <a href="#">{{ msg_creators|get_value:msg }}</a>
@@ -43,5 +43,5 @@
       {% endif %}
     </ul>
   </div>
-  <a href="#" class="btn btn-sm btn-default btn-flat pull-right">Confirm Choosed</a>
+  <a id="confirm" href="#" class="btn btn-sm btn-default btn-flat pull-right">Confirm Choosed</a>
 </div>

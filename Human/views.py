@@ -1,3 +1,4 @@
+import ast
 import json
 
 from django.contrib.auth import logout
@@ -198,17 +199,35 @@ def msg_panel(request):
 
 
 @login_required
-def msg_handle(request, mtype, linkid):
+def msg_handle(request, mtype='0', linkid=0):
     user = request.user
 
-    if mtype == '1':
-        status = link_confirm(request, user, int(linkid))
-    elif mtype == '0':
-        status = link_reject(request, user, int(linkid))
+    if request.method == 'GET':
+
+        if mtype == '1':
+            status = link_confirm(request, user, int(linkid))
+        elif mtype == '0':
+            status = link_reject(request, user, int(linkid))
+        else:
+            return HttpResponse(status=403)
+
+        return HttpResponse(status)
+
+    elif request.is_ajax():
+        links = request.POST.get('linkids')
+
+        confirm_list = json.loads(links)
+
+        count = 0
+        for link in confirm_list:
+            status = link_confirm(request, user, int(link))
+            if status == 0:
+                count += 1
+
+        return HttpResponse(count)
+
     else:
         return HttpResponse(status=403)
-
-    return HttpResponse(status)
 
 
 @login_required
@@ -424,6 +443,19 @@ def profile(request):
             return HttpResponse(-1)
 
     return render(request, 'Human/profile.html', context)
+
+
+########################################################################
+
+@login_required
+def settings(request):
+    logger.info(logger_join('Access', get_session_id(request)))
+
+    user = request.user
+    msgs_count = get_user_msgs_count(user)
+
+    context = {"project_name": PROJECT_NAME, "user": user, "msgs_count": msgs_count}
+    return render(request, 'Human/settings.html', context)
 
 
 ########################################################################

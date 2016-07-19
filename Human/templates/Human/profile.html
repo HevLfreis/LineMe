@@ -13,7 +13,6 @@
     <link rel="stylesheet" href="/static/plugins/select2/select2.min.css">
     <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
     <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
-    <link rel="stylesheet" href="/static/plugins/bootstrap-slider/slider.css">
     <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
     <style>
 
@@ -98,7 +97,7 @@
                     <div class="widget-user-image">
                       <img onclick="window.location.href='#'" class="img-circle" src="/static/images/user_avatars/{{ user.id }}.png" alt="User Avatar">
                     </div>
-                    <h3 class="widget-user-username">{{ username }}</h3>
+                    <h3 class="widget-user-username"><strong>{{ username }}</strong></h3>
                     <h5 class="widget-user-desc">{{ user.email }}</h5>
                   </div>
                   <form method="post" action="{% url 'profile' %}">

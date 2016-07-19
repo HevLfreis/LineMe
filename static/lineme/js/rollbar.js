@@ -10,7 +10,7 @@ $(function() {
 
     if (!isSafari)
         // Todo: fix select2 in profile
-        $('body, .box-body').rollbar({
+        $('body, .box-global-info-body').rollbar({
             scroll: 'vertical',
             sliderOpacity: 0,
             zIndex: 2000,
@@ -18,6 +18,7 @@ $(function() {
             wheelSpeed: 50,
             touchSpeed: 0.4,
             sliderSize: '25%',
+            lazyCheckScroll: 500,
         });
 });
 

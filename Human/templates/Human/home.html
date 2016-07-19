@@ -7,11 +7,11 @@
 {#    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">#}
     <link rel="shortcut icon" href="/static/favicon.ico">
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/static/plugins/icheck/all.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="//cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css">
     <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
     <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
+    <link rel="stylesheet" href="/static/plugins/icheck/all.css">
     <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
     <style>
       a {
@@ -61,7 +61,7 @@
             </div>
             <div class="modal-footer">
               <h4 class="pull-left text-red">Create group will cost {{ group_cost }} credits</h4>
-              <button type="submit" class="btn btn-primary">Create</button>
+              <button type="submit" class="btn btn-primary btn-flat">Create</button>
             </div>
           </form>
         </div>
@@ -256,7 +256,7 @@
                   <h3 class="box-title">Manage Groups --- Group Recommendations</h3>
                   <div class="box-tools pull-right" title="">
                     <div class="btn-group" data-toggle="btn-toggle">
-                      <button id="btn-rcmd-group" type="button" class="btn btn-default btn-sm active"><i class="fa fa-square text-yellow"></i></button>
+                      <button id="btn-rd-group" type="button" class="btn btn-default btn-sm active"><i class="fa fa-square text-yellow"></i></button>
                       <button id="btn-my-group" type="button" class="btn btn-default btn-sm"><i class="fa fa-square text-aqua"></i></button>
                       <button id="btn-in-group" type="button" class="btn btn-default btn-sm"><i class="fa fa-square text-green"></i></button>
                     </div>
@@ -339,7 +339,7 @@
                       </tbody>
                     </table>
                   </div>
-                  <div class="table-responsive" id="table-rcmd-group">
+                  <div class="table-responsive" id="table-rd-group">
                     <table class="table no-margin">
                       <thead>
                       <tr>
@@ -450,6 +450,7 @@
       var institutions = "{{ user.extra.institution }}".split(" ");
 
       var msgPanelUrl = "{% url 'homeMsg' %}";
+      var msgPostUrl = "{% url 'msgPost' %}";
       var invPanelUrl = "{% url 'homeInv' %}";
 
       $('#profile-email1').text(emails[0]);

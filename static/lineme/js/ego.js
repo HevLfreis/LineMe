@@ -236,7 +236,9 @@ $(function() {
                 else if(d.status < 0) return "link link-rejected";
             })
             .on("click", linkClick)
-            .on("mouseout", linkMouseout).on("mouseover", linkMouseover);
+            .on("mouseout", linkMouseout)
+            .on("mouseover", linkMouseover);
+
         link.exit().remove();
 
         node = node.data(nodes, function(d){return d.id;});
@@ -290,8 +292,9 @@ $(function() {
     var selected;
     function nodeClick(d){
 
+        // prevent drag click
         if (d3.event.defaultPrevented) return;
-        //console.logs('Node click: ', d.name);
+        //console.log('Node click: ', d.name);
         if(!selected){
             selected = d;
             d3.select(this).style('stroke', '#cd3b23');
@@ -334,7 +337,6 @@ $(function() {
         selected = null;
         start();
     }
-
 
     function nodeMouseover(d, i) {
         if (selected) return;
