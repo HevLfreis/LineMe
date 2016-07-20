@@ -184,10 +184,10 @@
                     </br>
                     <blockquote>
                       <ul>
-                        <li>Your links cover {{ cover|floatformat:"2" }} of the global network</li>
+                        <li>Your links cover {{ cover }}% of the global network</li>
                         </br>
                         {% if bestfriend.member_name != None %}
-                          <li>Your best friend is <a href="#">{{ bestfriend.member_name }}</a>, {{ bf_ratio|floatformat:"2" }} of the members have lined you two.</li>
+                          <li>Your best friend is <a href="#">{{ bestfriend.member_name }}</a>, {{ bf_ratio }}% of the members have lined you two.</li>
                           </br>
                         {% endif %}
                         {% if heart.member_name != None %}

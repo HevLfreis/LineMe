@@ -28,6 +28,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# SSL
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# if not DEBUG:
+SECURE_SSL_REDIRECT = True
+
 
 # Application definition
 
@@ -157,3 +162,6 @@ LOGGING = {
 
 
 logger = logging.getLogger('lineme_logger')
+
+
+

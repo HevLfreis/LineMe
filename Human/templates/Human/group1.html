@@ -320,11 +320,12 @@
       $('#profile-institution2').text(institutions[1]);
 
       $('.modal').on('show.bs.modal', function (e) {
-        $(this).find('.modal-dialog').css({
-          'margin-top': function () {
-            var modalHeight = $('#search').find('.modal-dialog').height();
-            return ($(window).height() / 6 - (modalHeight / 2));
-          }
+        var $dialog = $(this).find('.modal-dialog');
+        $dialog.css({
+            'margin-top': function () {
+                var modalHeight = $dialog.height();
+                return ($(window).height() / 6 - (modalHeight / 2));
+            }
         });
       });
 

@@ -7,8 +7,9 @@ from django.db import models
 class Privacy(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     # Todo: more privacy settings
-    link_me = models.BooleanField()
-    see_my_global = models.BooleanField()
+    # link_me = models.BooleanField()
+    # see_my_global = models.BooleanField()
+    link_need_my_confirm = models.BooleanField()
 
 
 class Extra(models.Model):

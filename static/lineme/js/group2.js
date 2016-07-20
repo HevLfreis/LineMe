@@ -7,9 +7,10 @@
 $(function() {
 
     $('.modal').on('show.bs.modal', function (e) {
-        $(this).find('.modal-dialog').css({
+        var $dialog = $(this).find('.modal-dialog');
+        $dialog.css({
             'margin-top': function () {
-                var modalHeight = $('#member-join-modal').find('.modal-dialog').height();
+                var modalHeight = $dialog.height();
                 return ($(window).height() / 6 - (modalHeight / 2));
             }
         });

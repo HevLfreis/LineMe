@@ -60,7 +60,7 @@ urlpatterns = [
     url(r'^upload/(?P<groupid>[0-9]+)/$', views.upload_members, name='uploadMembers'),
     #
     #
-    url(r'^avatar/$', views.avatar, name='avatar'),
+    url(r'^settings/$', views.settings, name='avatar'),
     url(r'^imghandle/$', views.img_handle, name='imgHandle'),
 
     url(r'^howto/$', views.home, name='howTo'),

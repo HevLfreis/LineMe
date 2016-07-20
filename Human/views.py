@@ -1,7 +1,7 @@
 import ast
 import json
 
-from django.contrib.auth import logout
+from django.contrib.auth import logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import PageNotAnInteger
 from django.core.paginator import Paginator, EmptyPage
@@ -26,7 +26,7 @@ from Human.methods.session import get_session_id, get_session_consume
 from Human.methods.user import create_user, get_user_groups, get_user_msgs_count, get_user_msgs, get_user_invs, \
     get_user_name
 from Human.methods.utils import smart_search, login_user, logger_join, input_filter
-from Human.methods.validation import check_groupid, validate_profile
+from Human.methods.validation import check_groupid, validate_profile, validate_passwd
 from Human.models import Group, GroupMember, MemberRequest
 from LineMe.constants import PROJECT_NAME, IDENTIFIER, CITIES_TABLE, GROUP_CREATED_CREDITS_COST
 from LineMe.settings import logger
@@ -41,6 +41,10 @@ def redirect2main(request):
 
 
 def search(request):
+
+    if not request.user.is_authenticated():
+        return HttpResponse(json.dumps([]))
+
     kw = request.GET.get('kw')
     kw = input_filter(kw)
     groupid = request.GET.get('gid')
@@ -50,6 +54,9 @@ def search(request):
 ########################################################################
 
 def lm_login(request):
+
+    if request.user.is_authenticated():
+        return redirect('home')
 
     context = {"project_name": PROJECT_NAME, "status": ''}
 
@@ -452,10 +459,43 @@ def settings(request):
     logger.info(logger_join('Access', get_session_id(request)))
 
     user = request.user
-    msgs_count = get_user_msgs_count(user)
 
-    context = {"project_name": PROJECT_NAME, "user": user, "msgs_count": msgs_count}
-    return render(request, 'Human/settings.html', context)
+    if request.method == 'GET':
+        msgs_count = get_user_msgs_count(user)
+
+        context = {"project_name": PROJECT_NAME, "user": user, "msgs_count": msgs_count}
+        return render(request, 'Human/settings.html', context)
+
+    elif request.is_ajax():
+
+        # pws = request.POST.get('passwords')
+        #
+        # passwords = json.loads(pws)
+        #
+        # if len(passwords) != 3:
+        #     return HttpResponse(-1)
+
+        passwd = request.POST.get('old')
+        new_passwd = request.POST.get('new')
+        new_passwd2 = request.POST.get('new2')
+
+        print passwd, new_passwd, new_passwd2
+
+        if user.check_password(passwd):
+            if validate_passwd(new_passwd, new_passwd2):
+                user.set_password(new_passwd)
+                user.save()
+
+                logger.info(logger_join('Reset', get_session_id(request)))
+                logger.info(logger_join('Logout', get_session_id(request)))
+                logout(request)
+
+                return HttpResponse(0)
+
+        return HttpResponse(-1)
+
+    else:
+        return HttpResponse(status=403)
 
 
 ########################################################################

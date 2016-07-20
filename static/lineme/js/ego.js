@@ -27,6 +27,10 @@ $(function() {
                     if (rcmdAddedNode[rcmdId2Node($(this).attr("id")).id]) return "bg-gray";
                     else return "bg-gray-light";
                 });
+
+            // if the item bg is gray-light, meaning the member is not in the graph
+            // we bind click event to this item
+            //
             $('.widget-user-2.bg-gray-light')
                 .mouseover(function(){
                     $(this).removeClass("bg-gray-light").addClass("bg-gray");
@@ -38,7 +42,7 @@ $(function() {
 
                     var newNode = rcmdId2Node($(this).attr("id"));
 
-                    if (!rcmdAddedNode[newNode.id]) {
+                    if (!nodeInGraph(newNode, nodes)) {
                         nodes.push(newNode);
                         rcmdAddedNode[newNode.id] = true;
                         $(this).removeClass("bg-gray-light")
@@ -48,15 +52,25 @@ $(function() {
                             .off('click');
                         start();
                     }
-
                 });
-
         });
     };
 
     function rcmdId2Node(id) {
         var ids = id.split('-');
         return {group: Math.floor(Math.random() * 10) + 1, name: ids[3], userid: ids[2] == ''? -1: parseInt(ids[2]), id: ids[1], creator: false}
+    }
+
+    function nodeInGraph(node, nodes) {
+
+        var res = false;
+        $.each(nodes, function() {
+            if (node.id === this.id && node.name === this.name) {
+                res = res || true;
+            }
+        });
+
+        return res;
     }
 
     updateRcmdPanel(1);
@@ -182,7 +196,7 @@ $(function() {
             nodeById.set(node.id, node);
             if (node.self) self = node;
 
-            rcmdAddedNode[node.id] = true;
+            //rcmdAddedNode[node.id] = true;
         });
 
         links.forEach(function(link) {
@@ -224,6 +238,7 @@ $(function() {
 
 
     function start(){
+
         force.nodes(nodes)
             .links(links);
 
@@ -285,7 +300,9 @@ $(function() {
         if (selected) return;
         linkedIndex[d.source.id + "," + d.target.id] = false;
         //console.logs(links);
-        links = links.filter(function(a) { return a.source.id + "," + a.target.id !== d.source.id + "," + d.target.id; });
+        links = links.filter(function(a) {
+            return a.source.id + "," + a.target.id !== d.source.id + "," + d.target.id;
+        });
         start();
     }
 
@@ -449,7 +466,15 @@ $(function() {
         resetMenu();
     });
 
+
+    // Todo: implement clear
     $('#clear').click(function() {
+
+        links = [];
+        linkedIndex = {};
+
+        start();
+        resetMenu();
 
     });
 
@@ -462,10 +487,11 @@ $(function() {
                 nid = 'sug-'+id.substring(4, id.length),
                 newNode = rcmdId2Node(id);
 
-            if (!rcmdAddedNode[newNode.id]) {
+
+            if (!nodeInGraph(newNode, nodes)) {
                 nodes.push(newNode);
                 rcmdAddedNode[newNode.id] = true;
-                console.log("[id='"+nid+"']");
+                //console.log("[id='"+nid+"']");
                 $("[id='"+nid+"']").removeClass("bg-gray-light")
                     .addClass("bg-gray")
                     .off('mouseout')
@@ -473,7 +499,6 @@ $(function() {
                     .off('click');
                 start();
             }
-
         }
     });
 

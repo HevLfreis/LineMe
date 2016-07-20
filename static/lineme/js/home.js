@@ -36,10 +36,11 @@ $(function() {
         keepHeight()
     });
 
-    $('#group-create-modal').on('show.bs.modal', function (e) {
-        $(this).find('.modal-dialog').css({
-            'margin-top': function () {
-                var modalHeight = $('#search').find('.modal-dialog').height();
+    $('.modal').on('show.bs.modal', function(e) {
+        var $dialog = $(this).find('.modal-dialog');
+        $dialog.css({
+            'margin-top': function() {
+                var modalHeight = $dialog.height();
                 return ($(window).height() / 6 - (modalHeight / 2));
             }
         });
@@ -52,13 +53,13 @@ $(function() {
 
     window.msgConfirmed = function(url, type, linkid) {
         $.get(url, function(data){
-            if(data == -1) {
+            if (data == -1) {
                 alert("Server Internal Error");
             }
             else {
-                if(type == 1)
+                if (type == 1)
                     $('#msg-'+linkid+' > small').attr('class', 'label label-success').text('Confirmed');
-                else if(type == 0)
+                else if (type == 0)
                     $('#msg-'+linkid+' > small').attr('class', 'label label-danger').text('Rejected');
             }
         });
@@ -81,7 +82,7 @@ $(function() {
 
     var timeout;
     window.updateInvPanel = function(page, groupname) {
-        if(groupname)
+        if (groupname)
             $.get(invPanelUrl+'?page='+page+'&groupname='+groupname, function(data) {
                 onUpdateInvSucceess(data);
             });
@@ -89,6 +90,7 @@ $(function() {
             $.get(invPanelUrl+'?page='+page, function(data){
                 onUpdateInvSucceess(data);
             });
+        keepHeight();
     };
 
     function onUpdateInvSucceess(data) {
@@ -97,16 +99,16 @@ $(function() {
         inv.find('.box-footer').remove();
         inv.append(data);
 
-        $('#search-group').bind('input', function () {
+        $('#search-group').bind('input', function() {
 
             clearTimeout(timeout);
             var text = $(this).val();
-            if(text)
-                timeout = setTimeout(function () {
+            if (text)
+                timeout = setTimeout(function() {
                     updateInvPanel(1, text);
                 }, 1000);
             else
-                timeout = setTimeout(function () {
+                timeout = setTimeout(function() {
                     updateInvPanel(1, null);
                 }, 1500);
         });
@@ -123,7 +125,7 @@ $(function() {
 
         if (selected.length == 0) return;
 
-        $.post(msgPostUrl, {'linkids': JSON.stringify(selected)}, function(result) {
+        $.post(msgPostUrl, {linkids: JSON.stringify(selected)}, function(result) {
             if(selected.length != parseInt(result)) {
                 alert(selected.length - parseInt(result)+' Messages Confirm Failed');
             }
