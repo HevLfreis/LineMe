@@ -27,8 +27,8 @@ from Human.methods.user import create_user, get_user_groups, get_user_msgs_count
     get_user_name
 from Human.methods.utils import smart_search, login_user, logger_join, input_filter
 from Human.methods.validation import check_groupid, validate_profile, validate_passwd
-from Human.models import Group, GroupMember, MemberRequest
-from LineMe.constants import PROJECT_NAME, IDENTIFIER, CITIES_TABLE, GROUP_CREATED_CREDITS_COST
+from Human.models import Group, GroupMember, MemberRequest, Privacy
+from LineMe.constants import PROJECT_NAME, IDENTIFIER, CITIES_TABLE, GROUP_CREATED_CREDITS_COST, PRIVACIES
 from LineMe.settings import logger
 
 
@@ -463,17 +463,27 @@ def settings(request):
     if request.method == 'GET':
         msgs_count = get_user_msgs_count(user)
 
-        context = {"project_name": PROJECT_NAME, "user": user, "msgs_count": msgs_count}
+        pris = {}
+        for i, pri in PRIVACIES.items():
+            if getattr(user.privacy, pri[0].name):
+                pris[i] = pri+(True,)
+            else:
+                pris[i] = pri+(False,)
+
+        context = {"project_name": PROJECT_NAME, "user": user, "msgs_count": msgs_count,
+                   "privacies": pris}
         return render(request, 'Human/settings.html', context)
 
-    elif request.is_ajax():
+    else:
+        return HttpResponse(status=403)
 
-        # pws = request.POST.get('passwords')
-        #
-        # passwords = json.loads(pws)
-        #
-        # if len(passwords) != 3:
-        #     return HttpResponse(-1)
+
+def passwd_reset(request):
+    logger.info(logger_join('Access', get_session_id(request)))
+
+    user = request.user
+
+    if request.is_ajax():
 
         passwd = request.POST.get('old')
         new_passwd = request.POST.get('new')
@@ -493,6 +503,29 @@ def settings(request):
                 return HttpResponse(0)
 
         return HttpResponse(-1)
+    else:
+        return HttpResponse(status=403)
+
+
+def privacy_save(request):
+    logger.info(logger_join('Access', get_session_id(request)))
+
+    user = request.user
+
+    if request.is_ajax():
+        try:
+            for k, v in json.loads(request.POST.get('privacies')).items():
+                a = PRIVACIES[k]
+
+                pri = Privacy.objects.get(user=user)
+                setattr(pri, a[0].name, v)
+                pri.save()
+        except Exception, e:
+            logger.error(logger_join('Privacy', get_session_id(request), 'failed', e=e))
+            return HttpResponse(-1)
+
+        logger.info(logger_join('Update', get_session_id(request)))
+        return HttpResponse(0)
 
     else:
         return HttpResponse(status=403)
@@ -530,13 +563,8 @@ def img_handle(request):
 def manage_group(request, groupid=0):
     logger.info(logger_join('Access', get_session_id(request), gid=groupid))
 
-    # Todo: implement errorname and updatestat
-    fs = get_session_consume(request, 'FileStat')
-    mn = get_session_consume(request, 'MemName')
-    us = get_session_consume(request, 'UpdateStat')
-
-    # if not us:
-    #     fs = mn
+    us = get_session_consume(request, 'update_status')
+    nm = get_session_consume(request, 'error_name')
 
     user = request.user
     groups = get_user_groups(user)
@@ -546,7 +574,7 @@ def manage_group(request, groupid=0):
     group = get_object_or_404(Group, id=groupid)
 
     context = {"project_name": PROJECT_NAME, "user": user, "group": group, "groups": groups,
-               "rcmd_groups": rcmd_groups, "update_status": fs, "name": mn, "msgs_count": msgs_count}
+               "rcmd_groups": rcmd_groups, "update_status": us, "name": nm, "msgs_count": msgs_count}
 
     if request.method == 'GET':
         if user != group.creator:
@@ -585,19 +613,49 @@ def manage_group(request, groupid=0):
         if gf.is_valid():
             name = gf.cleaned_data['name']
             identifier = gf.cleaned_data['identifier']
+
+            # Todo: impl over max-size
             status = create_group_member(request, group, name, identifier)
 
             if status != 0:
-                request.session['MemName'] = name
-                request.session['UpdateStat'] = False
+                request.session['error_name'] = name
+                request.session['update_status'] = False
             else:
-                request.session['MemName'] = name
-                request.session['UpdateStat'] = True
+                request.session['update_status'] = True
 
             return redirect('group', groupid)
 
     else:
         return HttpResponse(status=403)
+
+
+@login_required
+def upload_members(request, groupid):
+    user = request.user
+
+    if Group.objects.filter(creator=user, id=groupid).exists():
+        group = Group.objects.get(id=groupid)
+
+        if request.method == 'POST':
+            fuf = FileUploadForm(request.POST, request.FILES)
+            if fuf.is_valid():
+
+                status = create_group_member_from_file(request, group)
+                if status != 0:
+                    request.session['update_status'] = False
+                    request.session['error_name'] = status
+                    return redirect('group', groupid=groupid)
+                else:
+
+                    request.session['update_status'] = True
+                    return redirect('group', groupid=groupid)
+            else:
+                request.session['update_status'] = False
+                return redirect('group', groupid=groupid)
+
+    else:
+
+        return redirect('group', groupid=groupid)
 
 
 # Todo: check check
@@ -720,31 +778,3 @@ def join_confirm(request, groupid, requestid):
     else:
         return HttpResponse(status=403)
 
-
-@login_required
-def upload_members(request, groupid):
-    user = request.user
-
-    if Group.objects.filter(creator=user, id=groupid).exists():
-        group = Group.objects.get(id=groupid)
-
-        if request.method == 'POST':
-            fuf = FileUploadForm(request.POST, request.FILES)
-            if fuf.is_valid():
-
-                status = create_group_member_from_file(request, group)
-                if status != 0:
-                    request.session['FileStat'] = False
-                    request.session['ErrorName'] = status
-                    return redirect('group', groupid=groupid)
-                else:
-
-                    request.session['FileStat'] = True
-                    return redirect('group', groupid=groupid)
-            else:
-                request.session['FileStat'] = False
-                return redirect('group', groupid=groupid)
-
-    else:
-
-        return redirect('group', groupid=groupid)

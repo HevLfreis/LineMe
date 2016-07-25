@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
     <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
     <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
+    <link rel="stylesheet" href="/static/plugins/hint/css/hint.css">
     <style>
 
       .box-body .form-group {
@@ -193,14 +194,18 @@
                         <label>Create New Members</label>
                         <div class="btn-group">
                           <button type="button" class="btn bg-navy btn-flat" data-toggle="modal" data-target="#member-create-modal">Add One</button>
-                          <button type="button" class="btn bg-purple btn-flat" onclick="chooseFile();">From File</button>
+                          <button type="button" class="btn bg-purple btn-flat hint--bottom hint--rounded hint--bounce" aria-label="File Format&#10;&#10;name1, identifier1&#10;name2, identifier2&#10;..." onclick="chooseFile();">From File</button>
                           <form id="from-file" method="post" action="{% url 'uploadMembers' group.id %}" enctype="multipart/form-data" hidden>
                             <input id="from-file-input" type="file" name="members"/>
                           </form>
                         </div>
                         {% if update_status != None %}
-                          {% if update_status %}
-                            <p class="text-center bg-red" style="margin-top: 5px">Update "{{ update_status }}" failed</p>
+                          {% if not update_status %}
+                            {% if name == -1 %}
+                              <p class="text-center bg-red" style="margin-top: 5px">Wrong file format</p>
+                            {% else %}
+                              <p class="text-center bg-red" style="margin-top: 5px">Update "{{ name }}" failed</p>
+                            {% endif %}
                           {% else %}
                             <p class="text-center bg-green" style="margin-top: 5px">Update members successfully</p>
                           {% endif %}

@@ -12,7 +12,7 @@ from Human.methods.session import get_session_id
 from Human.methods.user import get_user_name
 from Human.methods.utils import logger_join
 from Human.methods.validation import validate_group_info, user_in_group
-from Human.models import Group, Credits, MemberRequest, Link
+from Human.models import Group, Credits, MemberRequest, Link, Privacy
 from Human.models import GroupMember
 from LineMe.constants import GROUP_CREATED_CREDITS_COST
 from LineMe.constants import GROUP_MAXSIZE
@@ -70,6 +70,10 @@ def create_group(request, user, name, identifier, gtype):
 
 
 def group_recommender(user):
+
+    if not user.privacy.allow_group_recommendation:
+        return []
+
     gms = GroupMember.objects.filter(member_name=get_user_name(user), is_joined=False)
 
     sug = set(gm.group for gm in gms if not user_in_group(user, gm.group.id))

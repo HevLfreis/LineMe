@@ -44,6 +44,10 @@ body {
   width: 400px;
 }
 
+.pagination a {
+  cursor: pointer;
+}
+
 /* Layout */
 
 .wrapper {

@@ -15,6 +15,7 @@ from PIL import ImageDraw
 from Human.methods.session import get_session_id
 
 from Human.methods.utils import logger_join
+from LineMe import settings
 from LineMe.constants import STATIC_FOLDER
 from LineMe.settings import logger
 
@@ -39,8 +40,11 @@ def create_avatar(request, userid, username='Unknown'):
                                     '#af7ac5',
                                     '#f39c12',
                                     '#95a5a6'])
-    font = ImageFont.truetype('simhei.ttf', 125)
-    # font = ImageFont.truetype('/usr/share/fonts/truetype/simhei.ttf', 125)
+    if settings.DEPLOYMENT:
+        font = ImageFont.truetype('/usr/share/fonts/truetype/simhei.ttf', 125)
+    else:
+        font = ImageFont.truetype('simhei.ttf', 125)
+
     img = Image.new('RGB', (200, 200), random.choice(beautifulRGB))
     draw = ImageDraw.Draw(img)
     if len(word) >= 2:
@@ -58,18 +62,19 @@ def create_avatar(request, userid, username='Unknown'):
 
 
 def handle_avatar(request):
-    userid = request.user.id
+    user = request.user
     try:
 
         image_string = cStringIO.StringIO(base64.b64decode(request.POST['imgBase64'].partition('base64,')[2]))
         image = Image.open(image_string)
 
         path = os.path.join(STATIC_FOLDER, 'images/user_avatars/')
-        image.resize((200, 200)).save(path+str(userid)+".png", image.format, quality=100)
+        image.resize((200, 200)).save(path+str(user.id)+".png", image.format, quality=100)
         # print image.format, image.size, image.mode
     except Exception, e:
         logger.error(logger_join('Avatar', get_session_id(request), e=e))
         return -1
+
     logger.info(logger_join('Avatar', get_session_id(request)))
     return 0
 

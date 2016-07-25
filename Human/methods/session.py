@@ -29,6 +29,6 @@ def get_session_id(request):
 
 def get_session_consume(request, kw):
     val = request.session.get(kw)
-    if val:
+    if val is not None:
         del request.session[kw]
     return val

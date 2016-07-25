@@ -28,10 +28,14 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+
+DEPLOYMENT = False
+
 # SSL
 # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-# if not DEBUG:
-SECURE_SSL_REDIRECT = True
+if DEPLOYMENT:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
 
 
 # Application definition

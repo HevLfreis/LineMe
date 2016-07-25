@@ -72,6 +72,8 @@ def graph_analyzer(user, groupid):
 
     # If the network is not connected,
     # return -1
+
+    # Todo: warning, when the net is big, maybe slow
     if nx.is_connected(G) and G.number_of_nodes() > 1:
         average_distance = nx.average_shortest_path_length(G)
     else:
@@ -92,8 +94,10 @@ def graph_analyzer(user, groupid):
         bestfriend = None
         bf_ratio = 0
 
-    # Todo: ratio not correct
-    links_of_me = links.filter(Q(source_member=my_member) | Q(target_member=my_member)).exclude(creator=user) \
+    # Todo: ratio not correct fixed...
+    links_of_me = links\
+        .filter(Q(source_member=my_member) | Q(target_member=my_member), group__id=groupid)\
+        .exclude(creator=user) \
         .values('creator').annotate(count=Count('pk')).order_by('-count')
 
     # print links_of_me

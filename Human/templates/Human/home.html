@@ -13,11 +13,6 @@
     <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
     <link rel="stylesheet" href="/static/plugins/icheck/all.css">
     <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
-    <style>
-      a {
-        cursor: pointer;
-      }
-    </style>
   </head>
   <body class="hold-transition skin-black sidebar-mini">
     <div class="wrapper">
@@ -130,7 +125,7 @@
           </ul>
           <ul class="control-sidebar-menu">
             <li>
-              <a href="#">
+              <a>
                 {% if user.extra.gender  %}
                   <i class="menu-icon fa fa-venus bg-yellow" title="gender"></i>
                   <div class="menu-info">
@@ -145,7 +140,7 @@
               </a>
             </li>
             <li>
-              <a href="#">
+              <a>
                 <i class="menu-icon fa fa-birthday-cake bg-red" title="birth"></i>
                 <div class="menu-info">
                   <h4 id="profile-birth" class="control-sidebar-subheading">{{ user.extra.birth }}</h4>
@@ -153,7 +148,7 @@
               </a>
             </li>
             <li>
-              <a href="#">
+              <a>
                 <i class="menu-icon fa fa-envelope-o bg-light-blue" title="email"></i>
                 <div class="menu-info">
                   <h4 id="profile-email1" class="control-sidebar-subheading"></h4>
@@ -162,7 +157,7 @@
               </a>
             </li>
             <li>
-              <a href="#">
+              <a>
                 <i class="menu-icon fa fa-location-arrow bg-green" title="location"></i>
                 <div class="menu-info">
                   <h4 id="profile-location1" class="control-sidebar-subheading"></h4>
@@ -172,7 +167,7 @@
             </li>
             <li>
             <li>
-              <a href="#">
+              <a>
                 <i class="menu-icon fa fa-institution bg-maroon" title="institution"></i>
                 <div class="menu-info">
                   <h4 id="profile-institution1" class="control-sidebar-subheading"></h4>
@@ -181,7 +176,7 @@
               </a>
             </li>
             <li>
-              <a href="#">
+              <a>
                 <i class="menu-icon fa fa-star bg-teal" title="credits"></i>
                 <div class="menu-info">
                   <h4 class="control-sidebar-subheading">{{ user.extra.credits }}</h4>

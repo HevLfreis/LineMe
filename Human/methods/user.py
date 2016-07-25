@@ -36,7 +36,7 @@ def create_user(request, name, email, password, password2):
             login_user(request, name, password)
 
             # Todo: impl privacy module
-            pri = Privacy(user=u, link_me=True, see_my_global=True)
+            pri = Privacy(user=u)
             pri.save()
             extra = Extra(user=u,
                           gender=False,
@@ -49,8 +49,8 @@ def create_user(request, name, email, password, password2):
             extra.save()
             create_avatar(request, u.id, name)
         except Exception, e:
-            logout(request)
             logger.error(logger_join('Create', get_session_id(request), 'failed', e=e))
+            logout(request)
             return -4
 
         logger.info(logger_join('Create', get_session_id(request)))

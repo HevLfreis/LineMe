@@ -13,7 +13,7 @@ from LineMe.constants import CITIES_TABLE
 
 
 def get_user_global_graph(user, groupid):
-    # Todo: status should =3
+    # Todo: status should = 3
     ls = Link.objects.filter(group__id=groupid)
 
     nodes, links = [], []

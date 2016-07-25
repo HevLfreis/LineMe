@@ -15,7 +15,6 @@ from LineMe.constants import GROUP_MAXSIZE
 from LineMe.settings import logger
 
 
-# Todo: token multiple check, and fix same token, token can be same ?
 def create_group_member(request, group, name, identifier, user=None, is_creator=False, is_joined=False):
     now = timezone.now()
 
@@ -46,8 +45,6 @@ def create_group_member(request, group, name, identifier, user=None, is_creator=
 def create_group_member_from_file(request, group):
     members = []
     with request.FILES.get('members') as f:
-
-        # Todo: file check
         for l in f:
             kv = l.strip().split(',')
 

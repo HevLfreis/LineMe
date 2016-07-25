@@ -7,18 +7,18 @@
 import json
 import os
 
+from Human.models import Privacy
 from settings import STATICFILES_DIRS
 
 
 PROJECT_NAME = 'LineMe'
 STATIC_FOLDER = STATICFILES_DIRS[0]
-GROUP_MAXSIZE = 5000
+GROUP_MAXSIZE = 500
 GROUP_CREATED_CREDITS_COST = 100
-
-# Todo: implement identifier
 IDENTIFIER = {0: 'Special Code', 1: 'Email', 2: 'No Validation'}
+
+# Todo: implement private group
 GROUP_TYPE = {0: 'Public', 1: 'Private'}
-GROUP_REALTIME_ACTIVE_TIME = 0
 LINK_STATUS = {-3: 'Both Reject', -21: 'Target Reject Source Confirmed', -12: 'Source Reject Target Confirmed',
                -2: 'Target Reject', -1: 'Source Reject', 0: 'Both Unconfirmed',
                1: 'Source Confirmed', 2: 'Target Confirmed', 3: 'Both Confirmed'}
@@ -40,4 +40,9 @@ TARGET_LINK_REJECT_STATUS_TRANSITION_TABLE = {-3: -3, -21: -21, -12: -3,
                                               1: -21, 2: -2, 3: -21}
 
 
-CITIES_TABLE = json.load(file(os.path.join(STATIC_FOLDER, 'data/cities2.json')))
+CITIES_TABLE = json.loads(file(os.path.join(STATIC_FOLDER, 'data/cities2.json')))
+
+PRIVACIES = {'pri-'+str(i): (field, field.verbose_name.title())
+             for i, field in enumerate(Privacy._meta.fields)
+             if field.verbose_name.title() != 'User'}
+

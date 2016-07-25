@@ -95,7 +95,7 @@
                 <div class="box box-widget widget-user-2">
                   <div class="widget-user-header bg-purple">
                     <div class="widget-user-image">
-                      <img onclick="window.location.href='#'" class="img-circle" src="/static/images/user_avatars/{{ user.id }}.png" alt="User Avatar">
+                      <img onclick="window.location.href='{% url 'avatar' %}'" class="img-circle" src="/static/images/user_avatars/{{ user.id }}.png" alt="User Avatar">
                     </div>
                     <h3 class="widget-user-username"><strong>{{ username }}</strong></h3>
                     <h5 class="widget-user-desc">{{ user.email }}</h5>

@@ -98,7 +98,7 @@
           </ul>
           <ul class="control-sidebar-menu">
             <li>
-              <a href="#">
+              <a>
                 {% if user.extra.gender  %}
                   <i class="menu-icon fa fa-venus bg-yellow" title="gender"></i>
                   <div class="menu-info">
@@ -113,7 +113,7 @@
               </a>
             </li>
             <li>
-              <a href="#">
+              <a>
                 <i class="menu-icon fa fa-birthday-cake bg-red" title="birth"></i>
                 <div class="menu-info">
                   <h4 id="profile-birth" class="control-sidebar-subheading">{{ user.extra.birth }}</h4>
@@ -121,7 +121,7 @@
               </a>
             </li>
             <li>
-              <a href="#">
+              <a>
                 <i class="menu-icon fa fa-envelope-o bg-light-blue" title="email"></i>
                 <div class="menu-info">
                   <h4 id="profile-email1" class="control-sidebar-subheading"></h4>
@@ -130,7 +130,7 @@
               </a>
             </li>
             <li>
-              <a href="#">
+              <a>
                 <i class="menu-icon fa fa-location-arrow bg-green" title="location"></i>
                 <div class="menu-info">
                   <h4 id="profile-location1" class="control-sidebar-subheading"></h4>
@@ -140,7 +140,7 @@
             </li>
             <li>
             <li>
-              <a href="#">
+              <a>
                 <i class="menu-icon fa fa-institution bg-maroon" title="institution"></i>
                 <div class="menu-info">
                   <h4 id="profile-institution1" class="control-sidebar-subheading"></h4>
@@ -149,7 +149,7 @@
               </a>
             </li>
             <li>
-              <a href="#">
+              <a>
                 <i class="menu-icon fa fa-star bg-teal" title="credits"></i>
                 <div class="menu-info">
                   <h4 class="control-sidebar-subheading">{{ user.extra.credits }}</h4>
@@ -213,6 +213,7 @@
                                 <input type="range" class="cropit-image-zoom-input custom">
                               </div>
                             </div>
+{#                            Todo: fix two fuck buttuons #}
                             <div class="col-md-5 text-center btn-group-cropper">
                               <div class="row" style="margin-bottom: 15px">
                                 <button id="select" class="btn btn-primary btn-flat" ><i class="fa fa-image pull-left"></i>Image</button>
@@ -227,6 +228,7 @@
                     </div>
                   </div>
                 </li>
+{#                            Todo: fix chaos #}
                 <li>
                   <i class="fa fa-lock bg-blue"></i>
                   <div class="timeline-item">
@@ -264,33 +266,21 @@
                   <i class="fa fa-exclamation-triangle bg-red"></i>
                   <div class="timeline-item">
                     <div class="timeline-body">
-                      <div class="row">
-                        <div class="col-sm-10 col-xs-10">
-                          <h4>Hello</h4>
+                    <form id="form-pri" method="post">
+                      {% for id, pri in privacies.items %}
+                        <div class="row">
+                          <div class="col-sm-10 col-xs-10">
+                            <h4>{{ pri.1 }}</h4>
+                          </div>
+                          <div class="col-sm-2 col-xs-2">
+                            <input type="checkbox" class="js-switch" name="{{ id }}" {% if pri.2 %}checked{% endif %}>
+                          </div>
                         </div>
-                        <div class="col-sm-2 col-xs-2">
-                          <input type="checkbox" class="js-switch" checked>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-sm-10 col-xs-10">
-                          <h4>Hello</h4>
-                        </div>
-                        <div class="col-sm-2 col-xs-2">
-                          <input type="checkbox" class="js-switch" checked>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-sm-10 col-xs-10">
-                          <h4>Hello</h4>
-                        </div>
-                        <div class="col-sm-2 col-xs-2">
-                          <input type="checkbox" class="js-switch" checked>
-                        </div>
-                      </div>
+                      {% endfor %}
+                    </form>
                     </div>
                     <div class="timeline-footer">
-                      <a href="#" class="btn btn-flat btn-xs bg-red"> Save Privacy</a>
+                      <button id="save-pri" class="btn btn-flat btn-xs bg-red">Save Privacy</button>
                     </div>
                   </div>
                 </li>
@@ -300,7 +290,6 @@
                     <h3 class="timeline-header">About LineMe</h3>
                     <div class="timeline-body">
                       <div class="embed-responsive embed-responsive-16by9"></div>
-
                     </div>
                   </div>
                 </li>
@@ -340,6 +329,8 @@
       var userid = {{ user.id }};
       var loginUrl = "{% url 'login' %}";
       var imgHandleUrl = "{% url 'imgHandle' %}";
+      var pwResetUrl = "{% url 'password' %}";
+      var priSaveUrl = "{% url 'privacy' %}";
 
       $('#profile-email1').text(emails[0]);
       $('#profile-email2').text('@'+emails[1]);

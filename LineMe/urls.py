@@ -50,7 +50,6 @@ urlpatterns = [
 
     #
     url(r'^profile/$', views.profile, name='profile'),
-    url(r'^settings/$', views.settings, name='settings'),
 
     #
     url(r'^group/(?P<groupid>[0-9]+)/$', views.manage_group, name='group'),
@@ -60,8 +59,12 @@ urlpatterns = [
     url(r'^upload/(?P<groupid>[0-9]+)/$', views.upload_members, name='uploadMembers'),
     #
     #
+    url(r'^settings/$', views.settings, name='settings'),
     url(r'^settings/$', views.settings, name='avatar'),
     url(r'^imghandle/$', views.img_handle, name='imgHandle'),
+    url(r'^password/$', views.passwd_reset, name='password'),
+    url(r'^privacy/$', views.privacy_save, name='privacy'),
+
 
     url(r'^howto/$', views.home, name='howTo'),
     #

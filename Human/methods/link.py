@@ -19,7 +19,6 @@ from LineMe.constants import TARGET_LINK_CONFIRM_STATUS_TRANSITION_TABLE
 from LineMe.settings import logger
 
 
-# Todo: logger and security
 def link_confirm(request, user, linkid):
 
     link = get_object_or_404(Link, id=linkid)
@@ -79,7 +78,6 @@ def update_links(request, new_links, creator, groupid):
     for link in old_links:
         links_index[str(link.source_member.id) + ',' + str(link.target_member.id)] = link
 
-    # Todo: ast.literal_eval
     for link in json.loads(new_links):
         if link["source"] + ',' + link["target"] in links_index:
             links_index[link["source"] + ',' + link["target"]] = 0

@@ -23,7 +23,7 @@ $('.modal').on('show.bs.modal', function (e) {
 
 $('#reset-passwd').click(function () {
     $('.modal-footer').find('.btn-primary').addClass('disabled');
-    $.post("{% url 'settings' %}", $('#form-passwd').serialize(), function (result) {
+    $.post(pwResetUrl, $('#form-passwd').serialize(), function (result) {
 
         if (result == 0) {
             $('.modal-body').find('h4').text('Reset password successfully, please re-login');
@@ -38,6 +38,18 @@ $('#reset-passwd').click(function () {
         }
     });
 
+});
+
+$('#save-pri').click(function () {
+    var priDict = {};
+    $('.js-switch').each(function (){
+        priDict[$(this).attr('name')] = this.checked;
+    });
+
+    //priDict['pri-9'] = false;
+    $.post(priSaveUrl, {privacies: JSON.stringify(priDict)}, function (result) {
+       if (result == 0) alert('Save Privacy Successfully');
+    });
 });
 
 
