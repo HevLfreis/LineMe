@@ -67,6 +67,8 @@ urlpatterns = [
 
 
     url(r'^howto/$', views.home, name='howTo'),
+
+    url(r'^404/$', views.view_404, name='404'),
     #
     # url(r'^admin/', include(admin.site.urls)),
 ]

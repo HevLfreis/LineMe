@@ -84,7 +84,7 @@ def member_join(request, user, group, identifier):
     return 0
 
 
-def member_join_request(request, user, group, mesg):
+def create_request(request, user, group, mesg):
     try:
         if MemberRequest.objects.filter(user=user, group=group).exists():
 

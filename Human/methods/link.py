@@ -67,7 +67,9 @@ def link_reject(request, user, linkid):
 
 def update_links(request, new_links, creator, groupid):
 
-    if not GroupMember.objects.filter(user=creator, group__id=groupid, is_joined=True).exists():
+    if not GroupMember.objects.filter(user=creator,
+                                      group__id=groupid,
+                                      is_joined=True).exists():
         return -1
         
     now = timezone.now()

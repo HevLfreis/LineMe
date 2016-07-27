@@ -6,9 +6,7 @@
 import re
 
 from django.contrib.auth.models import User
-
 from Human.models import Group, GroupMember
-
 from LineMe.constants import CITIES_TABLE, IDENTIFIER
 
 
@@ -43,6 +41,7 @@ def validate_passwd(password, password2):
     return False
 
 
+# Todo: space in group name
 def validate_group_info(name, identifier, gtype):
     if re.match("^[a-zA-Z][a-zA-Z0-9]{2,20}$", name):
         if not Group.objects.filter(group_name=name).exists():

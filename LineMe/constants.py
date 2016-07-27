@@ -17,7 +17,7 @@ GROUP_MAXSIZE = 500
 GROUP_CREATED_CREDITS_COST = 100
 IDENTIFIER = {0: 'Special Code', 1: 'Email', 2: 'No Validation'}
 
-# Todo: implement private group
+# Todo: implement private group, pri group should be closed to anyone not in the member list
 GROUP_TYPE = {0: 'Public', 1: 'Private'}
 LINK_STATUS = {-3: 'Both Reject', -21: 'Target Reject Source Confirmed', -12: 'Source Reject Target Confirmed',
                -2: 'Target Reject', -1: 'Source Reject', 0: 'Both Unconfirmed',
@@ -40,7 +40,7 @@ TARGET_LINK_REJECT_STATUS_TRANSITION_TABLE = {-3: -3, -21: -21, -12: -3,
                                               1: -21, 2: -2, 3: -21}
 
 
-CITIES_TABLE = json.loads(file(os.path.join(STATIC_FOLDER, 'data/cities2.json')))
+CITIES_TABLE = json.load(file(os.path.join(STATIC_FOLDER, 'data/cities2.json')))
 
 PRIVACIES = {'pri-'+str(i): (field, field.verbose_name.title())
              for i, field in enumerate(Privacy._meta.fields)

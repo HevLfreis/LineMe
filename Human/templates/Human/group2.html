@@ -127,7 +127,7 @@
               <button class="btn btn-flat"><i class="fa fa-search"></i></button>
             </span>
           </div>
-          <ul class="sidebar-menu" style="margin-left: 0px">
+          <ul class="sidebar-menu">
             <li class="header">My Groups</li>
             {% for k, v in sug.items %}
               <li>
@@ -214,7 +214,6 @@
                 {% else %}
                   <div class="widget-user-header bg-blue text-center">
                 {% endif %}
-{#                <div class="widget-user-header bg-olive text-center">#}
                   <h3 class="widget-user-username"><strong>{{ group.group_name }}</strong></h3>
                   <h5 class="widget-user-desc">created by {{ creator.username }}</h5>
                 </div>

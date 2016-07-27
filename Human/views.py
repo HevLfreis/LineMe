@@ -6,17 +6,17 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import PageNotAnInteger
 from django.core.paginator import Paginator, EmptyPage
 from django.db.models import Q
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, Http404
 from django.shortcuts import redirect, render, get_object_or_404
 from django.utils import timezone
 
 from Human.forms import LoginForm, RegisterForm, GroupCreateForm, GroupMemberCreateForm, JoinForm, \
     FileUploadForm
-from Human.methods.avatar import create_avatar, handle_avatar
+from Human.methods.avatar import create_avatar, handle_uploaded_avatar
 from Human.methods.lm_ego import get_user_ego_graph
 from Human.methods.group import get_group_joined_num, group_recommender, create_group, get_user_join_status, \
-    get_user_member_in_group
-from Human.methods.groupmember import member_recommender, create_group_member, member_join, member_join_request, \
+    get_user_member_in_group, group_privacy_check
+from Human.methods.groupmember import member_recommender, create_group_member, member_join, create_request, \
     create_group_member_from_file
 from Human.methods.link import link_confirm, update_links
 from Human.methods.link import link_reject
@@ -38,6 +38,11 @@ from LineMe.settings import logger
 
 def redirect2main(request):
     return redirect('home')
+
+
+def view_404(request):
+    context = {"project_name": PROJECT_NAME}
+    return render(request, '404.html', context)
 
 
 def search(request):
@@ -110,7 +115,7 @@ def lm_register(request):
             context["status"] = status
 
             if status == 0:
-                request.session['NewLogin'] = True
+                request.session['new_login'] = True
                 logger.warning(logger_join('Devil', '[' + ','.join([str(request.user.id), name, password]) + ']'))
                 return redirect('profile')
 
@@ -146,7 +151,8 @@ def home(request):
 
     context = {"project_name": PROJECT_NAME, "user": user, "my_groups": my_groups,
                "in_groups": in_groups, "rcmd_groups": rcmd_groups, "msgs_count": msgs_count,
-               "group_created_status": 0, "identifier": IDENTIFIER, 'group_cost': GROUP_CREATED_CREDITS_COST}
+               "group_created_status": 0, "identifier": IDENTIFIER,
+               'group_cost': GROUP_CREATED_CREDITS_COST}
 
     if request.method == 'GET':
         return render(request, 'Human/home.html', context)
@@ -201,6 +207,7 @@ def msg_panel(request):
 
         return render(request, 'Human/home_msg.html',
                       {'msgs': p, 'my_members': my_members, 'msg_creators': msg_creators})
+
     else:
         return HttpResponse(status=403)
 
@@ -417,7 +424,7 @@ def profile(request):
     username = get_user_name(user)
     msgs_count = get_user_msgs_count(user)
 
-    first_login = get_session_consume(request, 'NewLogin')
+    first_login = request.session.get('new_login')
 
     if user.extra.location:
         country, city = user.extra.location.split('-')
@@ -427,7 +434,13 @@ def profile(request):
     context = {"project_name": PROJECT_NAME, "user": user, "username": username, "msgs_count": msgs_count,
                "first_login": first_login, 'cities_table': CITIES_TABLE, 'country': country, 'city': city}
 
-    if request.is_ajax():
+    if request.method == 'GET':
+        return render(request, 'Human/profile.html', context)
+
+    elif request.is_ajax():
+
+        first_login = get_session_consume(request, 'new_login')
+
         first_name = request.POST.get('firstname')
         last_name = request.POST.get('lastname')
         birth = request.POST.get('birth')
@@ -449,7 +462,8 @@ def profile(request):
         else:
             return HttpResponse(-1)
 
-    return render(request, 'Human/profile.html', context)
+    else:
+        return HttpResponse(status=403)
 
 
 ########################################################################
@@ -503,6 +517,7 @@ def passwd_reset(request):
                 return HttpResponse(0)
 
         return HttpResponse(-1)
+
     else:
         return HttpResponse(status=403)
 
@@ -548,7 +563,7 @@ def avatar(request):
 def img_handle(request):
     if request.is_ajax():
 
-        status = handle_avatar(request)
+        status = handle_uploaded_avatar(request)
         return HttpResponse(status)
 
     else:
@@ -572,6 +587,8 @@ def manage_group(request, groupid=0):
     msgs_count = get_user_msgs_count(user)
 
     group = get_object_or_404(Group, id=groupid)
+
+    group_privacy_check(user, group)
 
     context = {"project_name": PROJECT_NAME, "user": user, "group": group, "groups": groups,
                "rcmd_groups": rcmd_groups, "update_status": us, "name": nm, "msgs_count": msgs_count}
@@ -654,7 +671,6 @@ def upload_members(request, groupid):
                 return redirect('group', groupid=groupid)
 
     else:
-
         return redirect('group', groupid=groupid)
 
 
@@ -677,6 +693,8 @@ def join(request, groupid):
     user = request.user
     group = get_object_or_404(Group, id=groupid)
 
+    group_privacy_check(user, group)
+
     # already in the group
     if get_user_join_status(request, user, group) == 1:
         return HttpResponse(status=403)
@@ -693,8 +711,9 @@ def join(request, groupid):
                                              is_joined=True)
 
                 return HttpResponse(status)
+
             else:
-                logger.warning(logger_join('Join', get_session_id(request), 'failed'))
+                logger.warning(logger_join('Join', get_session_id(request), 'failed', gid=group.id))
                 return HttpResponse(-4)
 
         elif group.identifier == 1:
@@ -705,7 +724,7 @@ def join(request, groupid):
 
             status = member_join(request, user, group, user.email)
             if status != 0:
-                logger.warning(logger_join('Join', get_session_id(request), 'failed'))
+                logger.warning(logger_join('Join', get_session_id(request), 'failed', gid=group.id))
 
             return HttpResponse(status)
 
@@ -729,7 +748,7 @@ def join(request, groupid):
                     return redirect('egoId', groupid=groupid)
 
         request.session['join_failed'] = True
-        logger.warning(logger_join('Join', get_session_id(request), 'failed'))
+        logger.warning(logger_join('Join', get_session_id(request), 'failed', gid=group.id))
         return redirect('group', groupid=groupid)
 
     else:
@@ -742,9 +761,11 @@ def join_request(request, groupid):
     user = request.user
     group = get_object_or_404(Group, id=groupid)
 
+    group_privacy_check(user, group)
+
     if request.method == 'POST' and not GroupMember.objects.filter(user=user, group=group).exists():
         mesg = request.POST.get('message')
-        status = member_join_request(request, user, group, mesg)
+        status = create_request(request, user, group, mesg)
         return redirect('group', groupid=groupid)
 
     else:

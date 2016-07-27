@@ -8,6 +8,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 import re
+
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
 from django.db.models import Q
@@ -35,6 +36,8 @@ def smart_search(request, kw, groupid, limit):
 
     logger.info(logger_join('Search', get_session_id(request), kw=kw))
 
+    user = request.user
+
     res = []
 
     if kw == '':
@@ -51,8 +54,11 @@ def smart_search(request, kw, groupid, limit):
                 res.append({"mid": gm.id, "uid": 0, "mname": gm.member_name})
 
     else:
-        gs = Group.objects.filter(group_name__istartswith=kw).order_by('group_name')[0:limit]
-        for g in gs:
+        gs = Group.objects.filter(group_name__istartswith=kw).order_by('group_name')
+        gs1 = gs.filter(creator=user)
+        gs2 = gs.exclude(creator=user).filter(type=0)
+
+        for g in (gs1 | gs2)[0:limit]:
             res.append({"cid": g.creator.id, "gid": g.id, "name": g.group_name})
 
     return res

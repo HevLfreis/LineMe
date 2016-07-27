@@ -14,7 +14,7 @@ from LineMe.constants import CITIES_TABLE
 
 def get_user_global_graph(user, groupid):
     # Todo: status should = 3
-    ls = Link.objects.filter(group__id=groupid)
+    ls = Link.objects.filter(group__id=groupid, status=3)
 
     nodes, links = [], []
 
@@ -40,7 +40,7 @@ def get_user_global_graph(user, groupid):
 
 def get_user_global_map(user, groupid):
     # Todo: status should =3
-    ls = Link.objects.filter(group__id=groupid)
+    ls = Link.objects.filter(group__id=groupid, status=3)
     gms = GroupMember.objects.filter(group__id=groupid)
     my_member = gms.get(group__id=groupid, user=user)
 

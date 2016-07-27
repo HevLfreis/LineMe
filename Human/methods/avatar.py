@@ -61,10 +61,10 @@ def create_avatar(request, userid, username='Unknown'):
     return 0
 
 
-def handle_avatar(request):
+def handle_uploaded_avatar(request):
     user = request.user
-    try:
 
+    try:
         image_string = cStringIO.StringIO(base64.b64decode(request.POST['imgBase64'].partition('base64,')[2]))
         image = Image.open(image_string)
 

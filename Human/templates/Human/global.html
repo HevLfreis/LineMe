@@ -77,7 +77,7 @@
               <button class="btn btn-flat"><i class="fa fa-search"></i></button>
             </span>
           </div>
-          <ul class="sidebar-menu" style="margin-left: 0px">
+          <ul class="sidebar-menu">
             <li class="header">My Groups</li>
             {% for group in rcmd_groups %}
               <li>
@@ -124,12 +124,18 @@
           <div class="row">
             <div class="col-md-9 col-sm-12">
               <div class="box box-success">
-                <div id="main-panel" class="bg-gray-light cl-effect" style="height: 750px;">
+                <div id="main-panel" class="bg-gray-light cl-effect">
+                  {% if not group %}
+                    <h1 class="panel-text-center text-navy text-bold">
+                      <span class="fa fa-arrow-left"></span>
+                      &nbsp;&nbsp;&nbsp;Click Left to Select Group
+                    </h1>
+                  {% endif %}
                   {% if group %}
-                    <a id="map-mode" class="map text-center" style="width: 200px;z-index: 100;position: absolute;bottom: 0px;margin:75px" hidden>MAP MODE</a>
-                    <a id="normal-mode" class="normal text-center" style="width: 200px;z-index: 100;position: absolute;bottom: 0px;margin:75px">NORMAL MODE</a>
-                    <div id="network" style="position: absolute;z-index: 1;"></div>
-                    <div id="map" style="position: absolute;z-index: 1;visibility: hidden;"></div>
+                    <a id="map-mode" class="map text-center" hidden>MAP MODE</a>
+                    <a id="normal-mode" class="normal text-center">NORMAL MODE</a>
+                    <div id="network"></div>
+                    <div id="map"></div>
                   {% endif %}
                 </div>
               </div>
@@ -139,9 +145,9 @@
                 <div class="box-header with-border">
                   <h3 class="box-title">Information</h3>
                 </div>
-                <div class="box-body box-global-info-body" style="height: 680px;overflow: scroll;font-size: 16px">
+                <div class="box-body box-global-info-body">
                   {% if group %}
-                    <div id="info-degree" style="height: 350px"></div>
+                    <div id="info-degree"></div>
                     <table class="table no-margin">
                       <thead>
                         <tr>

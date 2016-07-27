@@ -6,6 +6,7 @@
 
 // Todo: check
 $(function() {
+    //setTimeout(function () {$('.panel-text-bottom').fadeOut(500);}, 2000);
 
     /**
         rcmd panel

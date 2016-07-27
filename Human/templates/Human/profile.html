@@ -28,10 +28,6 @@
         margin-left: 0;
       }
 
-      img {
-        cursor: pointer;
-      }
-
     </style>
   </head>
   <body class="hold-transition skin-black sidebar-mini">
@@ -173,11 +169,13 @@
                   <div class="box-footer no-padding">
                     <div class="row">
                       <div class="col-xs-12">
-                        {% if first_login %}
-                          <button id="submit" class="btn btn-lg btn-block btn-flat bg-olive">Continue</button>
-                        {% else %}
-                          <button id="submit" class="btn btn-lg btn-block btn-flat bg-olive">Save</button>
-                        {% endif %}
+                          <button id="submit" class="btn btn-lg btn-block btn-flat bg-olive">
+                            {% if first_login %}
+                              Continue
+                            {% else %}
+                              Save
+                            {% endif %}
+                          </button>
                       </div>
                     </div>
                   </div>

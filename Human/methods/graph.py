@@ -37,9 +37,10 @@ def create_global_graph(nodes, links, user):
 
 
 # Todo: link status should be 3
+# Todo: most contributor ? get most credits
 def graph_analyzer(user, groupid):
     nodes = GroupMember.objects.filter(group__id=groupid)
-    links = Link.objects.filter(group__id=groupid)
+    links = Link.objects.filter(group__id=groupid, status=3)
     my_member = nodes.get(user=user)
 
     G = create_global_graph(nodes, links, user)

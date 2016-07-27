@@ -26,7 +26,7 @@ SECRET_KEY = '0jh#joni6e@5j!s%6a0%05xs%%^$x3@=l7fs5&ndfrchq5-tn-'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['lime.seeleit.com']
 
 
 DEPLOYMENT = False

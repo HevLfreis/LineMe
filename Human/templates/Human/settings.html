@@ -35,6 +35,7 @@
           </div>
         </div>
       </div>
+
       <header class="main-header">
         <a href="{% url 'home' %}" class="logo">
           <span class="logo-lg"><b>{{ project_name }}</b></span>
@@ -204,26 +205,26 @@
                     <h3 class="timeline-header">Upload Avatar</h3>
                     <div class="timeline-body">
                       <div id="image-cropper">
-                          <div class="row">
-                            <div class="col-md-7 border-right">
-                              <div class="cropit-preview"></div>
-                              <div class="col-xs-12 text-center" style="padding-top: 5px">
-                                <span class="fa fa-rotate-left fa-lg rotate-ccw" style="padding-right: 20px;cursor: pointer"></span>
-                                <span class="fa fa-rotate-right fa-lg rotate-cw" style="cursor: pointer"></span>
-                                <input type="range" class="cropit-image-zoom-input custom">
-                              </div>
-                            </div>
-{#                            Todo: fix two fuck buttuons #}
-                            <div class="col-md-5 text-center btn-group-cropper">
-                              <div class="row" style="margin-bottom: 15px">
-                                <button id="select" class="btn btn-primary btn-flat" ><i class="fa fa-image pull-left"></i>Image</button>
-                              </div>
-                              <div class="row">
-                                <button id="upload" class="export btn btn-success btn-flat disabled" style="" disabled><i class="fa fa-upload pull-left"></i>Upload</button>
-                              </div>
+                        <div class="row">
+                          <div class="col-md-7 border-right">
+                            <div class="cropit-preview"></div>
+                            <div class="col-xs-12 text-center" style="padding-top: 5px">
+                              <span class="fa fa-rotate-left fa-lg rotate-ccw" style="padding-right: 20px;cursor: pointer"></span>
+                              <span class="fa fa-rotate-right fa-lg rotate-cw" style="cursor: pointer"></span>
+                              <input type="range" class="cropit-image-zoom-input custom">
                             </div>
                           </div>
-                          <input type="file" class="cropit-image-input">
+{#                            Todo: fix two fuck buttuons #}
+                          <div class="col-md-5 text-center btn-group-cropper">
+                            <div class="row" style="margin-bottom: 15px">
+                              <button id="select" class="btn btn-primary btn-flat" ><i class="fa fa-image pull-left"></i>Image</button>
+                            </div>
+                            <div class="row">
+                              <button id="upload" class="export btn btn-success btn-flat disabled" style="" disabled><i class="fa fa-upload pull-left"></i>Upload</button>
+                            </div>
+                          </div>
+                        </div>
+                        <input type="file" class="cropit-image-input">
                       </div>
                     </div>
                   </div>

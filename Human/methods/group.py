@@ -5,6 +5,7 @@
 # Time: 13:50
 import networkx as nx
 from django.db.models import Q
+from django.http import Http404
 from django.utils import timezone
 
 from Human.methods.groupmember import create_group_member
@@ -15,7 +16,6 @@ from Human.methods.validation import validate_group_info, user_in_group
 from Human.models import Group, Credits, MemberRequest, Link, Privacy
 from Human.models import GroupMember
 from LineMe.constants import GROUP_CREATED_CREDITS_COST
-from LineMe.constants import GROUP_MAXSIZE
 from LineMe.settings import logger
 
 
@@ -116,6 +116,13 @@ def get_user_join_status(request, user, group):
         return -1
     else:
         return 0
+
+
+# Todo: fix func
+def group_privacy_check(user, group):
+    if group.type == 1:
+        if not get_user_member_in_group(user, group):
+            raise Http404()
 
 
 ########################################################################
