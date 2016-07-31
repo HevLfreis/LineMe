@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>{{ project_name }} | Group</title>
-{#    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">#}
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="shortcut icon" href="/static/favicon.ico">
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/plugins/icheck/all.css">
@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
     <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
     <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
+    <link rel="stylesheet" href="/static/plugins/hint/css/hint.css">
     <style>
 
       blockquote {
@@ -76,17 +77,17 @@
         <nav class="navbar navbar-static-top" role="navigation">
           <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
-              <li class="notifications-menu">
+              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="{% if msgs_count > 0  %}You have {{ msgs_count }} requests{% else %}No request{% endif %}">
                 <a href="{% url 'home' %}">
                   <i class="fa fa-envelope-o"></i>
                   {% if msgs_count >= 99  %}
                     <span class="label label-danger">99</span>
-                  {% else %}
+                  {% elif msgs_count > 0 %}
                     <span class="label label-success">{{ msgs_count }}</span>
                   {% endif %}
                 </a>
               </li>
-              <li class="notifications-menu">
+              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="Help">
                 <a href="{% url 'howTo' %}">
                   <i class="fa fa-question"></i>
                 </a>

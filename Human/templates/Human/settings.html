@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="/static/plugins/cropit/css/cropit.css">
     <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
     <link rel="stylesheet" href="/static/plugins/switchery/css/switchery.min.css">
+    <link rel="stylesheet" href="/static/plugins/hint/css/hint.css">
     <link rel="stylesheet" href="/static/lineme/css/settings.css">
   </head>
   <body class="hold-transition skin-black sidebar-mini">
@@ -43,17 +44,17 @@
         <nav class="navbar navbar-static-top" role="navigation">
           <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
-              <li class="notifications-menu">
+              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="{% if msgs_count > 0  %}You have {{ msgs_count }} requests{% else %}No request{% endif %}">
                 <a href="{% url 'home' %}">
                   <i class="fa fa-envelope-o"></i>
                   {% if msgs_count >= 99  %}
                     <span class="label label-danger">99</span>
-                  {% else %}
+                  {% elif msgs_count > 0 %}
                     <span class="label label-success">{{ msgs_count }}</span>
                   {% endif %}
                 </a>
               </li>
-              <li class="notifications-menu">
+              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="Help">
                 <a href="{% url 'howTo' %}">
                   <i class="fa fa-question"></i>
                 </a>
@@ -214,7 +215,6 @@
                               <input type="range" class="cropit-image-zoom-input custom">
                             </div>
                           </div>
-{#                            Todo: fix two fuck buttuons #}
                           <div class="col-md-5 text-center btn-group-cropper">
                             <div class="row" style="margin-bottom: 15px">
                               <button id="select" class="btn btn-primary btn-flat" ><i class="fa fa-image pull-left"></i>Image</button>
@@ -229,7 +229,6 @@
                     </div>
                   </div>
                 </li>
-{#                            Todo: fix chaos #}
                 <li>
                   <i class="fa fa-lock bg-blue"></i>
                   <div class="timeline-item">
@@ -238,21 +237,27 @@
                       <div class="row">
                         <form id="form-passwd" method="post">
                           <div class="form-group">
-                            <label class="col-sm-4 control-label">Original Password</label>
-                            <div class="col-sm-8">
-                              <input type="password" name="old" class="form-control">
+                            <div class="row">
+                              <label class="col-sm-4 control-label">Original Password</label>
+                              <div class="col-sm-8">
+                                <input type="password" name="old" class="form-control">
+                              </div>
                             </div>
                           </div>
                           <div class="form-group">
-                            <label class="col-sm-4 control-label">New Password</label>
-                            <div class="col-sm-8">
-                              <input type="password" name="new" class="form-control">
+                            <div class="row">
+                              <label class="col-sm-4 control-label">New Password</label>
+                              <div class="col-sm-8">
+                                <input type="password" name="new" class="form-control">
+                              </div>
                             </div>
                           </div>
                           <div class="form-group">
-                            <label class="col-sm-4 control-label">Re-enter Password</label>
-                            <div class="col-sm-8">
-                              <input type="password" name="new2" class="form-control">
+                            <div class="row">
+                              <label class="col-sm-4 control-label">Re-enter Password</label>
+                              <div class="col-sm-8">
+                                <input type="password" name="new2" class="form-control">
+                              </div>
                             </div>
                           </div>
                         </form>

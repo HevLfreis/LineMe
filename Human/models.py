@@ -7,7 +7,7 @@ from django.db import models
 # all privacy need a default setting
 class Privacy(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    # Todo: more privacy settings
+    # Todo: more privacy settings, email privacy
     # link_me = models.BooleanField()
     # see_my_global = models.BooleanField()
     # link_need_my_confirm = models.BooleanField("Links need my confirmation", default=True)

@@ -46,6 +46,12 @@ body {
     width: 400px;
 }
 
+@media (max-width: 991px) {
+    .modal-dialog {
+        width: 350px;
+    }
+}
+
 .pagination a {
     cursor: pointer;
 }
@@ -1489,7 +1495,7 @@ a:focus {
 
     .navbar-custom-menu > .navbar-nav > li > .dropdown-menu {
         position: absolute;
-        right: 5%;
+        /*right: 2px;*/
         left: auto;
         border: 1px solid #ddd;
         background: #fff;

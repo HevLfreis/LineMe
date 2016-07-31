@@ -121,6 +121,7 @@ def lm_register(request):
 
             else:
                 return render(request, 'Human/register.html', context)
+
         else:
             context["status"] = -4
             return render(request, 'Human/register.html', context)
@@ -773,6 +774,7 @@ def join_request(request, groupid):
 
 
 # Todo: if the member is existed, sth is wrong
+# Todo: impl join decline
 @login_required
 def join_confirm(request, groupid, requestid):
 
@@ -796,6 +798,7 @@ def join_confirm(request, groupid, requestid):
 
             # Todo: confirm failed
             return redirect('group', groupid)
+
     else:
         return HttpResponse(status=403)
 

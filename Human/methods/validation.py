@@ -24,12 +24,11 @@ def validate_username_exist(name):
 
 
 def validate_email(email):
-    if User.objects.filter(email=email).exists():
-        return False
-
-    # Todo: email len > 7 ?
-    if len(email) > 7:
-        if re.match("^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$", email):
+    if not User.objects.filter(email=email).exists():
+        if re.match("^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\."
+                    "[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:"
+                    "[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)"
+                    "+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$", email):
             return True
     return False
 
@@ -41,9 +40,8 @@ def validate_passwd(password, password2):
     return False
 
 
-# Todo: space in group name
 def validate_group_info(name, identifier, gtype):
-    if re.match("^[a-zA-Z][a-zA-Z0-9]{2,20}$", name):
+    if re.match("^[a-zA-Z][a-zA-Z0-9\s]{2,20}$", name):
         if not Group.objects.filter(group_name=name).exists():
             if identifier in IDENTIFIER:
                 if gtype == 0 or gtype == 1:
@@ -51,14 +49,14 @@ def validate_group_info(name, identifier, gtype):
     return False
 
 
-def user_in_group(user, groupid):
+def _user_in_group(user, groupid):
     return GroupMember.objects.filter(group__id=groupid, user=user).exists()
 
 
 def check_groupid(user, groupid):
     if groupid is None:
         return -2
-    elif Group.objects.filter(id=groupid).exists() and user_in_group(user, groupid):
+    elif Group.objects.filter(id=groupid).exists() and _user_in_group(user, groupid):
         return groupid
     else:
         return 0

@@ -138,6 +138,17 @@ $(function() {
         });
     }
 
+    $('.select2[name="identifier"]').select2({
+        minimumResultsForSearch: 4
+    }).on("change", function(e) {
+        if (this.value == 2) {
+            $('input[type="radio"][value="1"].minimal').iCheck('disable').iCheck('uncheck');
+            $('input[type="radio"][value="0"].minimal').iCheck('check');
+        }
+        else
+            $('input[type="radio"][value="1"].minimal').iCheck('enable');
+    });
+
     var height = 0;
     function keepHeight() {
         var new_height = $content.height();

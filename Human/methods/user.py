@@ -13,9 +13,9 @@ from Human.methods.avatar import create_avatar
 from Human.methods.session import get_session_id
 from Human.methods.utils import login_user, logger_join
 from Human.methods.validation import validate_email, validate_username_exist
-from Human.methods.validation import validate_username, validate_passwd
+from Human.methods.validation import validate_passwd
 from Human.models import Privacy, Extra, GroupMember, Link
-from LineMe.settings import logger
+from LineMe.settings import logger, DEBUG
 
 
 def create_user(request, name, email, password, password2):
@@ -35,7 +35,11 @@ def create_user(request, name, email, password, password2):
             u = User.objects.create_user(name, email, password)
             login_user(request, name, password)
 
-            # Todo: impl privacy module
+            if DEBUG:
+                credit = 100
+            else:
+                credit = 30
+
             pri = Privacy(user=u)
             pri.save()
             extra = Extra(user=u,
@@ -43,7 +47,7 @@ def create_user(request, name, email, password, password2):
 
                           # Todo: django timezone?
                           birth=datetime.date.today(),
-                          credits=30,
+                          credits=credit,
                           privacy=pri)
 
             extra.save()

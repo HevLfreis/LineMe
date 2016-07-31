@@ -1123,6 +1123,7 @@ S2.define('select2/results',[
 
     if ($.fn.mousewheel) {
       this.$results.on('mousewheel', function (e) {
+        e.stopPropagation();
         var top = self.$results.scrollTop();
 
         var bottom = (

@@ -12,7 +12,7 @@ from Human.methods.groupmember import create_group_member
 from Human.methods.session import get_session_id
 from Human.methods.user import get_user_name
 from Human.methods.utils import logger_join
-from Human.methods.validation import validate_group_info, user_in_group
+from Human.methods.validation import validate_group_info
 from Human.models import Group, Credits, MemberRequest, Link, Privacy
 from Human.models import GroupMember
 from LineMe.constants import GROUP_CREATED_CREDITS_COST
@@ -21,6 +21,9 @@ from LineMe.settings import logger
 
 def create_group(request, user, name, identifier, gtype):
     now = timezone.now()
+
+    if identifier == 2:
+        gtype = 0
 
     if not validate_group_info(name, identifier, gtype):
         return -1
@@ -76,7 +79,14 @@ def group_recommender(user):
 
     gms = GroupMember.objects.filter(member_name=get_user_name(user), is_joined=False)
 
-    sug = set(gm.group for gm in gms if not user_in_group(user, gm.group.id))
+    sug = set(gm.group
+              for gm in gms
+              if not get_user_member_in_group(user, gm.group.id))
+
+    # Todo: only recommend 5 no validation public group, may add algo
+    for no_val_group in Group.objects.filter(identifier=2).exclude(creator=user)[0:5]:
+        if not get_user_member_in_group(user, no_val_group):
+            sug.add(no_val_group)
 
     return sug
 

@@ -67,17 +67,17 @@
         <nav class="navbar navbar-static-top" role="navigation">
           <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
-              <li class="notifications-menu">
+              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="{% if msgs_count > 0  %}You have {{ msgs_count }} requests{% else %}No request{% endif %}">
                 <a href="{% url 'home' %}">
                   <i class="fa fa-envelope-o"></i>
                   {% if msgs_count >= 99  %}
                     <span class="label label-danger">99</span>
-                  {% else %}
+                  {% elif msgs_count > 0 %}
                     <span class="label label-success">{{ msgs_count }}</span>
                   {% endif %}
                 </a>
               </li>
-              <li class="notifications-menu">
+              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="Help">
                 <a href="{% url 'howTo' %}">
                   <i class="fa fa-question"></i>
                 </a>
@@ -234,9 +234,9 @@
                             <td>{{ member.token }}</td>
                             <td>{{ member.created_time|date:'Y-m-d' }}</td>
                             {% if member.is_joined %}
-                              <td><span class="label label-success"><span class="fa fa-check-square"></span></span></td>
+                              <td><span class="label label-success" title="Joined"><span class="fa fa-check-square"></span></span></td>
                             {% else %}
-                              <td><span class="label label-warning"><span class="fa fa-circle"></span></span></td>
+                              <td><span class="label label-warning" title="On the way"><span class="fa fa-circle"></span></span></td>
                             {% endif %}
                           </tr>
                         {% endfor %}

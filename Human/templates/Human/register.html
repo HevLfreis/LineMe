@@ -72,11 +72,9 @@
     <script src="/static/bootstrap/js/bootstrap.min.js"></script>
     <script src="/static/plugins/icheck/icheck.min.js"></script>
     <script type="text/javascript">
-      {# Todo: icheck #}
       $(function () {
-        $('input').iCheck({
+        $('input[type="checkbox"]').iCheck({
           checkboxClass: 'icheckbox_square-blue',
-          radioClass: 'iradio_square-blue',
           increaseArea: '20%'
         });
       });

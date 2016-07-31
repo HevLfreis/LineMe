@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="/static/lineme/css/animations.css">
     <link rel="stylesheet" href="/static/plugins/d3/css/d3-tip.css">
     <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
+    <link rel="stylesheet" href="/static/plugins/hint/css/hint.css">
   </head>
   <body class="hold-transition skin-black sidebar-mini">
     <div class="wrapper">
@@ -26,17 +27,26 @@
         <nav class="navbar navbar-static-top" role="navigation">
           <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
-              <li class="notifications-menu">
+              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="My Net">
+                {% if group %}
+                  <a href="{% url 'egoId' group.id %}">
+                {% else %}
+                  <a href="{% url 'ego'%}">
+                {% endif %}
+                  <i class="fa fa-dot-circle-o"></i>
+                </a>
+              </li>
+              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="{% if msgs_count > 0  %}You have {{ msgs_count }} requests{% else %}No request{% endif %}">
                 <a href="{% url 'home' %}">
                   <i class="fa fa-envelope-o"></i>
                   {% if msgs_count >= 99  %}
                     <span class="label label-danger">99</span>
-                  {% else %}
+                  {% elif msgs_count > 0 %}
                     <span class="label label-success">{{ msgs_count }}</span>
                   {% endif %}
                 </a>
               </li>
-              <li class="notifications-menu">
+              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="Help">
                 <a href="{% url 'howTo' %}">
                   <i class="fa fa-question"></i>
                 </a>
@@ -104,17 +114,10 @@
       </aside>
       <div class="content-wrapper">
         <section class="content-header">
-          {% if group %}
-            <h1>
-              Global Network: <span class="text-bold">{{ group.group_name }}</span>
-              <small>view your entire global networks here</small>
-            </h1>
-          {% else %}
-            <h1>
-              Global Network
-              <small>view your entire global networks here</small>
-            </h1>
-          {% endif %}
+          <h1>
+            Global Network{% if group %}: <span class="text-bold">{{ group.group_name }}</span>{% endif %}
+            <small>view your entire global networks here</small>
+          </h1>
           <ol class="breadcrumb">
             <li><a href="{% url 'home' %}"><i class="fa fa-home"></i>{{ project_name }}</a></li>
             <li class="active">Global Network</li>

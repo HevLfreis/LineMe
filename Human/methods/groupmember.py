@@ -32,6 +32,10 @@ def create_group_member(request, group, name, identifier, user=None, is_creator=
                         is_creator=is_creator,
                         is_joined=is_joined,
                         created_time=now)
+
+        if is_joined:
+            m.joined_time = now
+
         m.save()
 
     except Exception, e:

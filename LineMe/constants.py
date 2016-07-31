@@ -15,6 +15,7 @@ PROJECT_NAME = 'LineMe'
 STATIC_FOLDER = STATICFILES_DIRS[0]
 GROUP_MAXSIZE = 500
 GROUP_CREATED_CREDITS_COST = 100
+LINK_BONUS = 10
 IDENTIFIER = {0: 'Special Code', 1: 'Email', 2: 'No Validation'}
 
 # Todo: implement private group, pri group should be closed to anyone not in the member list

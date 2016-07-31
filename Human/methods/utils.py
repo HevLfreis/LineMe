@@ -32,6 +32,7 @@ def login_user(request, username, password):
         return False
 
 
+# Todo: private group no result but i am in the list
 def smart_search(request, kw, groupid, limit):
 
     logger.info(logger_join('Search', get_session_id(request), kw=kw))

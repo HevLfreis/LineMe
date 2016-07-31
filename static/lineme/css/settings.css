@@ -6,22 +6,22 @@
     float: right;
 }
 
-.pull-left {
-    margin-top: 3px;
-}
+/*.fa.pull-left {*/
+    /*margin-top: 3px;*/
+/*}*/
 
 .border-right {
     border-right: 1px solid #f4f4f4;
 }
 
 .btn-group-cropper {
-    margin-top: 25%;
+    margin-top: 20%;
 }
 
 .btn-group-cropper button {
     margin-left: auto;
     margin-right: auto;
-    width: 180px;
+    width: 80%;
 }
 
 .cropit-preview {
@@ -46,4 +46,9 @@ input.cropit-image-input {
 
 input, .export {
     display: block;
+}
+
+.form-group .row {
+    margin-left: 5px;
+    margin-right: 5px;
 }
