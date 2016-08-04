@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>{{ project_name }} | My Network</title>
+    <title>{{ project_name }} | 我的网络</title>
 {#    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">#}
     <link rel="shortcut icon" href="/static/favicon.ico">
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
@@ -27,7 +27,7 @@
         <nav class="navbar navbar-static-top" role="navigation">
           <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
-              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="Global Net">
+              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="全局网络">
                 {% if group %}
                   <a href="{% url 'globalId' group.id %}">
                 {% else %}
@@ -36,7 +36,7 @@
                   <i class="fa fa-globe"></i>
                 </a>
               </li>
-              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="{% if msgs_count > 0  %}You have {{ msgs_count }} requests{% else %}No request{% endif %}">
+              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="{% if msgs_count > 0  %}你有 {{ msgs_count }} 条连边请求{% else %}无新消息{% endif %}">
                 <a href="{% url 'home' %}">
                   <i class="fa fa-envelope-o"></i>
                   {% if msgs_count >= 99  %}
@@ -46,7 +46,7 @@
                   {% endif %}
                 </a>
               </li>
-              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="Help">
+              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="帮助">
                 <a href="#">
                   <i class="fa fa-question"></i>
                 </a>
@@ -58,12 +58,12 @@
                   <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu" role="menu">
-                  <li><a href={% url 'ego' %}>My Network</a></li>
-                  <li><a href={% url 'global' %}>Global Network</a></li>
-                  <li><a href={% url 'profile' %}>My Profile</a></li>
-                  <li><a href={% url 'settings' %}>Settings</a></li>
+                  <li><a href={% url 'ego' %}>我的网络</a></li>
+                  <li><a href={% url 'global' %}>全局网络</a></li>
+                  <li><a href={% url 'profile' %}>个人信息</a></li>
+                  <li><a href={% url 'settings' %}>系统设置</a></li>
                   <li class="divider"></li>
-                  <li><a href={% url 'logout' %}>Sign Out</a></li>
+                  <li><a href={% url 'logout' %}>登出</a></li>
                 </ul>
               </li>
             </ul>
@@ -78,17 +78,17 @@
             </div>
             <div class="pull-left info">
               <p>{{ user.username }}</p>
-              <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
+              <a href="#"><i class="fa fa-circle text-success"></i> 在线</a>
             </div>
           </div>
           <div id="search" class="input-group sidebar-form">
-            <input type="text" name="q" class="form-control" placeholder="{% if group %}Member Search...{% else %}Group Search...{% endif %}">
+            <input type="text" name="q" class="form-control" placeholder="{% if group %}搜索成员...{% else %}搜索组...{% endif %}">
             <span class="input-group-btn">
               <button class="btn btn-flat"><i class="fa fa-search"></i></button>
             </span>
           </div>
           <ul class="sidebar-menu">
-            <li class="header">My Groups</li>
+            <li class="header">我的群</li>
             {% for group in rcmd_groups %}
               <li>
                 <a href="{% url 'group' group.id %}">
@@ -115,12 +115,12 @@
       <div class="content-wrapper">
         <section class="content-header">
           <h1>
-            My Network{% if group %}: <span class="text-bold">{{ group.group_name }}</span>{% endif %}
-            <small>map your social networks</small>
+            我的网络{% if group %}: <span class="text-bold">{{ group.group_name }}</span>{% endif %}
+            <small>构建你的朋友网络</small>
           </h1>
           <ol class="breadcrumb">
             <li><a href="{% url 'home' %}"><i class="fa fa-home"></i>{{ project_name }}</a></li>
-            <li class="active">My Network</li>
+            <li class="active">我的网络</li>
           </ol>
         </section>
         <section class="content">
@@ -132,7 +132,7 @@
                   {% if not group %}
                     <h1 class="panel-text-center text-navy text-bold">
                       <span class="fa fa-arrow-left"></span>
-                      &nbsp;&nbsp;&nbsp;Click Left to Select Group
+                      &nbsp;&nbsp;&nbsp;点击左侧选择群
                     </h1>
                   {% endif %}
                   {% if group %}
@@ -147,6 +147,11 @@
                         <li><a id="howto">Howto</a></li>
                       </ul>
                     </div>
+{#                    <h1 class="panel-text-bottom text-navy text-bold">#}
+{#                      Tools Menu</br>#}
+{#                      <span class="fa fa-arrow-down"></span>#}
+{##}
+{#                    </h1>#}
                   {% endif %}
                 </div>
               </div>
@@ -154,7 +159,7 @@
             <div class="col-md-3 col-sm-12" id="rcmd-panel">
               <div class="box box-success">
                 <div class="box-header with-border">
-                  <h3 class="box-title">Recommendations</h3>
+                  <h3 class="box-title">成员推荐</h3>
                 </div>
               </div>
             </div>

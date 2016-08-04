@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>{{ project_name }} | Group</title>
+    <title>{{ project_name }} | 群</title>
 {#    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">#}
     <link rel="shortcut icon" href="/static/favicon.ico">
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
@@ -33,28 +33,28 @@
           <form method="post" class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-              <h4 class="modal-title">Create a New Member</h4>
+              <h4 class="modal-title">新建成员</h4>
             </div>
             <div class="modal-body">
               <div class="form-group has-feedback">
-                <label for="member-name">Member name</label>
-                <input type="text" class="form-control" name="name" placeholder="Enter member name">
+                <label for="member-name">成员姓名</label>
+                <input type="text" class="form-control" name="name" placeholder="输入名字">
                 <span class="glyphicon glyphicon-tags form-control-feedback"></span>
               </div>
               <div class="form-group has-feedback">
                 {% if group.identifier != 2 %}
-                  <label for="member-identifier">Identifier</label>
+                  <label for="member-identifier">验证</label>
                   {% if group.identifier == 0 %}
-                    <input type="text" class="form-control" name="identifier" placeholder="Enter identifier for this member">
+                    <input type="text" class="form-control" name="identifier" placeholder="输入秘钥">
                   {% elif group.identifier == 1 %}
-                    <input type="text" class="form-control" name="identifier" placeholder="Enter email for this member">
+                    <input type="text" class="form-control" name="identifier" placeholder="输入邮箱">
                   {% endif %}
                   <span class="glyphicon glyphicon-info-sign form-control-feedback"></span>
                 {% endif %}
               </div>
             </div>
             <div class="modal-footer">
-              <button type="submit" class="btn btn-primary btn-flat">Create</button>
+              <button type="submit" class="btn btn-primary btn-flat">创建</button>
             </div>
           </form>
         </div>
@@ -67,7 +67,7 @@
         <nav class="navbar navbar-static-top" role="navigation">
           <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
-              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="{% if msgs_count > 0  %}You have {{ msgs_count }} requests{% else %}No request{% endif %}">
+              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="{% if msgs_count > 0  %}你有 {{ msgs_count }} 条连边请求{% else %}无新消息{% endif %}">
                 <a href="{% url 'home' %}">
                   <i class="fa fa-envelope-o"></i>
                   {% if msgs_count >= 99  %}
@@ -77,7 +77,7 @@
                   {% endif %}
                 </a>
               </li>
-              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="Help">
+              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="帮助">
                 <a href="#">
                   <i class="fa fa-question"></i>
                 </a>
@@ -89,12 +89,12 @@
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu" role="menu">
-                  <li><a href={% url 'ego' %}>My Network</a></li>
-                  <li><a href={% url 'global' %}>Global Network</a></li>
-                  <li><a href={% url 'profile' %}>My Profile</a></li>
-                  <li><a href={% url 'settings' %}>Settings</a></li>
+                  <li><a href={% url 'ego' %}>我的网络</a></li>
+                  <li><a href={% url 'global' %}>全局网络</a></li>
+                  <li><a href={% url 'profile' %}>个人信息</a></li>
+                  <li><a href={% url 'settings' %}>系统设置</a></li>
                   <li class="divider"></li>
-                  <li><a href={% url 'logout' %}>Sign Out</a></li>
+                  <li><a href={% url 'logout' %}>登出</a></li>
                 </ul>
               </li>
             </ul>
@@ -109,17 +109,17 @@
             </div>
             <div class="pull-left info">
               <p>{{ user.username }}</p>
-              <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
+              <a href="#"><i class="fa fa-circle text-success"></i> 在线</a>
             </div>
           </div>
           <div id="search" class="input-group sidebar-form">
-            <input type="text" name="q" class="form-control" placeholder="Group Search...">
+            <input type="text" name="q" class="form-control" placeholder="搜索群...">
             <span class="input-group-btn">
               <button class="btn btn-flat"><i class="fa fa-search"></i></button>
             </span>
           </div>
           <ul class="sidebar-menu">
-            <li class="header">My Groups</li>
+            <li class="header">我的群</li>
             {% for k, v in sug.items %}
               <li>
                 <a href="{% url 'group' k %}">
@@ -146,12 +146,12 @@
       <div class="content-wrapper">
         <section class="content-header">
           <h1>
-            My Created Group: <span class="text-bold">{{ group.group_name }}</span>
+            我创建的群: <span class="text-bold">{{ group.group_name }}</span>
 {#            <small>Optional description</small>#}
           </h1>
           <ol class="breadcrumb">
             <li><a href="{% url 'home' %}"><i class="fa fa-home"></i>{{ project_name }}</a></li>
-            <li class="active">Group</li>
+            <li class="active">群</li>
           </ol>
         </section>
         <section class="content">
@@ -161,40 +161,40 @@
                 <div class="box-body box-profile">
                   <div class="col-md-5">
                     <div class="form-group has-feedback">
-                      <label>Group name</label>
+                      <label>群</label>
                       <input type="text" class="form-control" name="name" placeholder="{{ group.group_name }}" disabled>
                       <span class="glyphicon glyphicon-tags form-control-feedback"></span>
                     </div>
                     <div class="form-group has-feedback">
-                      <label>Num of Members</label>
+                      <label>成员数量</label>
                       <input type="number" class="form-control" name="" placeholder="{{ members_count }}" disabled>
                       <span class="glyphicon glyphicon-asterisk form-control-feedback"></span>
                     </div>
                     <div class="form-group">
-                      <label>Group Identifier</label>
+                      <label>验证方式</label>
                       <select class="form-control select2" name="identifier" disabled>
-                        <option value="0" {% if group.identifier == 0 %}selected="selected"{% endif %}>Special Code</option>
-                        <option value="1" {% if group.identifier == 1 %}selected="selected"{% endif %}>Email</option>
-                        <option value="2" {% if group.identifier == 2 %}selected="selected"{% endif %}>No Validation</option>
+                        <option value="0" {% if group.identifier == 0 %}selected="selected"{% endif %}>秘钥</option>
+                        <option value="1" {% if group.identifier == 1 %}selected="selected"{% endif %}>邮箱</option>
+                        <option value="2" {% if group.identifier == 2 %}selected="selected"{% endif %}>无验证</option>
                       </select>
                     </div>
-                    <label>Group Type</label>
+                    <label>类型</label>
                     <div class="form-group">
                       <label style="padding-right: 15px">
                         <input type="radio" name="gtype" class="minimal" {% if group.type == 0 %}checked{% else %}disabled{% endif %}>
-                        Public
+                        公开
                       </label>
                       <label>
                         <input type="radio" name="gtype" class="minimal" {% if group.type == 1 %}checked{% else %}disabled{% endif %}>
-                        Private
+                        私有
                       </label>
                     </div>
                     {% if group.identifier != 2 %}
                       <div class="form-group">
-                        <label>Create New Members</label>
+                        <label>新成员</label>
                         <div class="btn-group">
-                          <button type="button" class="btn bg-navy btn-flat" data-toggle="modal" data-target="#member-create-modal">Add One</button>
-                          <button type="button" class="btn bg-purple btn-flat hint--bottom hint--rounded hint--bounce" aria-label="File Format&#10;&#10;name1, identifier1&#10;name2, identifier2&#10;..." onclick="chooseFile();">From File</button>
+                          <button type="button" class="btn bg-navy btn-flat" data-toggle="modal" data-target="#member-create-modal">新增</button>
+                          <button type="button" class="btn bg-purple btn-flat hint--bottom hint--rounded hint--bounce" aria-label="文件格式&#10;&#10;名字1, 秘钥1&#10;名字2, 秘钥2&#10;..." onclick="chooseFile();">从文件</button>
                           <form id="from-file" method="post" action="{% url 'uploadMembers' group.id %}" enctype="multipart/form-data" hidden>
                             <input id="from-file-input" type="file" name="members"/>
                           </form>
@@ -202,12 +202,12 @@
                         {% if update_status != None %}
                           {% if not update_status %}
                             {% if name == -1 %}
-                              <p class="text-center bg-red" style="margin-top: 5px">Wrong file format</p>
+                              <p class="text-center bg-red" style="margin-top: 5px">文件格式错误</p>
                             {% else %}
-                              <p class="text-center bg-red" style="margin-top: 5px">Update "{{ name }}" failed</p>
+                              <p class="text-center bg-red" style="margin-top: 5px">新建 "{{ name }}" 失败</p>
                             {% endif %}
                           {% else %}
-                            <p class="text-center bg-green" style="margin-top: 5px">Update members successfully</p>
+                            <p class="text-center bg-green" style="margin-top: 5px">成功新建成员</p>
                           {% endif %}
                         {% endif %}
                       </div>
@@ -217,10 +217,10 @@
                     <table class="table no-margin">
                       <thead>
                       <tr>
-                        <th>Member Name</th>
-                        <th>Identifier</th>
-                        <th>Created Time</th>
-                        <th>Status</th>
+                        <th>成员</th>
+                        <th>秘钥</th>
+                        <th>创建时间</th>
+                        <th>状态</th>
                       </tr>
                       </thead>
                       <tbody>
@@ -234,9 +234,9 @@
                             <td>{{ member.token }}</td>
                             <td>{{ member.created_time|date:'Y-m-d' }}</td>
                             {% if member.is_joined %}
-                              <td><span class="label label-success" title="Joined"><span class="fa fa-check-square"></span></span></td>
+                              <td><span class="label label-success" title="已加入"><span class="fa fa-check-square"></span></span></td>
                             {% else %}
-                              <td><span class="label label-warning" title="On the way"><span class="fa fa-circle"></span></span></td>
+                              <td><span class="label label-warning" title="未加入"><span class="fa fa-circle"></span></span></td>
                             {% endif %}
                           </tr>
                         {% endfor %}
@@ -246,7 +246,7 @@
                 </div>
                 <div class="box-footer clearfix">
                   <div class="box-tools pull-right">
-                    <button type="button" class="btn bg-red">DELETE GROUP</button>
+                    <button type="button" class="btn bg-red">删除群</button>
                   </div>
                   <div class="box-tools pull-left">
                     <ul class="pagination pagination-sm inline">
@@ -270,7 +270,7 @@
               <div class="col-md-4 col-sm-12">
                 <div class="box box-warning">
                   <div class="box-header with-border">
-                    <h3 class="box-title">Requests</h3>
+                    <h3 class="box-title">请求</h3>
                   </div>
                   <div class="box-footer box-comments">
                     {% for req in requests %}
@@ -283,7 +283,7 @@
                           </span>
                           {{ req.message }}
                         </div>
-                        <a href="{% url 'joinConfirm' group.id req.id %}" class="btn bg-navy btn-xs pull-right"><i class="fa fa-flash"></i> Accept</a>
+                        <a href="{% url 'joinConfirm' group.id req.id %}" class="btn bg-navy btn-xs pull-right"><i class="fa fa-flash"></i> 接受</a>
                       </div>
                     {% endfor %}
                   </div>

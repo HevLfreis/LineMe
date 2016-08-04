@@ -39,6 +39,9 @@ if DEPLOYMENT:
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
 
+DEPLOYED_LANGUAGE = 'zh-cn'
+
+
 # Application definition
 
 INSTALLED_APPS = (

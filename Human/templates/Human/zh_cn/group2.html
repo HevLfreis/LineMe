@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>{{ project_name }} | Group</title>
+    <title>{{ project_name }} | 群</title>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="shortcut icon" href="/static/favicon.ico">
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
@@ -30,41 +30,41 @@
           <form method="post" action="{% url 'join' group.id %}" class="modal-content" id="modal-content-wrong">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-              <h4 class="modal-title">Identifier Wrong</h4>
+              <h4 class="modal-title">秘钥错误</h4>
             </div>
             <div class="modal-body">
               <div class="form-group has-feedback">
-                <label for="member-identifier">Identifier</label>
+                <label for="member-identifier">验证</label>
                 {% if group.identifier == 0 %}
-                  <input type="text" class="form-control" name="identifier" placeholder="Re-enter identifier">
+                  <input type="text" class="form-control" name="identifier" placeholder="重新输入验证秘钥">
                 {% elif group.identifier == 1 %}
-                  <input type="text" class="form-control" name="identifier" placeholder="Re-enter email">
+                  <input type="text" class="form-control" name="identifier" placeholder="重新输入邮箱">
                 {% endif %}
                 <span class="glyphicon glyphicon-info-sign form-control-feedback"></span>
               </div>
             </div>
             <div class="modal-footer">
-              <button type="submit" class="btn btn-primary btn-flat">Follow</button>
+              <button type="submit" class="btn btn-primary btn-flat">加入</button>
             </div>
           </form>
 
           <form method="post" action="{% url 'joinRequest' group.id %}" class="modal-content" id="modal-content-notin">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-              <h4 class="modal-title">Attention</h4>
+              <h4 class="modal-title">注意</h4>
             </div>
             <div class="modal-body">
               <blockquote>
-                <h4>You are not in this group's list.</h4>
-                <h4>Please send a request to the creator.</h4>
+                <h4>你的名字不在成员列表中</h4>
+                <h4>你可以向群主发送入群请求</h4>
               </blockquote>
             </div>
             <div class="modal-footer">
               <div class="form-group has-feedback pull-left" style="margin-bottom: 0">
-                  <input type="text" class="form-control" name="message" placeholder="Message">
+                  <input type="text" class="form-control" name="message" placeholder="消息">
                 <span class="glyphicon glyphicon-info-sign form-control-feedback"></span>
               </div>
-              <button type="submit" class="btn btn-primary btn-flat">Send Request</button>
+              <button type="submit" class="btn btn-primary btn-flat">发送</button>
             </div>
           </form>
         </div>
@@ -77,7 +77,7 @@
         <nav class="navbar navbar-static-top" role="navigation">
           <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
-              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="{% if msgs_count > 0  %}You have {{ msgs_count }} requests{% else %}No request{% endif %}">
+              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="{% if msgs_count > 0  %}你有 {{ msgs_count }} 条连边请求{% else %}无新消息{% endif %}">
                 <a href="{% url 'home' %}">
                   <i class="fa fa-envelope-o"></i>
                   {% if msgs_count >= 99  %}
@@ -87,7 +87,7 @@
                   {% endif %}
                 </a>
               </li>
-              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="Help">
+              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="帮助">
                 <a href="#">
                   <i class="fa fa-question"></i>
                 </a>
@@ -99,12 +99,12 @@
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu" role="menu">
-                  <li><a href={% url 'ego' %}>My Network</a></li>
-                  <li><a href={% url 'global' %}>Global Network</a></li>
-                  <li><a href={% url 'profile' %}>My Profile</a></li>
-                  <li><a href={% url 'settings' %}>Settings</a></li>
+                  <li><a href={% url 'ego' %}>我的网络</a></li>
+                  <li><a href={% url 'global' %}>全局网络</a></li>
+                  <li><a href={% url 'profile' %}>个人信息</a></li>
+                  <li><a href={% url 'settings' %}>系统设置</a></li>
                   <li class="divider"></li>
-                  <li><a href={% url 'logout' %}>Sign Out</a></li>
+                  <li><a href={% url 'logout' %}>登出</a></li>
                 </ul>
               </li>
             </ul>
@@ -119,17 +119,17 @@
             </div>
             <div class="pull-left info">
               <p>{{ user.username }}</p>
-              <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
+              <a href="#"><i class="fa fa-circle text-success"></i> 在线</a>
             </div>
           </div>
           <div id="search" class="input-group sidebar-form">
-            <input type="text" name="q" class="form-control" placeholder="Group Search...">
+            <input type="text" name="q" class="form-control" placeholder="搜索群...">
             <span class="input-group-btn">
               <button class="btn btn-flat"><i class="fa fa-search"></i></button>
             </span>
           </div>
           <ul class="sidebar-menu">
-            <li class="header">My Groups</li>
+            <li class="header">我的群</li>
             {% for k, v in sug.items %}
               <li>
                 <a href="{% url 'group' k %}">
@@ -156,12 +156,12 @@
       <div class="content-wrapper">
         <section class="content-header">
           <h1>
-            Group Information: <span class="text-bold">{{ group.group_name }}</span>
+            群信息: <span class="text-bold">{{ group.group_name }}</span>
 {#            <small>Optional description</small>#}
           </h1>
           <ol class="breadcrumb">
             <li><a href="{% url 'home' %}"><i class="fa fa-home"></i>{{ project_name }}</a></li>
-            <li class="active">Group</li>
+            <li class="active">群</li>
           </ol>
         </section>
         <section class="content">
@@ -216,7 +216,7 @@
                   <div class="widget-user-header bg-blue text-center">
                 {% endif %}
                   <h3 class="widget-user-username"><strong>{{ group.group_name }}</strong></h3>
-                  <h5 class="widget-user-desc">created by {{ creator.username }}</h5>
+                  <h5 class="widget-user-desc">{{ creator.username }} 创建</h5>
                 </div>
                 <div class="widget-user-image">
                   <img class="img-circle" src="/static/images/user_avatars/{{ creator.id }}.png"  alt="User Avatar">
@@ -227,37 +227,37 @@
                       <div class="description-block">
                         <h5 class="description-header">
                           {% if group.identifier == 0 %}
-                            Special Code
+                            秘钥
                           {% elif group.identifier == 1 %}
-                            Email
+                            邮箱
                           {% else %}
-                            No Validation
+                            无验证
                           {% endif %}
                         </h5>
-                        <span class="description-text">IDENTIFIER</span>
+                        <span class="description-text">验证</span>
                       </div>
                     </div>
                     <div class="col-sm-4 border-right">
                       <div class="description-block">
                         <h5 class="description-header">{{ members_count }}</h5>
-                        <span class="description-text">MEMBERS</span>
+                        <span class="description-text">成员</span>
                       </div>
                     </div>
                     <div class="col-sm-4">
                       <div class="description-block">
                         <h5 class="description-header">{{ group.created_time|date:'Y m d' }}</h5>
-                        <span class="description-text">CREATED</span>
+                        <span class="description-text">创建时间</span>
                       </div>
                     </div>
                   </div>
                   {% if follow_status == 1 %}
-                    <button class="btn btn-lg btn-success btn-block btn-flat" disabled><b>Already in Group</b></button>
+                    <button class="btn btn-lg btn-success btn-block btn-flat" disabled><b>已加入</b></button>
                   {% elif follow_status == -1 %}
-                    <button class="btn btn-lg btn-warning btn-block btn-flat" disabled><b>Request Already Sent</b></button>
+                    <button class="btn btn-lg btn-warning btn-block btn-flat" disabled><b>请求已发送</b></button>
                   {% elif follow_status < -1 %}
-                    <button id="follow" class="btn btn-lg btn-danger btn-block btn-flat"><b>Follow Failed</b></button>
+                    <button id="follow" class="btn btn-lg btn-danger btn-block btn-flat"><b>验证失败</b></button>
                   {% else %}
-                    <button id="follow" class="btn btn-lg btn-block bg-orange btn-flat">Follow</button>
+                    <button id="follow" class="btn btn-lg btn-block bg-orange btn-flat">加入</button>
                   {% endif %}
                 </div>
               </div>

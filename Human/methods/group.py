@@ -79,9 +79,7 @@ def group_recommender(user):
 
     gms = GroupMember.objects.filter(member_name=get_user_name(user), is_joined=False)
 
-    sug = set(gm.group
-              for gm in gms
-              if not get_user_member_in_group(user, gm.group.id))
+    sug = set(gm.group for gm in gms if get_user_member_in_group(user, gm.group.id) is not None)
 
     # Todo: only recommend 5 no validation public group, may add algo
     for no_val_group in Group.objects.filter(identifier=2).exclude(creator=user)[0:5]:

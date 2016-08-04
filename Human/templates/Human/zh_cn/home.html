@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>{{ project_name }} | Home</title>
+    <title>{{ project_name }} | 我的主页</title>
 {#    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">#}
     <link rel="shortcut icon" href="/static/favicon.ico">
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
@@ -25,16 +25,16 @@
           <form method="post" class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-              <h4 class="modal-title">New Group</h4>
+              <h4 class="modal-title">新建群</h4>
             </div>
             <div class="modal-body">
               <div class="form-group has-feedback">
-                <label>Group name</label>
-                <input type="text" class="form-control" name="name" placeholder="Enter Group Name">
+                <label>群名字</label>
+                <input type="text" class="form-control" name="name" placeholder="请输入群名字">
                 <span class="glyphicon glyphicon-tags form-control-feedback"></span>
               </div>
               <div class="form-group">
-                <label>Group Identifier</label>
+                <label>群验证方式</label>
                 <select class="form-control select2" name="identifier" style="width: 100%">
                   {% for k, v in identifier.items %}
                     {% if k == 0 %}
@@ -46,20 +46,20 @@
                 </select>
               </div>
               <div class="form-group" style="margin-bottom: 0">
-                <label>Group Type</label></br>
+                <label>群类型</label></br>
                 <label style="padding-right: 15px">
                   <input type="radio" name="gtype" class="minimal" value="0" checked>
-                  Public
+                  公开
                 </label>
                 <label>
                   <input type="radio" name="gtype" class="minimal" value="1">
-                  Private
+                  私有
                 </label>
               </div>
             </div>
             <div class="modal-footer">
-              <h4 class="pull-left text-red">Create group will cost {{ group_cost }} credits</h4>
-              <button type="submit" class="btn btn-primary btn-flat">Create</button>
+              <h4 class="pull-left text-red">创建群会花费 {{ group_cost }} 积分</h4>
+              <button type="submit" class="btn btn-primary btn-flat">创建</button>
             </div>
           </form>
         </div>
@@ -72,7 +72,7 @@
         <nav class="navbar navbar-static-top" role="navigation">
           <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
-              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="{% if msgs_count > 0  %}You have {{ msgs_count }} requests{% else %}No request{% endif %}">
+              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="{% if msgs_count > 0  %}你有 {{ msgs_count }} 条连边请求{% else %}无新消息{% endif %}">
                 <a href="{% url 'home' %}">
                   <i class="fa fa-envelope-o"></i>
                   {% if msgs_count >= 99  %}
@@ -82,7 +82,7 @@
                   {% endif %}
                 </a>
               </li>
-              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="Help">
+              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="帮助">
                 <a href="#" id="howto">
                   <i class="fa fa-question"></i>
                 </a>
@@ -94,12 +94,12 @@
                   <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu" role="menu">
-                  <li><a href={% url 'ego' %}>My Network</a></li>
-                  <li><a href={% url 'global' %}>Global Network</a></li>
-                  <li><a href={% url 'profile' %}>My Profile</a></li>
-                  <li><a href={% url 'settings' %}>Settings</a></li>
+                  <li><a href={% url 'ego' %}>我的网络</a></li>
+                  <li><a href={% url 'global' %}>全局网络</a></li>
+                  <li><a href={% url 'profile' %}>个人信息</a></li>
+                  <li><a href={% url 'settings' %}>系统设置</a></li>
                   <li class="divider"></li>
-                  <li><a href={% url 'logout' %}>Sign Out</a></li>
+                  <li><a href={% url 'logout' %}>登出</a></li>
                 </ul>
               </li>
             </ul>
@@ -114,37 +114,37 @@
             </div>
             <div class="pull-left info">
               <p>{{ user.username }}</p>
-              <a><i class="fa fa-circle text-success"></i> Online</a>
+              <a><i class="fa fa-circle text-success"></i> 在线</a>
             </div>
           </div>
           <div id="search" class="input-group sidebar-form">
-            <input type="text" name="q" class="form-control" placeholder="Group Search...">
+            <input type="text" name="q" class="form-control" placeholder="搜索群...">
             <span class="input-group-btn">
               <button class="btn btn-flat"><i class="fa fa-search"></i></button>
             </span>
           </div>
           <ul class="sidebar-menu">
-            <li class="header">My Profile</li>
+            <li class="header">个人信息</li>
           </ul>
           <ul class="control-sidebar-menu">
             <li>
               <a>
                 {% if user.extra.gender  %}
-                  <i class="menu-icon fa fa-venus bg-yellow" title="gender"></i>
+                  <i class="menu-icon fa fa-venus bg-yellow" title="性别"></i>
                   <div class="menu-info">
-                    <h4 class="control-sidebar-subheading">Female</h4>
+                    <h4 class="control-sidebar-subheading">美女</h4>
                   </div>
                 {% else %}
-                  <i class="menu-icon fa fa-mars bg-yellow" title="gender"></i>
+                  <i class="menu-icon fa fa-mars bg-yellow" title="性别"></i>
                   <div class="menu-info">
-                    <h4 class="control-sidebar-subheading">Male</h4>
+                    <h4 class="control-sidebar-subheading">帅哥</h4>
                   </div>
                 {% endif %}
               </a>
             </li>
             <li>
               <a>
-                <i class="menu-icon fa fa-birthday-cake bg-red" title="birth"></i>
+                <i class="menu-icon fa fa-birthday-cake bg-red" title="生日"></i>
                 <div class="menu-info">
                   <h4 id="profile-birth" class="control-sidebar-subheading">{{ user.extra.birth }}</h4>
                 </div>
@@ -152,7 +152,7 @@
             </li>
             <li>
               <a>
-                <i class="menu-icon fa fa-envelope-o bg-light-blue" title="email"></i>
+                <i class="menu-icon fa fa-envelope-o bg-light-blue" title="邮箱"></i>
                 <div class="menu-info">
                   <h4 id="profile-email1" class="control-sidebar-subheading"></h4>
                   <p id="profile-email2"></p>
@@ -161,7 +161,7 @@
             </li>
             <li>
               <a>
-                <i class="menu-icon fa fa-location-arrow bg-green" title="location"></i>
+                <i class="menu-icon fa fa-location-arrow bg-green" title="位置"></i>
                 <div class="menu-info">
                   <h4 id="profile-location1" class="control-sidebar-subheading"></h4>
                   <p id="profile-location2"></p>
@@ -171,7 +171,7 @@
             <li>
             <li>
               <a>
-                <i class="menu-icon fa fa-institution bg-maroon" title="institution"></i>
+                <i class="menu-icon fa fa-institution bg-maroon" title="所属"></i>
                 <div class="menu-info">
                   <h4 id="profile-institution1" class="control-sidebar-subheading"></h4>
                   <p id="profile-institution2"></p>
@@ -180,7 +180,7 @@
             </li>
             <li>
               <a>
-                <i class="menu-icon fa fa-star bg-teal" title="credits"></i>
+                <i class="menu-icon fa fa-star bg-teal" title="积分"></i>
                 <div class="menu-info">
                   <h4 class="control-sidebar-subheading">{{ user.extra.credits }}</h4>
                 </div>
@@ -192,12 +192,12 @@
       <div class="content-wrapper">
         <section class="content-header">
           <h1>
-            Home
+            我的主页
 {#            <small>Optional description</small>#}
           </h1>
           <ol class="breadcrumb">
             <li><a href="{% url 'home' %}"><i class="fa fa-home"></i>{{ project_name }}</a></li>
-            <li class="active">Home</li>
+            <li class="active">我的主页</li>
           </ol>
         </section>
         <section class="content">
@@ -206,8 +206,8 @@
               <div class="info-box">
                 <a href="{% url 'ego' %}" class="info-box-icon bg-blue"><i class="ion ion-ios-color-filter-outline"></i></a>
                 <div class="info-box-content">
-                  <span class="info-box-text">My Network</span>
-                  <span class="info-box-number">Create a friend network</span>
+                  <span class="info-box-text">我的网络</span>
+                  <span class="info-box-number">在群内创建你的朋友网络</span>
                 </div>
               </div>
             </div>
@@ -215,8 +215,8 @@
               <div class="info-box">
                 <a href="{% url 'global' %}" class="info-box-icon bg-green"><i class="ion ion-ios-world-outline"></i></a>
                 <div class="info-box-content">
-                  <span class="info-box-text">Global Network</span>
-                  <span class="info-box-number">See the global network of you</span>
+                  <span class="info-box-text">全局网络</span>
+                  <span class="info-box-number">查看你的全局网络</span>
                 </div>
               </div>
             </div>
@@ -225,8 +225,8 @@
               <div class="info-box">
                 <a href="{% url 'profile' %}" class="info-box-icon bg-yellow"><i class="ion ion-ios-albums-outline"></i></a>
                 <div class="info-box-content">
-                  <span class="info-box-text">My Profile</span>
-                  <span class="info-box-number">Edit your personal infomation</span>
+                  <span class="info-box-text">个人信息</span>
+                  <span class="info-box-number">编辑你的个人档案</span>
                 </div>
               </div>
             </div>
@@ -234,8 +234,8 @@
               <div class="info-box">
                 <a href="{% url 'settings' %}" class="info-box-icon bg-red"><i class="ion ion-ios-gear-outline"></i></a>
                 <div class="info-box-content">
-                  <span class="info-box-text">Settings</span>
-                  <span class="info-box-number">Change settings of {{ project_name }}</span>
+                  <span class="info-box-text">系统设置</span>
+                  <span class="info-box-number">更改 {{ project_name }} 的设置</span>
                 </div>
               </div>
             </div>
@@ -245,7 +245,7 @@
               <div id="box-msg" class="box box-primary">
                 <div class="box-header">
                   <i class="ion ion-paper-airplane"></i>
-                  <h3 class="box-title">Link Request Messages</h3>
+                  <h3 class="box-title">连边请求</h3>
 {#                  <div class="box-tools pull-right" title="" style="top:10px">#}
 {#                    <h3 class="box-title">Select All&nbsp;&nbsp;</h3>#}
 {#                    <input type="checkbox" value="" name="" >#}
@@ -255,7 +255,7 @@
               <div id="box-group" class="box box-warning">
                 <div class="box-header">
                   <i class="ion ion-crop"></i>
-                  <h3 class="box-title">Manage Groups --- Group Recommendations</h3>
+                  <h3 class="box-title">群推荐</h3>
                   <div class="box-tools pull-right" title="">
                     <div class="btn-group" data-toggle="btn-toggle">
                       <button id="btn-rd-group" type="button" class="btn btn-default btn-sm active"><i class="fa fa-square text-yellow"></i></button>
@@ -269,11 +269,11 @@
                     <table class="table no-margin">
                       <thead>
                       <tr>
-                        <th>Group Name</th>
-                        <th>Created Time</th>
-                        <th>Type</th>
-                        <th>Identifier</th>
-                        <th>Members</th>
+                        <th>群</th>
+                        <th>创建时间</th>
+                        <th>类型</th>
+                        <th>验证方式</th>
+                        <th>成员</th>
                       </tr>
                       </thead>
                       <tbody>
@@ -283,18 +283,18 @@
                           <td>{{ group.created_time|date:'M d, Y' }}</td>
                           <td>
                             {% if group.type == 0 %}
-                              Public
+                              公开
                             {% else %}
-                              Private
+                              私有
                             {% endif %}
                           </td>
                           <td>
                             {% if group.identifier == 0 %}
-                              Special Code
+                              秘钥
                             {% elif group.identifier == 1 %}
-                              Email
+                              邮箱
                             {% elif group.identifier == 2 %}
-                              No Validation
+                              无验证
                             {% endif %}
                           </td>
                           <td><span class="label label-info">{{ v }}</span></td>
@@ -307,11 +307,11 @@
                     <table class="table no-margin">
                       <thead>
                       <tr>
-                        <th>Group Name</th>
-                        <th>Created Time</th>
-                        <th>Type</th>
-                        <th>Identifier</th>
-                        <th>Members</th>
+                        <th>群</th>
+                        <th>创建时间</th>
+                        <th>类型</th>
+                        <th>验证方式</th>
+                        <th>成员</th>
                       </tr>
                       </thead>
                       <tbody>
@@ -321,18 +321,18 @@
                           <td>{{ group.created_time|date:'M d, Y' }}</td>
                           <td>
                             {% if group.type == 0 %}
-                              Public
+                              公开
                             {% else %}
-                              Private
+                              私有
                             {% endif %}
                           </td>
                           <td>
                             {% if group.identifier == 0 %}
-                              Special Code
+                              秘钥
                             {% elif group.identifier == 1 %}
-                              Email
+                              邮箱
                             {% elif group.identifier == 2 %}
-                              No Validation
+                              无验证
                             {% endif %}
                           </td>
                           <td><span class="label label-success">{{ v }}</span></td>
@@ -345,11 +345,11 @@
                     <table class="table no-margin">
                       <thead>
                       <tr>
-                        <th>Group Name</th>
-                        <th>Creator</th>
-                        <th>Created Time</th>
-                        <th>Type</th>
-                        <th>Identifier</th>
+                        <th>群</th>
+                        <th>创建时间</th>
+                        <th>类型</th>
+                        <th>验证方式</th>
+                        <th>成员</th>
                       </tr>
                       </thead>
                       <tbody>
@@ -360,18 +360,18 @@
                           <td>{{ group.created_time|date:'M d, Y' }}</td>
                           <td>
                             {% if group.type == 0 %}
-                              Public
+                              公开
                             {% else %}
-                              Private
+                              私有
                             {% endif %}
                           </td>
                           <td>
                             {% if group.identifier == 0 %}
-                              Special Code
+                              秘钥
                             {% elif group.identifier == 1 %}
-                              Email
+                              邮箱
                             {% elif group.identifier == 2 %}
-                              No Validation
+                              无验证
                             {% endif %}
                           </td>
                           <td><span class="label label-info">{{ v }}</span></td>
@@ -384,13 +384,13 @@
                 <div class="box-footer clearfix no-border">
                   <div class="box-tools pull-right">
                     {% if group_created_status == 0 %}
-                      <a class="btn bg-aqua btn-flat" data-toggle="modal" data-target="#group-create-modal" style=""><i class="fa fa-plus pull-left"></i>New Group</a>
+                      <a class="btn bg-aqua btn-flat" data-toggle="modal" data-target="#group-create-modal" style=""><i class="fa fa-plus pull-left"></i>创建新群</a>
                     {% elif group_created_status == -1 %}
-                      <a class="btn bg-yellow btn-flat" data-toggle="modal" data-target="#group-create-modal" style=""><i class="fa fa-info pull-left"></i>Invalid Group Name</a>
+                      <a class="btn bg-yellow btn-flat" data-toggle="modal" data-target="#group-create-modal" style=""><i class="fa fa-info pull-left"></i>群名字无效</a>
                     {% elif group_created_status == -2 %}
-                      <a class="btn bg-yellow btn-flat" data-toggle="modal" data-target="#group-create-modal" style=""><i class="fa fa-info pull-left"></i>Low Credits</a>
+                      <a class="btn bg-yellow btn-flat" data-toggle="modal" data-target="#group-create-modal" style=""><i class="fa fa-info pull-left"></i>积分不足</a>
                     {% else %}
-                      <a class="btn bg-red btn-flat" data-toggle="modal" data-target="#group-create-modal" style=""><i class="fa fa-info pull-left"></i>Try Again</a>
+                      <a class="btn bg-red btn-flat" data-toggle="modal" data-target="#group-create-modal" style=""><i class="fa fa-info pull-left"></i>请重试</a>
                     {% endif %}
                   </div>
                   <div class="box-tools pull-left">
@@ -414,10 +414,10 @@
             <div class="col-md-5 col-xs-12">
               <div id="box-inv" class="box box-purple">
                 <div class="box-header with-border">
-                  <h3 class="box-title">My Link Invitations</h3>
+                  <h3 class="box-title">我的连边邀请</h3>
                   <div class="box-tools pull-right">
                     <div class="has-feedback">
-                      <input id="search-group" type="text" class="form-control input-sm" placeholder="Group Search">
+                      <input id="search-group" type="text" class="form-control input-sm" placeholder="搜索群">
                       <span class="glyphicon glyphicon-search form-control-feedback"></span>
                     </div>
                   </div>

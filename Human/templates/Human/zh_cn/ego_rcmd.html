@@ -1,0 +1,47 @@
+<div class="box box-success">
+  <div class="box-header with-border">
+    <h3 class="box-title">成员推荐</h3>
+  </div>
+  <div class="box-body widget-user-list">
+    {% for member in members %}
+      <div class="box box-widget widget-user-2" id="sug-{{ member.id }}-{{ member.user.id }}-{{ member.member_name }}">
+        <div class="widget-user-header">
+          {% if member.is_joined %}
+            <div class="widget-user-image">
+              <img class="img-circle" src="/static/images/user_avatars/{{ member.user.id }}.png" alt="User Avatar">
+            </div>
+          {% else %}
+            <div class="widget-user-image">
+              <img class="img-circle" src="/static/images/user_avatars/0.png" alt="User Avatar">
+            </div>
+          {% endif %}
+          <h3 class="widget-user-username">{{ member.member_name }}</h3>
+          {% if member.user != None %}
+            <h4 class="widget-user-desc">{{ member.user.email }}&nbsp</h4>
+          {% else %}
+            <h4 class="widget-user-desc">还未加入</h4>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+<div class="box-footer clearfix">
+  <div class="box-tools pull-left">
+    <ul class="pagination pagination-sm inline">
+      {% if members.has_previous %}
+        <li><a onclick="updateRcmdPanel({{ members.previous_page_number }})">«</a></li>
+      {% else %}
+        <li class="disabled"><a href="#">«</a></li>
+      {% endif %}
+        <li><a>{{ members.number }}/{{ members.paginator.num_pages }}</a></li>
+      {% if members.has_next %}
+        <li><a onclick="updateRcmdPanel({{ members.next_page_number }})">»</a></li>
+      {% else %}
+        <li class="disabled"><a href="#">»</a></li>
+      {% endif %}
+    </ul>
+  </div>
+  <button id="refresh" class="btn btn-sm btn-default btn-flat pull-right">刷新</button>
+</div>
+

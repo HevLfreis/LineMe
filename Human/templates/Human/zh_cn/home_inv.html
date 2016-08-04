@@ -1,0 +1,62 @@
+<div class="box-body">
+  <div class="table-responsive">
+    <table class="table no-margin">
+      <thead>
+      <tr>
+        <th>群</th>
+        <th>从</th>
+        <th>至</th>
+        <th>创建时间</th>
+        <th>状态</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for inv in invs %}
+        <tr>
+          <td>{{ inv.group.group_name }}</td>
+          {% if inv.source_member in my_members %}
+            <td>我</td>
+          {% else %}
+            <td><a href="#">{{ inv.source_member.member_name }}</a></td>
+          {% endif %}
+          {% if inv.target_member in my_members %}
+            <td>我</td>
+          {% else %}
+            <td><a href="#">{{ inv.target_member.member_name }}</a></td>
+          {% endif %}
+          <td>{{ inv.created_time|date:'M d, Y' }}</td>
+          {% if inv.status == -3 %}
+            <td><span class="label label-danger" title="双方拒绝"><span class="fa fa-close"></span></span></td>
+          {% elif inv.status == 3 %}
+            <td><span class="label label-success" title="已确认"><span class="fa fa-check-square"></span></span></td>
+          {% elif inv.status > 0 %}
+            <td><span class="label label-primary" title="一方确认"><span class="fa fa-circle"></span></span></td>
+          {% elif inv.status < 0 %}
+            <td><span class="label label-danger"title="一方拒绝"><span class="fa fa-circle"></span></span></td>
+          {% elif inv.status == 0 %}
+            <td><span class="label label-warning" title="未确认"><span class="fa fa-circle"></span></span></td>
+          {% endif %} 
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="box-footer clearfix no-border">
+  <div class="box-tools pull-left">
+    <ul class="pagination pagination-sm inline">
+      {% if invs.has_previous %}
+        <li><a onclick="updateInvPanel({{ invs.previous_page_number }}, $('#search-group').val())">«</a></li>
+      {% else %}
+        <li class="disabled"><a href="#">«</a></li>
+      {% endif %}
+      <li><a>{{ invs.number }}/{{ invs.paginator.num_pages }}</a></li>
+      {% if invs.has_next %}
+        <li><a onclick="updateInvPanel({{ invs.next_page_number }}, $('#search-group').val())">»</a></li>
+      {% else %}
+        <li class="disabled"><a href="#">»</a></li>
+      {% endif %}
+    </ul>
+  </div>
+  <a href="#" class="btn btn-sm btn-default btn-flat pull-right disabled">邮件邀请</a>
+</div>

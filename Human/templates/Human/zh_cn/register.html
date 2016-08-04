@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{{ project_name }} | 注册</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="shortcut icon" href="/static/favicon.ico">
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
+    <link rel="stylesheet" href="/static/plugins/icheck/square/blue.css">
+  </head>
+  <body class="hold-transition register-page">
+    <div class="register-box">
+      <div class="register-logo">
+        <a href="{% url 'login' %}"><b>{{ project_name }}</b></a>
+      </div>
+      <div class="register-box-body">
+        <p class="login-box-msg">注册新账号</p>
+        <form method="post">
+          {% if status == -4 %}
+            <p class="text-center bg-red">注册失败</p>
+          {% endif %}
+          {% if status == -1 %}
+            <div class="form-group has-error has-feedback">
+            <label class="control-label"><i class="fa fa-times"></i> 无效用户名</label>
+            <input name="username" type="text" class="form-control" placeholder="字母和数字，不少于6个字符">
+          {% else %}
+            <div class="form-group has-feedback">
+            <input name="username" type="text" class="form-control" placeholder="用户名">
+          {% endif %}
+            <span class="glyphicon glyphicon-user form-control-feedback"></span>
+          </div>
+          {% if status == -2 %}
+            <div class="form-group has-error has-feedback">
+            <label class="control-label"><i class="fa fa-times"></i> 无效邮箱</label>
+          {% else %}
+            <div class="form-group has-feedback">
+          {% endif %}
+            <input name="email" type="email" class="form-control" placeholder="邮箱">
+            <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+          </div>
+          {% if status == -3 %}
+            <div class="form-group has-error has-feedback">
+            <label class="control-label"><i class="fa fa-times"></i> 无效密码</label>
+            <input name="password" type="password" class="form-control" placeholder="字母和数字，不少于6个字符">
+          {% else %}
+            <div class="form-group has-feedback">
+            <input name="password" type="password" class="form-control" placeholder="密码">
+          {% endif %}
+            <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+          </div>
+          <div class="form-group has-feedback">
+            <input name="password2" type="password" class="form-control" placeholder="重复密码">
+            <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
+          </div>
+          <div class="row">
+            <div class="col-xs-8">
+               <a href="{% url 'login' %}" class="text-center">我有账号</a>
+            </div>
+            <div class="col-xs-4">
+              <button type="submit" class="btn btn-primary btn-block btn-flat">注册</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="/static/plugins/jQuery/jQuery-2.1.4.min.js"></script>
+    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/static/plugins/icheck/icheck.min.js"></script>
+    <script type="text/javascript">
+      $(function () {
+        $('input[type="checkbox"]').iCheck({
+          checkboxClass: 'icheckbox_square-blue',
+          increaseArea: '20%'
+        });
+      });
+    </script>
+  </body>
+</html>

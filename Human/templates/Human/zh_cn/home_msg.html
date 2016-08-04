@@ -6,18 +6,18 @@
           <span class="text">
             {% load filters %}
             <a href="#">{{ msg_creators|get_value:msg }}</a>
-            invites you to confirm the friend link to
+            邀请您确认在 <a href="{% url 'group' msg.group.id %}">{{ msg.group.group_name }}</a> 群中和
             {% if msg.source_member in my_members %}
               <a href="#">{{ msg.target_member.member_name }}</a>
             {% else %}
               <a href="#">{{ msg.source_member.member_name }}</a>
             {% endif %}
-            in <a href="{% url 'group' msg.group.id %}">{{ msg.group.group_name }}</a>
+            的连边
           </span>
         {% if msg.status <= 0 %}
-          <small class="label label-warning">Both Unconfirmed</small>
+          <small class="label label-warning">未确认</small>
         {% else %}
-          <small class="label label-primary">Other Side Confirmed</small>
+          <small class="label label-primary">一方确认</small>
         {% endif %}
         <div class="tools">
           <i class="fa fa-check-circle-o fa-lg" onclick="msgConfirmed('{% url 'msgHandle' 1 msg.id %}', 1,{{ msg.id }})"></i>
@@ -43,5 +43,5 @@
       {% endif %}
     </ul>
   </div>
-  <a id="confirm" href="#" class="btn btn-sm btn-default btn-flat pull-right">Confirm Choosed</a>
+  <a id="confirm" href="#" class="btn btn-sm btn-default btn-flat pull-right">确认已选择</a>
 </div>

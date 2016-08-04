@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>{{ project_name }} | Settings</title>
+    <title>{{ project_name }} | 设置</title>
 {#    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">#}
     <link rel="shortcut icon" href="/static/favicon.ico">
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
@@ -24,14 +24,14 @@
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-              <h4 class="modal-title">Warning</h4>
+              <h4 class="modal-title">警告</h4>
             </div>
             <div class="modal-body">
-              <h4>You are going to reset your password, continue ?</h4>
+              <h4>你将要更改密码, 继续吗 ?</h4>
             </div>
             <div class="modal-footer">
-              <button id="reset-passwd" class="btn btn-primary btn-flat">OK</button>
-              <button class="btn btn-warning btn-flat" data-dismiss="modal">Cancel</button>
+              <button id="reset-passwd" class="btn btn-primary btn-flat">确定</button>
+              <button class="btn btn-warning btn-flat" data-dismiss="modal">取消</button>
             </div>
           </div>
         </div>
@@ -44,7 +44,7 @@
         <nav class="navbar navbar-static-top" role="navigation">
           <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
-              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="{% if msgs_count > 0  %}You have {{ msgs_count }} requests{% else %}No request{% endif %}">
+              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="{% if msgs_count > 0  %}你有 {{ msgs_count }} 条连边请求{% else %}无新消息{% endif %}">
                 <a href="{% url 'home' %}">
                   <i class="fa fa-envelope-o"></i>
                   {% if msgs_count >= 99  %}
@@ -54,7 +54,7 @@
                   {% endif %}
                 </a>
               </li>
-              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="Help">
+              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="帮助">
                 <a href="#">
                   <i class="fa fa-question"></i>
                 </a>
@@ -66,12 +66,12 @@
                   <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu" role="menu">
-                  <li><a href={% url 'ego' %}>My Network</a></li>
-                  <li><a href={% url 'global' %}>Global Network</a></li>
-                  <li><a href={% url 'profile' %}>My Profile</a></li>
-                  <li><a href={% url 'settings' %}>Settings</a></li>
+                  <li><a href={% url 'ego' %}>我的网络</a></li>
+                  <li><a href={% url 'global' %}>全局网络</a></li>
+                  <li><a href={% url 'profile' %}>个人信息</a></li>
+                  <li><a href={% url 'settings' %}>系统设置</a></li>
                   <li class="divider"></li>
-                  <li><a href={% url 'logout' %}>Sign Out</a></li>
+                  <li><a href={% url 'logout' %}>登出</a></li>
                 </ul>
               </li>
             </ul>
@@ -86,37 +86,37 @@
             </div>
             <div class="pull-left info">
               <p>{{ user.username }}</p>
-              <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
+              <a href="#"><i class="fa fa-circle text-success"></i> 在线</a>
             </div>
           </div>
           <div id="search" class="input-group sidebar-form">
-            <input type="text" name="q" class="form-control" placeholder="Group Search...">
+            <input type="text" name="q" class="form-control" placeholder="搜索群...">
             <span class="input-group-btn">
               <button class="btn btn-flat"><i class="fa fa-search"></i></button>
             </span>
           </div>
           <ul class="sidebar-menu">
-            <li class="header">My Profile</li>
+            <li class="header">个人信息</li>
           </ul>
           <ul class="control-sidebar-menu">
             <li>
               <a>
                 {% if user.extra.gender  %}
-                  <i class="menu-icon fa fa-venus bg-yellow" title="gender"></i>
+                  <i class="menu-icon fa fa-venus bg-yellow" title="性别"></i>
                   <div class="menu-info">
-                    <h4 class="control-sidebar-subheading">Female</h4>
+                    <h4 class="control-sidebar-subheading">美女</h4>
                   </div>
                 {% else %}
-                  <i class="menu-icon fa fa-mars bg-yellow" title="gender"></i>
+                  <i class="menu-icon fa fa-mars bg-yellow" title="性别"></i>
                   <div class="menu-info">
-                    <h4 class="control-sidebar-subheading">Male</h4>
+                    <h4 class="control-sidebar-subheading">帅哥</h4>
                   </div>
                 {% endif %}
               </a>
             </li>
             <li>
               <a>
-                <i class="menu-icon fa fa-birthday-cake bg-red" title="birth"></i>
+                <i class="menu-icon fa fa-birthday-cake bg-red" title="生日"></i>
                 <div class="menu-info">
                   <h4 id="profile-birth" class="control-sidebar-subheading">{{ user.extra.birth }}</h4>
                 </div>
@@ -124,7 +124,7 @@
             </li>
             <li>
               <a>
-                <i class="menu-icon fa fa-envelope-o bg-light-blue" title="email"></i>
+                <i class="menu-icon fa fa-envelope-o bg-light-blue" title="邮箱"></i>
                 <div class="menu-info">
                   <h4 id="profile-email1" class="control-sidebar-subheading"></h4>
                   <p id="profile-email2"></p>
@@ -133,7 +133,7 @@
             </li>
             <li>
               <a>
-                <i class="menu-icon fa fa-location-arrow bg-green" title="location"></i>
+                <i class="menu-icon fa fa-location-arrow bg-green" title="位置"></i>
                 <div class="menu-info">
                   <h4 id="profile-location1" class="control-sidebar-subheading"></h4>
                   <p id="profile-location2"></p>
@@ -143,7 +143,7 @@
             <li>
             <li>
               <a>
-                <i class="menu-icon fa fa-institution bg-maroon" title="institution"></i>
+                <i class="menu-icon fa fa-institution bg-maroon" title="所属"></i>
                 <div class="menu-info">
                   <h4 id="profile-institution1" class="control-sidebar-subheading"></h4>
                   <p id="profile-institution2"></p>
@@ -152,7 +152,7 @@
             </li>
             <li>
               <a>
-                <i class="menu-icon fa fa-star bg-teal" title="credits"></i>
+                <i class="menu-icon fa fa-star bg-teal" title="积分"></i>
                 <div class="menu-info">
                   <h4 class="control-sidebar-subheading">{{ user.extra.credits }}</h4>
                 </div>
@@ -164,12 +164,12 @@
       <div class="content-wrapper">
         <section class="content-header">
           <h1>
-            LineMe Settings
+            设置
 {#            <small>Optional description</small>#}
           </h1>
           <ol class="breadcrumb">
             <li><a href="{% url 'home' %}"><i class="fa fa-home"></i>{{ project_name }}</a></li>
-            <li class="active">Settings</li>
+            <li class="active">设置</li>
           </ol>
         </section>
         <section class="content">
@@ -179,20 +179,20 @@
                 <li>
                   <i class="fa fa-user bg-yellow"></i>
                   <div class="timeline-item">
-                    <h3 class="timeline-header no-border">Basic Infomation</h3>
+                    <h3 class="timeline-header no-border">基本信息</h3>
                     <div class="timeline-body">
                       <table class="table table-bordered">
                         <tbody>
                           <tr>
-                            <th>Account</th>
+                            <th>账号</th>
                             <td>{{ user.username }}</td>
                           </tr>
                           <tr>
-                            <th>Email</th>
+                            <th>邮箱</th>
                             <td>{{ user.email }}</td>
                           </tr>
                           <tr>
-                            <th>Credits</th>
+                            <th>积分</th>
                             <td>{{ user.extra.credits }}</td>
                           </tr>
                         </tbody>
@@ -203,7 +203,7 @@
                 <li id="avatar">
                   <i class="fa fa-magic bg-purple"></i>
                   <div class="timeline-item">
-                    <h3 class="timeline-header">Upload Avatar</h3>
+                    <h3 class="timeline-header">上传头像</h3>
                     <div class="timeline-body">
                       <div id="image-cropper">
                         <div class="row">
@@ -217,10 +217,10 @@
                           </div>
                           <div class="col-md-5 text-center btn-group-cropper">
                             <div class="row" style="margin-bottom: 15px">
-                              <button id="select" class="btn btn-primary btn-flat" ><i class="fa fa-image pull-left"></i>Image</button>
+                              <button id="select" class="btn btn-primary btn-flat" ><i class="fa fa-image pull-left"></i>图片</button>
                             </div>
                             <div class="row">
-                              <button id="upload" class="export btn btn-success btn-flat disabled" style="" disabled><i class="fa fa-upload pull-left"></i>Upload</button>
+                              <button id="upload" class="export btn btn-success btn-flat disabled" style="" disabled><i class="fa fa-upload pull-left"></i>上传</button>
                             </div>
                           </div>
                         </div>
@@ -232,13 +232,13 @@
                 <li>
                   <i class="fa fa-lock bg-blue"></i>
                   <div class="timeline-item">
-                    <h3 class="timeline-header">Reset Password</h3>
+                    <h3 class="timeline-header">更改密码</h3>
                     <div class="timeline-body">
                       <div class="row">
                         <form id="form-passwd" method="post">
                           <div class="form-group">
                             <div class="row">
-                              <label class="col-sm-4 control-label">Original Password</label>
+                              <label class="col-sm-4 control-label">原密码</label>
                               <div class="col-sm-8">
                                 <input type="password" name="old" class="form-control">
                               </div>
@@ -246,7 +246,7 @@
                           </div>
                           <div class="form-group">
                             <div class="row">
-                              <label class="col-sm-4 control-label">New Password</label>
+                              <label class="col-sm-4 control-label">新密码</label>
                               <div class="col-sm-8">
                                 <input type="password" name="new" class="form-control">
                               </div>
@@ -254,7 +254,7 @@
                           </div>
                           <div class="form-group">
                             <div class="row">
-                              <label class="col-sm-4 control-label">Re-enter Password</label>
+                              <label class="col-sm-4 control-label">再次输入</label>
                               <div class="col-sm-8">
                                 <input type="password" name="new2" class="form-control">
                               </div>
@@ -264,7 +264,7 @@
                       </div>
                     </div>
                     <div class="timeline-footer">
-                      <button class="btn bg-blue btn-flat btn-xs" data-toggle="modal" data-target="#reset-passwd-modal">Reset Password</button>
+                      <button class="btn bg-blue btn-flat btn-xs" data-toggle="modal" data-target="#reset-passwd-modal">更改密码</button>
                     </div>
                   </div>
                 </li>
@@ -286,14 +286,14 @@
                     </form>
                     </div>
                     <div class="timeline-footer">
-                      <button id="save-pri" class="btn btn-flat btn-xs bg-red">Save Privacy</button>
+                      <button id="save-pri" class="btn btn-flat btn-xs bg-red">保存隐私设置</button>
                     </div>
                   </div>
                 </li>
                 <li>
                   <i class="fa fa-video-camera bg-maroon"></i>
                   <div class="timeline-item">
-                    <h3 class="timeline-header">About LineMe</h3>
+                    <h3 class="timeline-header">关于 LineMe</h3>
                     <div class="timeline-body">
                       <div class="embed-responsive embed-responsive-16by9"></div>
                     </div>

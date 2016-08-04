@@ -26,7 +26,7 @@ body {
 body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    font-family: 'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: 'Source Sans Pro', 'Helvetica Neue', 'Microsoft YaHei', Helvetica, Arial, sans-serif;
     font-weight: 400;
     overflow-x: hidden;
     overflow-y: auto;
@@ -3869,7 +3869,7 @@ table.text-center th {
 
 .login-page,
 .register-page {
-    background: #d2d6de;
+    background: #dedede;
 }
 
 .login-box,

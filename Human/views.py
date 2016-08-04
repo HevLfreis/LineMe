@@ -29,11 +29,15 @@ from Human.methods.utils import smart_search, login_user, logger_join, input_fil
 from Human.methods.validation import check_groupid, validate_profile, validate_passwd
 from Human.models import Group, GroupMember, MemberRequest, Privacy
 from LineMe.constants import PROJECT_NAME, IDENTIFIER, CITIES_TABLE, GROUP_CREATED_CREDITS_COST, PRIVACIES
-from LineMe.settings import logger
-
+from LineMe.settings import logger, DEPLOYED_LANGUAGE
 
 # Todo: ///check all place with user input///, deal with utf-8 chinese, check all filter to get
 # Todo: member in group multiple?
+
+if DEPLOYED_LANGUAGE == 'zh-cn':
+    template_dir = 'Human/zh_cn/'
+else:
+    template_dir = 'Human/'
 
 
 def redirect2main(request):
@@ -66,7 +70,7 @@ def lm_login(request):
     context = {"project_name": PROJECT_NAME, "status": ''}
 
     if request.method == 'GET':
-        return render(request, 'Human/login.html', context)
+        return render(request, template_dir+'login.html', context)
 
     elif request.method == 'POST':
         lf = LoginForm(request.POST)
@@ -83,7 +87,7 @@ def lm_login(request):
                 return redirect('home')
 
         context["status"] = -1
-        return render(request, 'Human/login.html', context)
+        return render(request, template_dir+'login.html', context)
 
     else:
         return HttpResponse(status=403)
@@ -100,7 +104,7 @@ def lm_register(request):
     context = {"project_name": PROJECT_NAME, "status": 0}
 
     if request.method == 'GET':
-        return render(request, 'Human/register.html', context)
+        return render(request, template_dir+'register.html', context)
 
     elif request.method == 'POST':
         rf = RegisterForm(request.POST)
@@ -120,11 +124,11 @@ def lm_register(request):
                 return redirect('profile')
 
             else:
-                return render(request, 'Human/register.html', context)
+                return render(request, template_dir+'register.html', context)
 
         else:
             context["status"] = -4
-            return render(request, 'Human/register.html', context)
+            return render(request, template_dir+'register.html', context)
 
     else:
         return HttpResponse(status=403)
@@ -156,7 +160,7 @@ def home(request):
                'group_cost': GROUP_CREATED_CREDITS_COST}
 
     if request.method == 'GET':
-        return render(request, 'Human/home.html', context)
+        return render(request, template_dir+'home.html', context)
 
     elif request.method == 'POST':
         gf = GroupCreateForm(request.POST)
@@ -174,10 +178,10 @@ def home(request):
                 return redirect('group', groupid=groupid)
 
             else:
-                return render(request, 'Human/home.html', context)
+                return render(request, template_dir+'home.html', context)
 
         context["group_created_status"] = -4
-        return render(request, 'Human/home.html', context)
+        return render(request, template_dir+'home.html', context)
 
     else:
         return HttpResponse(status=403)
@@ -206,7 +210,7 @@ def msg_panel(request):
 
         msg_creators = {xp: GroupMember.objects.get(user=xp.creator, group=xp.group).member_name for xp in p}
 
-        return render(request, 'Human/home_msg.html',
+        return render(request, template_dir+'home_msg.html',
                       {'msgs': p, 'my_members': my_members, 'msg_creators': msg_creators})
 
     else:
@@ -272,7 +276,7 @@ def inv_panel(request):
 
         my_members = GroupMember.objects.filter(user=user)
 
-        return render(request, 'Human/home_inv.html', {'invs': p, 'my_members': my_members})
+        return render(request, template_dir+'home_inv.html', {'invs': p, 'my_members': my_members})
     else:
         return HttpResponse(status=403)
 
@@ -303,7 +307,7 @@ def ego_network(request, groupid=0):
     context = {"project_name": PROJECT_NAME, "user": user, "groups": groups,
                "group": group, "rcmd_groups": rcmd_groups, "msgs_count": msgs_count}
 
-    return render(request, 'Human/ego.html', context)
+    return render(request, template_dir+'ego.html', context)
 
 
 @login_required
@@ -343,7 +347,7 @@ def rcmd_panel(request, groupid):
         except EmptyPage:
             p = paginator.page(paginator.num_pages)
 
-        return render(request, 'Human/ego_rcmd.html', {'members': p})
+        return render(request, template_dir+'ego_rcmd.html', {'members': p})
     else:
         return HttpResponse(status=403)
 
@@ -382,7 +386,7 @@ def global_network(request, groupid=0):
     context.update({"project_name": PROJECT_NAME, "user": user, "groups": groups,
                     "group": group, "msgs_count": msgs_count})
 
-    return render(request, 'Human/global.html', context)
+    return render(request, template_dir+'global.html', context)
 
 
 @login_required
@@ -436,7 +440,7 @@ def profile(request):
                "first_login": first_login, 'cities_table': CITIES_TABLE, 'country': country, 'city': city}
 
     if request.method == 'GET':
-        return render(request, 'Human/profile.html', context)
+        return render(request, template_dir+'profile.html', context)
 
     elif request.is_ajax():
 
@@ -487,7 +491,7 @@ def settings(request):
 
         context = {"project_name": PROJECT_NAME, "user": user, "msgs_count": msgs_count,
                    "privacies": pris}
-        return render(request, 'Human/settings.html', context)
+        return render(request, template_dir+'settings.html', context)
 
     else:
         return HttpResponse(status=403)
@@ -601,7 +605,7 @@ def manage_group(request, groupid=0):
 
             follow_status = get_user_join_status(request, user, group)
             context.update({'creator': group.creator, 'members_count': members_count, 'follow_status': follow_status})
-            return render(request, 'Human/group2.html', context)
+            return render(request, template_dir+'group2.html', context)
 
         else:
 
@@ -623,7 +627,7 @@ def manage_group(request, groupid=0):
 
             members_count = members.count()
             context.update({'members': p, 'creator': user, 'members_count': members_count, 'requests': request_members})
-            return render(request, 'Human/group1.html', context)
+            return render(request, template_dir+'group1.html', context)
 
     elif request.method == 'POST':
         gf = GroupMemberCreateForm(request.POST)
