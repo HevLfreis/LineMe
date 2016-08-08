@@ -429,7 +429,7 @@
       </div>
       <footer class="main-footer">
         <div class="pull-right hidden-xs">
-          <a href="http://www.seeleit.com" target="_black">POWERED BY HT</a>
+          <a href="http://seeleit.com" target="_black">POWERED BY HT</a>
         </div>
         <strong>Copyright &copy; 2016 <a href="http://cnc.sjtu.edu.cn" target="_black">CNC</a>.</strong> All rights reserved.
       </footer>
@@ -446,6 +446,7 @@
     <script src="/static/lineme/js/rollbar.js"></script>
     <script src="/static/lineme/js/autocomplete.js"></script>
     <script src="/static/plugins/trip/js/trip.js"></script>
+    <script src="/static/lineme/js/trip-home.js"></script>
     <script type="text/javascript">
 
       var emails = "{{ user.email }}".split("@");
@@ -470,27 +471,6 @@
       $('#profile-institution2').text(institutions[1]);
 
       $('#search').autocomplete();
-
-      var trip1 = new Trip([
-        { sel : $(".sidebar"), header : "hehe", content : "NorthNorthNorthNorth<br>NorthNorthNorthNorthNorth", position : "e"},
-        { sel : $("#box-msg"), header : "hehe", content : "NorthNorthNorthNorth<br>NorthNorthNorthNorthNorth", position : "e", expose : true},
-        { sel : $("#box-inv"), header : "hehe", content : "NorthNorthNorthNorth<br>NorthNorthNorthNorthNorth", position : "w", expose : true},
-        { sel : $("#box-group"), header : "hehe", content : "NorthNorthNorthNorth<br>NorthNorthNorthNorthNorth", position : "e"},
-        { sel : $("#box-msg"), header : "hehe", content : "NorthNorthNorthNorth<br>NorthNorthNorthNorthNorth", position : "e", expose : true},
-        { sel : $("#box-inv"), header : "hehe", content : "NorthNorthNorthNorth<br>NorthNorthNorthNorthNorth", position : "w", expose : true},
-        { sel : $("#box-group"), header : "hehe", content : "NorthNorthNorthNorth<br>NorthNorthNorthNorthNorth", position : "e"},
-
-      ], {
-        showHeader : true,
-        showCloseBox: true,
-        showNavigation : true,
-        tripTheme : "yeti",
-        delay : -1
-      });
-
-      $("#howto").on("click", function() {
-        trip1.start();
-      });
 
     </script>
     <script src="/static/lineme/js/home.js"></script>

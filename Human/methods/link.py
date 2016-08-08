@@ -6,6 +6,7 @@
 import ast
 import json
 
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
@@ -19,9 +20,12 @@ from LineMe.constants import TARGET_LINK_CONFIRM_STATUS_TRANSITION_TABLE
 from LineMe.settings import logger
 
 
-def link_confirm(request, user, linkid):
+def get_link(linkid):
+    return get_object_or_404(Link, id=linkid)
 
-    link = get_object_or_404(Link, id=linkid)
+
+def link_confirm(request, user, link):
+
     gm = get_object_or_404(GroupMember, user=user, group=link.group, is_joined=True)
 
     now = timezone.now()
@@ -34,17 +38,16 @@ def link_confirm(request, user, linkid):
         link.status = TARGET_LINK_CONFIRM_STATUS_TRANSITION_TABLE[link.status]
 
     else:
-        logger.info(logger_join('Confirm', get_session_id(request), 'failed', lid=linkid))
+        logger.info(logger_join('Confirm', get_session_id(request), 'failed', lid=link.id))
         return -1
 
     link.save()
-    logger.info(logger_join('Confirm', get_session_id(request), lid=linkid))
+    logger.info(logger_join('Confirm', get_session_id(request), lid=link.id))
     return 0
 
 
-def link_reject(request, user, linkid):
+def link_reject(request, user, link):
 
-    link = get_object_or_404(Link, id=linkid)
     gm = get_object_or_404(GroupMember, user=user, group=link.group, is_joined=True)
 
     now = timezone.now()
@@ -57,11 +60,53 @@ def link_reject(request, user, linkid):
         link.status = TARGET_LINK_REJECT_STATUS_TRANSITION_TABLE[link.status]
 
     else:
-        logger.info(logger_join('Reject', get_session_id(request), 'failed', lid=linkid))
+        logger.info(logger_join('Reject', get_session_id(request), 'failed', lid=link.id))
         return -1
 
     link.save()
-    logger.info(logger_join('Reject', get_session_id(request), lid=linkid))
+    logger.info(logger_join('Reject', get_session_id(request), lid=link.id))
+    return 0
+
+
+def link_aggregate(user, this_link):
+
+    my_member = get_object_or_404(GroupMember, user=user, group=this_link.group)
+
+    if this_link.source_member == my_member:
+        another_member = this_link.target_member
+    else:
+        another_member = this_link.source_member
+
+    all_links = Link.objects.filter(
+        (Q(source_member=my_member) & Q(target_member=another_member) &
+         (Q(status=0) | Q(status=2) | Q(status=-2))) |
+        (Q(target_member=my_member) & Q(source_member=another_member) &
+         (Q(status=0) | Q(status=1) | Q(status=-1))),
+        ~Q(creator=user), group=this_link.group
+    )
+
+    return all_links
+
+
+def link_confirm_aggregate(request, user, link):
+
+    all_links = link_aggregate(user, link)
+
+    for l in all_links:
+        status = link_confirm(request, user, l)
+        if status != 0:
+            return -1
+    return 0
+
+
+def link_reject_aggregate(request, user, link):
+
+    all_links = link_aggregate(user, link)
+
+    for l in all_links:
+        status = link_reject(request, user, l)
+        if status != 0:
+            return -1
     return 0
 
 

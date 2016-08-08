@@ -51,18 +51,43 @@ $(function() {
     });
 
 
-    window.msgConfirmed = function(url, type, linkid) {
+    window.msgConfirmed = function(url, type, handleid, refresh) {
         $.get(url, function(data){
             if (data == -1) {
                 alert("Server Internal Error");
             }
             else {
-                if (type == 1)
-                    $('#msg-'+linkid+' > small').attr('class', 'label label-success').text('Confirmed');
+                if (refresh)
+                    updateMsgPanel(1);
+                else if (type == 1)
+                    $('#msg-'+handleid+' > small').attr('class', 'label label-success').text('Confirmed');
                 else if (type == 0)
-                    $('#msg-'+linkid+' > small').attr('class', 'label label-danger').text('Rejected');
+                    $('#msg-'+handleid+' > small').attr('class', 'label label-danger').text('Rejected');
             }
         });
+    };
+
+
+    // Todo: impl dont show
+    window.msgAggregateConfirmed = function(url, type, memberName, count) {
+
+        count --;
+
+        var $modal = $('#modal-msg');
+        $modal.modal('show');
+        if (type == 3) {
+            $modal.find('.modal-body h4').html('Other '+count+' people also invite you to link '+memberName+' , <span class="text-bold text-red">CONFIRM ALL ?</span>');
+        }
+        else {
+            $modal.find('.modal-body h4').html('Other '+count+' people also invite you to link '+memberName+' , <span class="text-bold text-red">REJECT ALL ?</span>');
+        }
+
+        $modal.find('.btn-primary').attr('onclick', "msgConfirmed('"+url+"', 0, 0, true)");
+        var url_list = url.split("/");
+        url_list[2] -= 2;
+        url = url_list.join('/');
+        $modal.find('.btn-warning').attr('onclick', "msgConfirmed('"+url+"', 0, 0, true)");
+
     };
 
     window.updateMsgPanel = function(page) {
@@ -71,12 +96,12 @@ $(function() {
             msg.find('.box-body').remove();
             msg.find('.box-footer').remove();
             msg.append(data);
-            //msg.height(msg.height());
             $('input[type="checkbox"]').iCheck({
                 checkboxClass: 'icheckbox_square-blue',
             });
 
             $('#confirm').click(confirmChoosed);
+            keepHeight();
         });
     };
 

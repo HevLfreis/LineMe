@@ -52,6 +52,11 @@ body {
     }
 }
 
+.modal-footer .checkbox {
+    margin-top: 6px;
+    margin-bottom: 0;
+}
+
 .pagination a {
     cursor: pointer;
 }

@@ -91,10 +91,25 @@ def get_user_msgs(user):
         #                              Q(source_member=mm, status=-1), ~Q(creator=user))
 
         msgs += Link.objects.filter((Q(source_member=mm) & (Q(status=0) | Q(status=2) | Q(status=-2))) |
-                                    Q(target_member=mm) & (Q(status=0) | Q(status=1) | Q(status=-1)),
-                                    ~Q(creator=user))
+                                    (Q(target_member=mm) & (Q(status=0) | Q(status=1) | Q(status=-1))),
+                                    ~Q(creator=user)).order_by('source_member', 'target_member')
 
-    return msgs
+    msg_index = {}
+    for msg in msgs:
+        if msg.source_member in my_members:
+            if msg.target_member in msg_index:
+                msg_index[msg.target_member] += 1
+            else:
+                msg_index[msg.target_member] = 1
+        elif msg.target_member in my_members:
+            if msg.source_member in msg_index:
+                msg_index[msg.source_member] += 1
+            else:
+                msg_index[msg.source_member] = 1
+        else:
+            continue
+
+    return msgs, msg_index
 
 
 def get_user_msgs_count(user):

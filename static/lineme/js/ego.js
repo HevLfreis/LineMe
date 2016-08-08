@@ -8,6 +8,16 @@
 $(function() {
     //setTimeout(function () {$('.panel-text-bottom').fadeOut(500);}, 2000);
 
+    $('.modal').on('show.bs.modal', function(e) {
+        var $dialog = $(this).find('.modal-dialog');
+        $dialog.css({
+            'margin-top': function() {
+                var modalHeight = $dialog.height();
+                return ($(window).height() / 6 - (modalHeight / 2));
+            }
+        });
+    });
+
     /**
         rcmd panel
      */
@@ -430,7 +440,7 @@ $(function() {
                 linksCopy = links.slice(0);
                 linkedIndexCopy = $.extend({}, linkedIndex);
 
-                if (msg == 0) alert("Update Links Successfully");
+                if (msg == 0) $('#modal-success').modal('show');
                 else alert("Update Failed");
                 updateRcmdPanel(1);
                 resetMenu();

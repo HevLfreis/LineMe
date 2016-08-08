@@ -20,6 +20,23 @@
   </head>
   <body class="hold-transition skin-black sidebar-mini">
     <div class="wrapper">
+      <div class="modal fade" id="modal-success">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+              <h4 class="modal-title">Attention</h4>
+            </div>
+            <div class="modal-body">
+              <h4>Update Links Successfully</h4>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-primary btn-flat" data-dismiss="modal">OK</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <header class="main-header">
         <a href="{% url 'home' %}" class="logo">
           <span class="logo-lg"><b>{{ project_name }}</b></span>
@@ -116,7 +133,7 @@
         <section class="content-header">
           <h1>
             My Network{% if group %}: <span class="text-bold">{{ group.group_name }}</span>{% endif %}
-            <small>map your social networks</small>
+            <small>map your friend network</small>
           </h1>
           <ol class="breadcrumb">
             <li><a href="{% url 'home' %}"><i class="fa fa-home"></i>{{ project_name }}</a></li>
@@ -163,7 +180,7 @@
       </div>
       <footer class="main-footer">
         <div class="pull-right hidden-xs">
-          <a href="http://www.seeleit.com" target="_black">POWERED BY HT</a>
+          <a href="http://seeleit.com" target="_black">POWERED BY HT</a>
         </div>
         <strong>Copyright &copy; 2016 <a href="http://cnc.sjtu.edu.cn" target="_black">CNC</a>.</strong> All rights reserved.
       </footer>

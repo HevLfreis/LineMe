@@ -24,10 +24,9 @@
   </head>
   <body class="hold-transition skin-black sidebar-mini">
     <div class="wrapper">
-
-      <div class="modal fade" id="member-join-modal">
+      <div class="modal fade" id="modal-join">
         <div class="modal-dialog">
-          <form method="post" action="{% url 'join' group.id %}" class="modal-content" id="modal-content-wrong">
+          <form method="post" action="{% url 'join' group.id %}" class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
               <h4 class="modal-title">Identifier Wrong</h4>
@@ -47,8 +46,12 @@
               <button type="submit" class="btn btn-primary btn-flat">Follow</button>
             </div>
           </form>
+        </div>
+      </div>
 
-          <form method="post" action="{% url 'joinRequest' group.id %}" class="modal-content" id="modal-content-notin">
+      <div class="modal fade" id="modal-notin">
+        <div class="modal-dialog">
+          <form method="post" action="{% url 'joinRequest' group.id %}" class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
               <h4 class="modal-title">Attention</h4>
@@ -267,7 +270,7 @@
       </div>
       <footer class="main-footer">
         <div class="pull-right hidden-xs">
-          <a href="http://www.seeleit.com" target="_black">POWERED BY HT</a>
+          <a href="http://seeleit.com" target="_black">POWERED BY HT</a>
         </div>
         <strong>Copyright &copy; 2016 <a href="http://cnc.sjtu.edu.cn" target="_black">CNC</a>.</strong> All rights reserved.
       </footer>

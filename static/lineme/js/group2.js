@@ -25,33 +25,23 @@ $(function() {
         $.get(joinUrl, function(result) {
 
             switch (result) {
-
                 case '0':
                     window.location.replace(egoUrl);
                     break;
                 case '-1':
                     if (identifier == 0) {
-                        var $modal = $('#modal-content-wrong');
+                        var $modal = $('#modal-join');
                         $modal.find('.modal-title').text('Identifier');
                         $modal.find('.modal-footer button').val('Follow');
                         $modal.find('input').attr('placeholder', '');
-                        $modal.show();
-                        $('#modal-content-notin').hide();
-
-                        $('#member-join-modal').modal('show');
+                        $modal.modal('show');
                     }
                     else {
-                        $('#modal-content-wrong').show();
-                        $('#modal-content-notin').hide();
-
-                        $('#member-join-modal').modal('show');
+                        $('#modal-join').modal('show');
                     }
                     break;
                 case '-2':
-                    $('#modal-content-wrong').hide();
-                    $('#modal-content-notin').show();
-
-                    $('#member-join-modal').modal('show');
+                    $('#modal-notin').modal('show');
                     break;
                 case '-4':
                     alert('Server Internal Error');

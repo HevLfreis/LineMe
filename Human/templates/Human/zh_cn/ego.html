@@ -20,6 +20,23 @@
   </head>
   <body class="hold-transition skin-black sidebar-mini">
     <div class="wrapper">
+      <div class="modal fade" id="modal-success">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+              <h4 class="modal-title">注意</h4>
+            </div>
+            <div class="modal-body">
+              <h4>更新朋友网络成功</h4>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-primary btn-flat" data-dismiss="modal">确定</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <header class="main-header">
         <a href="{% url 'home' %}" class="logo">
           <span class="logo-lg"><b>{{ project_name }}</b></span>
@@ -168,7 +185,7 @@
       </div>
       <footer class="main-footer">
         <div class="pull-right hidden-xs">
-          <a href="http://www.seeleit.com" target="_black">POWERED BY HT</a>
+          <a href="http://seeleit.com" target="_black">POWERED BY HT</a>
         </div>
         <strong>Copyright &copy; 2016 <a href="http://cnc.sjtu.edu.cn" target="_black">CNC</a>.</strong> All rights reserved.
       </footer>

@@ -29,7 +29,7 @@ urlpatterns = [
     url(r'^home/$', views.home, name='home'),
     url(r'^msgpanel/$', views.msg_panel, name='homeMsg'),
     url(r'^msghandle/$', views.msg_handle, name='msgPost'),
-    url(r'^msghandle/(?P<mtype>[0-1])/(?P<linkid>[0-9]+)/$', views.msg_handle, name='msgHandle'),
+    url(r'^msghandle/(?P<mtype>[0-3])/(?P<handleid>[0-9]+)/$', views.msg_handle, name='msgHandle'),
 
     url(r'^invpanel/$', views.inv_panel, name='homeInv'),
     url(r'^sendemail/(?P<page>[0-9]+)/$', views.send_email2unconfirmed, name='email'),

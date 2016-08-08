@@ -18,7 +18,7 @@ from Human.methods.group import get_group_joined_num, group_recommender, create_
     get_user_member_in_group, group_privacy_check
 from Human.methods.groupmember import member_recommender, create_group_member, member_join, create_request, \
     create_group_member_from_file
-from Human.methods.link import link_confirm, update_links
+from Human.methods.link import link_confirm, update_links, link_confirm_aggregate, link_reject_aggregate, get_link
 from Human.methods.link import link_reject
 from Human.methods.lm_global import get_user_global_info, get_user_global_graph, get_user_global_map
 from Human.methods.profile import update_profile
@@ -27,7 +27,7 @@ from Human.methods.user import create_user, get_user_groups, get_user_msgs_count
     get_user_name
 from Human.methods.utils import smart_search, login_user, logger_join, input_filter
 from Human.methods.validation import check_groupid, validate_profile, validate_passwd
-from Human.models import Group, GroupMember, MemberRequest, Privacy
+from Human.models import Group, GroupMember, MemberRequest, Privacy, Link
 from LineMe.constants import PROJECT_NAME, IDENTIFIER, CITIES_TABLE, GROUP_CREATED_CREDITS_COST, PRIVACIES
 from LineMe.settings import logger, DEPLOYED_LANGUAGE
 
@@ -195,7 +195,7 @@ def msg_panel(request):
 
         page = request.GET.get('page')
 
-        msgs = get_user_msgs(user)
+        msgs, msg_index = get_user_msgs(user)
 
         paginator = Paginator(msgs, 10)
 
@@ -211,22 +211,27 @@ def msg_panel(request):
         msg_creators = {xp: GroupMember.objects.get(user=xp.creator, group=xp.group).member_name for xp in p}
 
         return render(request, template_dir+'home_msg.html',
-                      {'msgs': p, 'my_members': my_members, 'msg_creators': msg_creators})
+                      {'msgs': p, 'msg_index': msg_index, 'my_members': my_members,
+                       'msg_creators': msg_creators})
 
     else:
         return HttpResponse(status=403)
 
 
 @login_required
-def msg_handle(request, mtype='0', linkid=0):
+def msg_handle(request, mtype='0', handleid=0):
     user = request.user
 
     if request.method == 'GET':
 
         if mtype == '1':
-            status = link_confirm(request, user, int(linkid))
+            status = link_confirm(request, user, get_link(int(handleid)))
         elif mtype == '0':
-            status = link_reject(request, user, int(linkid))
+            status = link_reject(request, user, get_link(int(handleid)))
+        elif mtype == '3':
+            status = link_confirm_aggregate(request, user, get_link(int(handleid)))
+        elif mtype == '2':
+            status = link_reject_aggregate(request, user, get_link(int(handleid)))
         else:
             return HttpResponse(status=403)
 
