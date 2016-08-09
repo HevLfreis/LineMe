@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="/static/plugins/d3/css/d3-tip.css">
     <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
     <link rel="stylesheet" href="/static/plugins/hint/css/hint.css">
+    <link rel="stylesheet" href="/static/plugins/trip/css/trip.min.css">
   </head>
   <body class="hold-transition skin-black sidebar-mini">
     <div class="wrapper">
@@ -47,7 +48,7 @@
                 </a>
               </li>
               <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="Help">
-                <a href="#">
+                <a id="help" href="#">
                   <i class="fa fa-question"></i>
                 </a>
               </li>
@@ -232,6 +233,7 @@
     <script src="/static/plugins/rollbar/js/jquery.rollbar.min.js"></script>
     <script src="/static/lineme/js/rollbar.js"></script>
     <script src="/static/lineme/js/autocomplete.js"></script>
+    <script src="/static/plugins/trip/js/trip.js"></script>
     <script type="text/javascript">
       $('#search').autocomplete({
         type: 'global'

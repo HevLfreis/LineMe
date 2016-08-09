@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
     <link rel="stylesheet" href="/static/plugins/switchery/css/switchery.min.css">
     <link rel="stylesheet" href="/static/plugins/hint/css/hint.css">
+    <link rel="stylesheet" href="/static/plugins/trip/css/trip.min.css">
     <link rel="stylesheet" href="/static/lineme/css/settings.css">
   </head>
   <body class="hold-transition skin-black sidebar-mini">
@@ -55,7 +56,7 @@
                 </a>
               </li>
               <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="Help">
-                <a href="#">
+                <a id="help" href="#">
                   <i class="fa fa-question"></i>
                 </a>
               </li>
@@ -291,7 +292,7 @@
                   </div>
                 </li>
                 <li>
-                  <i class="fa fa-video-camera bg-maroon"></i>
+                  <i class="fa fa-bookmark bg-maroon"></i>
                   <div class="timeline-item">
                     <h3 class="timeline-header">About LineMe</h3>
                     <div class="timeline-body">
@@ -325,6 +326,7 @@
     <script src="/static/plugins/switchery/js/switchery.min.js"></script>
     <script src="/static/plugins/cropit/js/jquery.cropit.js"></script>
     <script src="/static/lineme/js/autocomplete.js"></script>
+    <script src="/static/plugins/trip/js/trip.js"></script>
     <script type="text/javascript">
 
       var emails = "{{ user.email }}".split("@");

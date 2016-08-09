@@ -419,11 +419,11 @@ $(function() {
     }
 
 
-    function resetMenu() {
-        var menu = document.getElementById( 'bt-menu' );
-        classie.remove( menu, 'bt-menu-open' );
-        classie.add( menu, 'bt-menu-close' );
-    }
+    //function resetMenu() {
+    //    var menu = document.getElementById( 'bt-menu' );
+    //    classie.remove( menu, 'bt-menu-open' );
+    //    classie.add( menu, 'bt-menu-close' );
+    //}
 
     $('#submit').click(function() {
 

@@ -17,6 +17,12 @@
 		return check;
 	}
 
+	window.resetMenu = function () {
+        var menu = document.getElementById( 'bt-menu' );
+        classie.remove( menu, 'bt-menu-open' );
+        classie.add( menu, 'bt-menu-close' );
+    };
+
 	function init() {
 
 		var menu = document.getElementById( 'bt-menu' ),
