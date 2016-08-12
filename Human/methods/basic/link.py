@@ -3,7 +3,6 @@
 # created by hevlhayt@foxmail.com 
 # Date: 2016/7/9
 # Time: 13:52
-import ast
 import json
 
 from django.db.models import Q
@@ -30,18 +29,21 @@ def link_confirm(request, user, link):
 
     now = timezone.now()
     link.confirmed_time = now
+    old_status = link.status
 
     if link.source_member == gm:
-        link.status = SOURCE_LINK_CONFIRM_STATUS_TRANSITION_TABLE[link.status]
+        link.status = SOURCE_LINK_CONFIRM_STATUS_TRANSITION_TABLE[old_status]
 
     elif link.target_member == gm:
-        link.status = TARGET_LINK_CONFIRM_STATUS_TRANSITION_TABLE[link.status]
+        link.status = TARGET_LINK_CONFIRM_STATUS_TRANSITION_TABLE[old_status]
 
     else:
         logger.info(logger_join('Confirm', get_session_id(request), 'failed', lid=link.id))
         return -1
 
     link.save()
+    # credit_processor(link, old_status)
+
     logger.info(logger_join('Confirm', get_session_id(request), lid=link.id))
     return 0
 
@@ -52,18 +54,21 @@ def link_reject(request, user, link):
 
     now = timezone.now()
     link.confirmed_time = now
+    old_status = link.status
 
     if link.source_member == gm:
-        link.status = SOURCE_LINK_REJECT_STATUS_TRANSITION_TABLE[link.status]
+        link.status = SOURCE_LINK_REJECT_STATUS_TRANSITION_TABLE[old_status]
 
     elif link.target_member == gm:
-        link.status = TARGET_LINK_REJECT_STATUS_TRANSITION_TABLE[link.status]
+        link.status = TARGET_LINK_REJECT_STATUS_TRANSITION_TABLE[old_status]
 
     else:
         logger.info(logger_join('Reject', get_session_id(request), 'failed', lid=link.id))
         return -1
 
     link.save()
+    # credit_processor(link, old_status)
+
     logger.info(logger_join('Reject', get_session_id(request), lid=link.id))
     return 0
 

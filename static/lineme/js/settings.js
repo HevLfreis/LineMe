@@ -23,7 +23,7 @@ $(function() {
 
 
     $('#reset-passwd').click(function () {
-        $('.modal-footer').find('.btn-primary').addClass('disabled');
+        $('.modal-footer').find('.btn-primary').attr('disabled', true);
         $.post(pwResetUrl, $('#form-passwd').serialize(), function (result) {
 
             if (result == 0) {
@@ -34,7 +34,8 @@ $(function() {
             else {
                 $('.modal-body').find('h4').text('Reset password failed');
                 setTimeout("$('.modal').modal('hide');" +
-                    "$('.modal-footer').find('.btn-primary').removeClass('disabled');",
+                    "$('.modal-footer').find('.btn-primary').attr('disabled', false);" +
+                    "$('.modal-body').find('h4').text('You are going to reset your password, continue ?');",
                     1500);
             }
         });
@@ -47,7 +48,6 @@ $(function() {
             priDict[$(this).attr('name')] = this.checked;
         });
 
-        //priDict['pri-9'] = false;
         $.post(priSaveUrl, {privacies: JSON.stringify(priDict)}, function (result) {
            if (result == 0) alert('Save Privacy Successfully');
         });
@@ -62,9 +62,8 @@ $(function() {
         },
         smallImage: 'stretch',
         onFileChange: function () {
-            $('#upload').removeClass('disabled').removeAttr('disabled');
+            $('#upload').attr('disabled', false);
         }
-
     });
 
     $('#select').click(function () {
@@ -80,6 +79,9 @@ $(function() {
     });
 
     $('#upload').click(function () {
+
+        $(this).attr('disabled', true);
+        $(this).html('<i class="fa fa-upload pull-left"></i>Uploading...');
         var imageData = $('#image-cropper').cropit('export');
 
         $.post(imgHandleUrl, {imgBase64: imageData}, function (result) {
@@ -88,6 +90,9 @@ $(function() {
                 window.location.reload();
             }
             else alert('Upload Failed');
+
+            $(this).attr('disabled', false);
+            $(this).html('<i class="fa fa-upload pull-left"></i>Upload');
         });
     });
 

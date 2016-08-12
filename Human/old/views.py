@@ -342,7 +342,7 @@ def rcmd_panel(request, groupid):
 
         rcmd_gms = simple_recommender(user, groupid)
 
-        rcmd_gms = friend_recommender(user, groupid)
+        # rcmd_gms = member_recommender2(user, groupid)
 
         paginator = Paginator(rcmd_gms, 6)
 
@@ -573,7 +573,6 @@ def avatar(request):
 @login_required
 def img_handle(request):
     if request.is_ajax():
-
         status = handle_uploaded_avatar(request)
         return HttpResponse(status)
 

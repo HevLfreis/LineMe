@@ -4,9 +4,10 @@
 # Date: 2016/7/9
 # Time: 13:52
 import random
+
 import networkx as nx
 
-from Human.methods.graph import create_global_graph, graph_analyzer
+from Human.methods.algorithm.graph import create_global_graph, graph_analyzer
 from Human.models import GroupMember
 from Human.models import Link
 from LineMe.constants import CITIES_TABLE

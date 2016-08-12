@@ -240,6 +240,7 @@
       });
     </script>
     {% if group %}
+      <script src="/static/lineme/js/trip/trip-global.js"></script>
       <script type="text/javascript">
         var groupid = {{ group.id }};
         var disData = {{ distribution|safe }};
@@ -248,6 +249,8 @@
         var gMapUrl = "{% url 'gMap' group.id %}";
       </script>
       <script src="/static/lineme/js/global.js"></script>
+    {% else %}
+      <script src="/static/lineme/js/trip/trip-none.js"></script>
     {% endif %}
   </body>
 </html>

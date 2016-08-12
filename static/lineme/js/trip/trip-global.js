@@ -6,42 +6,14 @@
 
 $(function() {
     var trip = new Trip([
+    { sel: $("#main-panel"), header: "Global", content: "All members in group are shown here.", position: "e", expose: true},
     {
-        header: "LineMe", content: "" +
-        "Welcome to LineMe ~<br><br>" +
-        "In LineMe, you can enjoy mapping your friend networks here. <br>" +
-        "Create a group, add some friends, everybody creates his own <br>" +
-        "net and all nets XXX to a global net.<br><br>" +
-        "Are you the center star in you social groups ?<br>" +
-        "Let's check it out !!!<br><br>" +
-        "Here is the homepage of LineMe, and we will tour you some functions.", position: "screen-center"
+        sel: $("#info-panel"), header: "Info", content: "" +
+        "Static information about the network <br>" +
+        "topology of this group is shown here. <br>", position: "w", expose: true
     },
-    { sel: $(".user-panel"), header: "Avatar", content: "Click avatar to upload yours.", position: "e"},
-    { sel: $("#search"), header: "Search", content: "You can search group by name.", position: "e"},
-    {
-        sel: $("#box-msg"), header: "Request", content: "" +
-        "The link requests linking you <br>" +
-        "from others will be shown here. <br>" +
-        "You can choose to confirm or reject them.", position: "e", expose: true
-    },
-    {
-        sel: $("#box-inv"), header: "Invitation", content: "" +
-        "You can check the link invitations <br>" +
-        "you have created here.", position: "w", expose: true
-    },
-    {
-        sel: $("#box-group"), header: "Group", content: "" +
-        "Here are our recommended groups<br> " +
-        "for you, click one to follow.<br><br> " +
-        "Also you can check the group you <br>" +
-        "have created and joined here.", position: "e", expose: true
-    },
-    {
-        sel: $("#howto"), header: "Help", content: "" +
-        "When you are confused in LineMe, <br> " +
-        "click help to get more infomation.", position: "s"
-    },
-
+    { sel: $("#normal-mode"), header: "Mode", content: "Switch to map mode.", position: "n"},
+    { sel: $(".fa-dot-circle-o"), header: "My Net", content: "Switch to my network.", position: "s"},
     ], {
         showHeader: true,
         showCloseBox: true,
@@ -50,7 +22,7 @@ $(function() {
         delay: -1
     });
 
-    $("#howto").on("click", function () {
+    $("#help").on("click", function () {
         trip.start();
     });
 });

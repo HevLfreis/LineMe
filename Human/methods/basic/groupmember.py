@@ -7,10 +7,10 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
+from Human.methods.basic.user import get_user_name
 from Human.methods.session import get_session_id
-from Human.methods.user import get_user_name
 from Human.methods.utils import logger_join
-from Human.models import GroupMember, Link, MemberRequest
+from Human.models import GroupMember, MemberRequest
 from LineMe.constants import GROUP_MAXSIZE
 from LineMe.settings import logger
 
@@ -109,20 +109,4 @@ def create_request(request, user, group, mesg):
     return 0
 
 
-def member_recommender(user, groupid):
-    if groupid < 0:
-        return None
-    gmout = []
-    gmin = []
-    ls = Link.objects.filter(group__id=groupid, creator=user)
 
-    for l in ls:
-        if l.source_member not in gmin or l.target_member not in gmin:
-            gmin.append(l.source_member)
-            gmin.append(l.target_member)
-
-    for gm in GroupMember.objects.filter(group__id=groupid).exclude(user=user).order_by('-is_joined'):
-        if gm not in gmin:
-            gmout.append(gm)
-
-    return gmout

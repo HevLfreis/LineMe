@@ -6,8 +6,9 @@
 import re
 
 from django.contrib.auth.models import User
+
 from Human.models import Group, GroupMember
-from LineMe.constants import CITIES_TABLE, IDENTIFIER
+from LineMe.constants import CITIES_TABLE, IDENTIFIER, LINK_BONUS
 
 
 def validate_username(name):
@@ -73,3 +74,14 @@ def validate_profile(first_name, last_name, birth, gender, country, city, instit
                     if country in CITIES_TABLE and city in CITIES_TABLE[country]:
                         return True
     return False
+
+
+def check_credits(user, bonus=''):
+    if bonus == 'add':
+        if user.extra.credits > 9999:
+            return
+    elif bonus == 'minus':
+        if user.extra.credits < LINK_BONUS:
+            return
+    else:
+        return

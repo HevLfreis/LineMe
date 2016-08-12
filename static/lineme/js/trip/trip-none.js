@@ -6,9 +6,7 @@
 
 $(function() {
     var trip = new Trip([
-    { sel: $(".sidebar-menu"), header: "Group", content: "Click to select group.", position: "e"},
-    { sel: $(".fa-globe"), header: "Global", content: "Change to global net.", position: "s"},
-    { sel: $(".fa-dot-circle-o"), header: "My", content: "change to my net.", position: "s"},
+    { header: "Help", content: "Nothing to show.", position: "screen-center"},
     ], {
         showHeader: true,
         showCloseBox: true,

@@ -8,12 +8,12 @@ from django.db.models import Q
 from django.http import Http404
 from django.utils import timezone
 
-from Human.methods.groupmember import create_group_member
+from Human.methods.basic.groupmember import create_group_member
+from Human.methods.basic.user import get_user_name
 from Human.methods.session import get_session_id
-from Human.methods.user import get_user_name
 from Human.methods.utils import logger_join
 from Human.methods.validation import validate_group_info
-from Human.models import Group, Credits, MemberRequest, Link, Privacy
+from Human.models import Group, Credit, MemberRequest, Link
 from Human.models import GroupMember
 from LineMe.constants import GROUP_CREATED_CREDITS_COST
 from LineMe.settings import logger
@@ -51,9 +51,9 @@ def create_group(request, user, name, identifier, gtype):
 
         user.extra.credits -= GROUP_CREATED_CREDITS_COST
 
-        c = Credits(user=user,
-                    action=-GROUP_CREATED_CREDITS_COST,
-                    timestamp=now)
+        c = Credit(user=user,
+                   action=-GROUP_CREATED_CREDITS_COST,
+                   timestamp=now)
 
         m.save()
         user.extra.save()

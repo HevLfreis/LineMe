@@ -3,11 +3,10 @@
 # created by hevlhayt@foxmail.com 
 # Date: 2016/7/9
 # Time: 13:51
+import re
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-
-import re
 
 from django.contrib.auth import authenticate
 from django.contrib.auth import login

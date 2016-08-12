@@ -4,19 +4,19 @@
 # Date: 2016/7/9
 # Time: 13:53
 import json
+from collections import Counter
 
 import networkx as nx
 from django.db.models import Count, Q
 
 from Human.models import GroupMember
 from Human.models import Link
-from collections import Counter
 
 
 def create_global_graph(nodes, links, user):
     G = nx.Graph()
 
-    # all members are calculated as nodes or only linked member are nodes
+    # Todo: all members are calculated as nodes or only linked member are nodes
     for node in nodes:
         G.add_node(node)
 

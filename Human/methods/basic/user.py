@@ -9,7 +9,7 @@ from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.db.models import Q
 
-from Human.methods.avatar import create_avatar
+from Human.methods.basic.avatar import create_avatar
 from Human.methods.session import get_session_id
 from Human.methods.utils import login_user, logger_join
 from Human.methods.validation import validate_email, validate_username_exist

@@ -4,16 +4,15 @@
 # Date: 2016/7/11
 # Time: 13:32
 import base64
+import cStringIO
 import os
 import random
 
-import cStringIO
 from PIL import Image
-from PIL import ImageFont
 from PIL import ImageDraw
+from PIL import ImageFont
 
 from Human.methods.session import get_session_id
-
 from Human.methods.utils import logger_join
 from LineMe import settings
 from LineMe.constants import STATIC_FOLDER
@@ -31,7 +30,7 @@ def create_avatar(request, userid, username='Unknown'):
     #                 (38, 157, 128),
     #                 (137, 157, 192))
 
-    beautifulRGB = map(hex_to_rgb, ['#3498db',
+    colors = map(hex_to_rgb, ['#3498db',
                                     '#1abc9c',
                                     '#f1c40f',
                                     '#9588b2',
@@ -45,7 +44,7 @@ def create_avatar(request, userid, username='Unknown'):
     else:
         font = ImageFont.truetype('simhei.ttf', 125)
 
-    img = Image.new('RGB', (200, 200), random.choice(beautifulRGB))
+    img = Image.new('RGB', (200, 200), random.choice(colors))
     draw = ImageDraw.Draw(img)
     if len(word) >= 2:
         draw.text((40, 38), word[:2], (255, 255, 255), font=font)

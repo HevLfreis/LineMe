@@ -62,7 +62,7 @@ class Link(models.Model):
     created_time = models.DateTimeField()
 
 
-class Credits(models.Model):
+class Credit(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     link = models.ForeignKey(Link, on_delete=models.CASCADE, null=True)
     action = models.IntegerField()
