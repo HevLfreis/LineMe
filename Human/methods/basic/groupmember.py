@@ -91,9 +91,9 @@ def member_join(request, user, group, identifier):
 def create_request(request, user, group, mesg):
     try:
         if MemberRequest.objects.filter(user=user, group=group).exists():
-
             mr = get_object_or_404(MemberRequest, user=user, group=group)
             mr.message = mesg
+
         else:
             mr = MemberRequest(user=user,
                                group=group,

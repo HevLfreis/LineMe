@@ -963,7 +963,7 @@ a:focus {
 .control-sidebar-menu {
     list-style: none;
     padding: 0;
-    margin: 0 -15px 0 -5px;
+    margin: 0 0 0 -5px;
 }
 
 .control-sidebar-menu > li > a {

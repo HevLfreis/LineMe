@@ -63,19 +63,6 @@ def check_groupid(user, groupid):
         return 0
 
 
-def validate_profile(first_name, last_name, birth, gender, country, city, institution):
-    if re.match("^[A-Za-z]{0,30}$", first_name) and re.match("^[A-Za-z]{0,30}$", last_name):
-        if gender == 0 or gender == 1:
-            if re.match("^(?:(?!0000)[0-9]{4}/(?:(?:0[1-9]|1[0-2])/(?:0[1-9]|1[0-9]|2[0-8])|"
-                        "(?:0[13-9]|1[0-2])/(?:29|30)|(?:0[13578]|1[02])-31)|(?:[0-9]{2}(?:0[48]|"
-                        "[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)/02/29)$", birth):
-                if re.match("^[A-Za-z0-9\s.!@#&\\\/\|:{}()';\"]{0,100}$", institution):
-                    country, city = country.replace('-', ' '), city.replace('-', ' ')
-                    if country in CITIES_TABLE and city in CITIES_TABLE[country]:
-                        return True
-    return False
-
-
 def check_credits(user, bonus=''):
     if bonus == 'add':
         if user.extra.credits > 9999:

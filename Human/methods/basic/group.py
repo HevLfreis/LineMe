@@ -63,30 +63,27 @@ def create_group(request, user, name, identifier, gtype):
         logger.error(logger_join('Create', get_session_id(request), 'failed', e=e))
         return -4
 
-    # create dummy members
-    # create_dummy_members(g, u, 20)
-    #
-    # # create dummy links
-    # create_dummy_links(g, u, now)
     logger.info(logger_join('Create', get_session_id(request), gid=g.id))
     return 0
 
 
-def group_recommender(user):
+def get_user_groups(user):
+    gms = GroupMember.objects.filter(user=user, is_joined=True)
+    groups = [gm.group for gm in gms]
+    return groups
 
-    if not user.privacy.allow_group_recommendation:
-        return []
 
-    gms = GroupMember.objects.filter(member_name=get_user_name(user), is_joined=False)
+def get_user_groups_split(user):
+    groups = get_user_groups(user)
+    my_groups, in_groups = {}, {}
 
-    sug = set(gm.group for gm in gms if get_user_member_in_group(user, gm.group.id) is not None)
+    for group in groups:
+        if group.creator == user:
+            my_groups[group] = get_group_joined_num(group)
+        else:
+            in_groups[group] = get_group_joined_num(group)
 
-    # Todo: only recommend 5 no validation public group, may add algo
-    for no_val_group in Group.objects.filter(identifier=2).exclude(creator=user)[0:5]:
-        if not get_user_member_in_group(user, no_val_group):
-            sug.add(no_val_group)
-
-    return sug
+    return my_groups, in_groups
 
 
 def get_group_joined_num(group):

@@ -19,6 +19,12 @@ $(function() {
     { sel: $(".user-panel"), header: "Avatar", content: "Click avatar to upload yours.", position: "e"},
     { sel: $("#search"), header: "Search", content: "You can search group by name.", position: "e"},
     {
+        sel: $("#credits"), header: "Credit", content: "" +
+        "Here is your credits in LineMe.<br>" +
+        "Credits can be used to create your own group.<br><br>" +
+        "A confirmed link will bonus you 10 points.<br>" +
+        "A rejected link will also cost you 10 points.<br>", position: "e"},
+    {
         sel: $("#box-msg"), header: "Request", content: "" +
         "The link requests linking you <br>" +
         "from others will be shown here. <br>" +

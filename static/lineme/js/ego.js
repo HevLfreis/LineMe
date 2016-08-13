@@ -69,7 +69,11 @@ $(function() {
 
     function rcmdId2Node(id) {
         var ids = id.split('-');
-        return {group: Math.floor(Math.random() * 10) + 1, name: ids[3], userid: ids[2] == ''? -1: parseInt(ids[2]), id: ids[1], creator: false}
+        return {group: Math.floor(Math.random() * 10) + 1,
+            name: ids[3],
+            userid: ids[2] == ''? -1: parseInt(ids[2]),
+            id: parseInt(ids[1]),
+            creator: false}
     }
 
     function nodeInGraph(node, nodes) {

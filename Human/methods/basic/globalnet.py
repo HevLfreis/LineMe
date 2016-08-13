@@ -6,6 +6,7 @@
 import random
 
 import networkx as nx
+from django.shortcuts import get_object_or_404
 
 from Human.methods.algorithm.graph import create_global_graph, graph_analyzer
 from Human.models import GroupMember
@@ -19,8 +20,8 @@ def get_user_global_graph(user, groupid):
 
     nodes, links = [], []
 
-    self = GroupMember.objects.get(group__id=groupid, user=user)
-    nodes.append({'id': self.id, 'userid': self.user.id, 'name': self.member_name,
+    my_member = get_object_or_404(GroupMember, group__id=groupid, user=user)
+    nodes.append({'id': my_member.id, 'userid': my_member.user.id, 'name': my_member.member_name,
                   'self': True, 'group': 0})
 
     # Todo: implement group color

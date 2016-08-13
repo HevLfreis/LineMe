@@ -9,23 +9,24 @@ from django.shortcuts import redirect, render, get_object_or_404
 
 from Human.forms import LoginForm, RegisterForm, GroupCreateForm, GroupMemberCreateForm, JoinForm, \
     FileUploadForm
-from Human.methods.algorithm.recommender import simple_recommender
-from Human.methods.algorithm.recommender import friend_recommender
+from Human.methods.algorithm.recommender import Recommender
+from Human.methods.algorithm.search import SearchEngine
+
 from Human.methods.basic.avatar import create_avatar, handle_uploaded_avatar
-from Human.methods.basic.group import get_group_joined_num, group_recommender, create_group, get_user_join_status, \
-    get_user_member_in_group, group_privacy_check
+from Human.methods.basic.group import create_group, get_user_join_status, \
+    get_user_member_in_group, group_privacy_check, get_user_groups_split, get_user_groups
 from Human.methods.basic.groupmember import create_group_member, create_group_member_from_file, member_join, \
     create_request
 from Human.methods.basic.link import link_confirm, get_link, link_reject, link_confirm_aggregate, link_reject_aggregate, \
     update_links
 from Human.methods.basic.egonet import get_user_ego_graph
 from Human.methods.basic.globalnet import get_user_global_info, get_user_global_graph, get_user_global_map
-from Human.methods.basic.profile import update_profile
-from Human.methods.basic.user import get_user_groups, get_user_msgs, get_user_invs, get_user_name, create_user
+from Human.methods.basic.profile import Profile
+from Human.methods.basic.user import get_user_msgs, get_user_invs, get_user_name, create_user
 from Human.methods.basic.user import get_user_msgs_count
 from Human.methods.session import get_session_id, get_session_consume
-from Human.methods.utils import smart_search, login_user, logger_join, input_filter
-from Human.methods.validation import check_groupid, validate_profile, validate_passwd
+from Human.methods.utils import login_user, logger_join, input_filter
+from Human.methods.validation import check_groupid, validate_passwd
 from Human.models import Group, GroupMember, MemberRequest, Privacy
 from LineMe.constants import PROJECT_NAME, IDENTIFIER, CITIES_TABLE, GROUP_CREATED_CREDITS_COST, PRIVACIES
 from LineMe.settings import logger, DEPLOYED_LANGUAGE
@@ -53,10 +54,7 @@ def search(request):
     if not request.user.is_authenticated():
         return HttpResponse(json.dumps([]))
 
-    kw = request.GET.get('kw')
-    kw = input_filter(kw)
-    groupid = request.GET.get('gid')
-    return HttpResponse(json.dumps(smart_search(request, kw, groupid, 5)))
+    return HttpResponse(json.dumps(SearchEngine(request).search(5)))
 
 
 ########################################################################
@@ -109,17 +107,12 @@ def lm_register(request):
         rf = RegisterForm(request.POST)
 
         if rf.is_valid():
-            name = rf.cleaned_data['username']
-            email = rf.cleaned_data['email']
-            password = rf.cleaned_data['password']
-            password2 = rf.cleaned_data['password2']
 
-            status = create_user(request, name, email, password, password2)
+            status = create_user(request, rf.cleaned_register())
             context["status"] = status
 
             if status == 0:
                 request.session['new_login'] = True
-                logger.warning(logger_join('Devil', '[' + ','.join([str(request.user.id), name, password]) + ']'))
                 return redirect('profile')
 
             else:
@@ -140,18 +133,9 @@ def home(request):
     logger.info(logger_join('Access', get_session_id(request)))
 
     user = request.user
-    groups = get_user_groups(user)
-
-    my_groups, in_groups = {}, {}
-
-    for group in groups:
-        if group.creator == user:
-            my_groups[group] = get_group_joined_num(group)
-        else:
-            in_groups[group] = get_group_joined_num(group)
-
+    my_groups, in_groups = get_user_groups_split(user)
     msgs_count = get_user_msgs_count(user)
-    rcmd_groups = group_recommender(user)
+    rcmd_groups = Recommender(user).group()
 
     context = {"project_name": PROJECT_NAME, "user": user, "my_groups": my_groups,
                "in_groups": in_groups, "rcmd_groups": rcmd_groups, "msgs_count": msgs_count,
@@ -193,9 +177,7 @@ def msg_panel(request):
     if request.is_ajax():
 
         page = request.GET.get('page')
-
         msgs, msg_index = get_user_msgs(user)
-
         paginator = Paginator(msgs, 10)
 
         try:
@@ -227,6 +209,8 @@ def msg_handle(request, mtype='0', handleid=0):
             status = link_confirm(request, user, get_link(int(handleid)))
         elif mtype == '0':
             status = link_reject(request, user, get_link(int(handleid)))
+
+        # link aggregate
         elif mtype == '3':
             status = link_confirm_aggregate(request, user, get_link(int(handleid)))
         elif mtype == '2':
@@ -299,7 +283,7 @@ def ego_network(request, groupid=0):
 
     user = request.user
     groups = get_user_groups(user)
-    rcmd_groups = group_recommender(user)
+    rcmd_groups = Recommender(user).group()
     msgs_count = get_user_msgs_count(user)
 
     groupid = check_groupid(user, groupid)
@@ -316,10 +300,9 @@ def ego_network(request, groupid=0):
 
 @login_required
 def ego_graph(request, groupid=0):
-    logger.info(logger_join('Access', get_session_id(request), gid=groupid))
-
     user = request.user
     groupid = check_groupid(user, groupid)
+
     if groupid == 0:
         return JsonResponse({"nodes": None, "links": None}, safe=False)
 
@@ -340,9 +323,9 @@ def rcmd_panel(request, groupid):
         if groupid == 0:
             return render(request, 'Human/ego_rcmd.html')
 
-        rcmd_gms = simple_recommender(user, groupid)
+        rcmd_gms = Recommender(user).simple(groupid)
 
-        rcmd_gms = friend_recommender(user, groupid)
+        rcmd_gms = Recommender(user).friend(groupid)
 
         paginator = Paginator(rcmd_gms, 6)
 
@@ -397,8 +380,6 @@ def global_network(request, groupid=0):
 
 @login_required
 def global_graph(request, groupid=0):
-    logger.info(logger_join('Access', get_session_id(request), gid=groupid))
-
     user = request.user
     groupid = check_groupid(user, groupid)
 
@@ -412,8 +393,6 @@ def global_graph(request, groupid=0):
 
 @login_required
 def global_map(request, groupid=0):
-    logger.info(logger_join('Access', get_session_id(request), gid=groupid))
-
     user = request.user
     groupid = check_groupid(user, groupid)
 
@@ -449,25 +428,14 @@ def profile(request):
         return render(request, template_dir+'profile.html', context)
 
     elif request.is_ajax():
-
         first_login = get_session_consume(request, 'new_login')
 
-        first_name = request.POST.get('firstname')
-        last_name = request.POST.get('lastname')
-        birth = request.POST.get('birth')
-        gender = int(request.POST.get('gender'))
-        country = request.POST.get('country')
-        city = request.POST.get('city')
-        institution = request.POST.get('institution')
+        pf = Profile(request)
 
-        # print country, city
-
-        if validate_profile(first_name, last_name, birth, gender, country, city, institution):
-            country, city = country.replace('-', ' '), city.replace('-', ' ')
-            if update_profile(request, user, first_name, last_name, birth, gender, country, city, institution) == 0:
+        if pf.is_valid():
+            if pf.update() == 0:
                 if first_login:
-                    create_avatar(request, user.id, username=first_name + ' ' + last_name)
-
+                    create_avatar(request, user.id, username=pf.first_name + ' ' + pf.last_name)
                 return HttpResponse(0)
 
         else:
@@ -594,7 +562,7 @@ def manage_group(request, groupid=0):
 
     user = request.user
     groups = get_user_groups(user)
-    rcmd_groups = group_recommender(user)
+    rcmd_groups = Recommender(user).group()
     msgs_count = get_user_msgs_count(user)
 
     group = get_object_or_404(Group, id=groupid)
