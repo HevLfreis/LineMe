@@ -113,7 +113,7 @@ def get_user_msgs_count(user):
     count = 0
     for mm in my_members:
         count += Link.objects.filter((Q(source_member=mm) & (Q(status=0) | Q(status=2) | Q(status=-2))) |
-                                     Q(target_member=mm) & (Q(status=0) | Q(status=1) | Q(status=-1)),
+                                     (Q(target_member=mm) & (Q(status=0) | Q(status=1) | Q(status=-1))),
                                      ~Q(creator=user)).count()
     return count
 

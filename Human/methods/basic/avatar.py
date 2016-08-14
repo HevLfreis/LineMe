@@ -21,7 +21,7 @@ from LineMe.settings import logger
 
 # Todo: make duplicate of 400px
 def create_avatar(request, userid, username='Unknown'):
-    save_path = os.path.join(STATIC_FOLDER, 'images/user_avatars/')
+    save_path = os.path.join(STATIC_FOLDER, 'images/avatars/')
     word = ''.join(map(lambda x: x[0].upper(), username.split(' ')))
     # beautifulRGB = ((245, 67, 101),
     #                 (252, 157, 154),
@@ -32,14 +32,14 @@ def create_avatar(request, userid, username='Unknown'):
     #                 (137, 157, 192))
 
     colors = map(hex_to_rgb, ['#3498db',
-                                    '#1abc9c',
-                                    '#f1c40f',
-                                    '#9588b2',
-                                    '#ec7063',
-                                    '#9cc2cb',
-                                    '#af7ac5',
-                                    '#f39c12',
-                                    '#95a5a6'])
+                              '#1abc9c',
+                              '#f1c40f',
+                              '#9588b2',
+                              '#ec7063',
+                              '#9cc2cb',
+                              '#af7ac5',
+                              '#f39c12',
+                              '#95a5a6'])
     if settings.DEPLOYMENT:
         font = ImageFont.truetype('/usr/share/fonts/truetype/simhei.ttf', 125)
     else:
@@ -52,6 +52,7 @@ def create_avatar(request, userid, username='Unknown'):
     if len(word) == 1:
         draw.text((69, 38), word, (255, 255, 255), font=font)
     try:
+        img.save(save_path + 'hdpi/' + str(userid) + '.png')
         img.save(save_path + str(userid) + '.png')
     except IOError, e:
         logger.error(logger_join('Avatar', get_session_id(request), e=e))
@@ -68,8 +69,14 @@ def handle_uploaded_avatar(request):
         image_string = cStringIO.StringIO(base64.b64decode(request.POST['imgBase64'].partition('base64,')[2]))
         image = Image.open(image_string)
 
-        path = os.path.join(STATIC_FOLDER, 'images/user_avatars/')
-        image.resize((200, 200)).save(path+str(user.id)+".png", image.format, quality=100)
+        path = os.path.join(STATIC_FOLDER, 'images/avatars/')
+
+        if image.size != (400, 400):
+            image.resize((400, 400)).save(path + 'hdpi/' + str(user.id) + ".png", image.format, quality=100)
+        else:
+            image.save(path + 'hdpi/' + str(user.id) + ".png", image.format, quality=100)
+
+        image.resize((200, 200)).save(path + str(user.id) + ".png", image.format, quality=100)
         # print image.format, image.size, image.mode
     except Exception, e:
         logger.error(logger_join('Avatar', get_session_id(request), e=e))
@@ -82,4 +89,4 @@ def handle_uploaded_avatar(request):
 def hex_to_rgb(value):
     value = value.lstrip('#')
     lv = len(value)
-    return tuple(int(value[i:i+lv/3], 16) for i in range(0, lv, lv/3))
+    return tuple(int(value[i:i + lv / 3], 16) for i in range(0, lv, lv / 3))

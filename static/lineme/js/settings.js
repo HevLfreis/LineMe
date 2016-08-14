@@ -53,17 +53,18 @@ $(function() {
         });
     });
 
-
-    $('.cropit-preview').height($('.col-md-7').width());
-    $('.cropit-preview').width($('.col-md-7').width());
+    var width = $('.col-md-7').width();
+    $('.cropit-preview').height(width);
+    $('.cropit-preview').width(width);
     $('#image-cropper').cropit({
         imageState: {
-            src: '/static/images/user_avatars/'+userid+'.png'
+            src: '/static/images/avatars/hdpi/'+userid+'.png'
         },
         smallImage: 'stretch',
         onFileChange: function () {
             $('#upload').attr('disabled', false);
-        }
+        },
+        exportZoom: 400.0 / width
     });
 
     $('#select').click(function () {

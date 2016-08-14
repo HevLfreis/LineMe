@@ -8,11 +8,11 @@
         <div class="widget-user-header">
           {% if member.is_joined %}
             <div class="widget-user-image">
-              <img class="img-circle" src="/static/images/user_avatars/{{ member.user.id }}.png" alt="User Avatar">
+              <img class="img-circle" src="/static/images/avatars/{{ member.user.id }}.png" alt="User Avatar">
             </div>
           {% else %}
             <div class="widget-user-image">
-              <img class="img-circle" src="/static/images/user_avatars/0.png" alt="User Avatar">
+              <img class="img-circle" src="/static/images/avatars/default.png" alt="User Avatar">
             </div>
           {% endif %}
           <h3 class="widget-user-username">{{ member.member_name }}</h3>

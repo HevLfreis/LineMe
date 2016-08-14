@@ -20,8 +20,7 @@ class Recommender:
         if groupid < 0:
             return None
 
-        gmout = []
-        gmin = []
+        gmout, gmin = [], []
         ls = Link.objects.filter(group__id=groupid, creator=self.user)
 
         for l in ls:

@@ -50,24 +50,21 @@ def validate_group_info(name, identifier, gtype):
     return False
 
 
-def _user_in_group(user, groupid):
-    return GroupMember.objects.filter(group__id=groupid, user=user).exists()
-
-
 def check_groupid(user, groupid):
     if groupid is None:
         return -2
-    elif Group.objects.filter(id=groupid).exists() and _user_in_group(user, groupid):
+    elif Group.objects.filter(id=groupid).exists() and \
+            GroupMember.objects.filter(group__id=groupid, user=user).exists():
         return groupid
     else:
         return 0
 
 
 def check_credits(user, bonus=''):
-    if bonus == 'add':
+    if bonus == 'bonus':
         if user.extra.credits > 9999:
             return
-    elif bonus == 'minus':
+    elif bonus == 'punish':
         if user.extra.credits < LINK_BONUS:
             return
     else:

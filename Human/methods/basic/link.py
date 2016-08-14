@@ -9,6 +9,7 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
+from Human.methods.basic.credit import credit_processor
 from Human.methods.session import get_session_id
 from Human.methods.utils import logger_join
 from Human.models import GroupMember

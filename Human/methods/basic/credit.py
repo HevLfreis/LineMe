@@ -10,47 +10,29 @@ from Human.models import Credit
 from LineMe.constants import LINK_BONUS
 
 
+# Todo: when the link is deleted
 def credit_processor(link, old_status):
     if link.status == 3 and old_status != 3:
-        bonus_link(link, 'creator')
+        creator_bonus(link)
 
     elif old_status == 3 and link.status != 3:
-        bonus_link(link, 'reverse')
+        creator_punish(link)
+
+    elif link.status == -3 and old_status != -3:
+        creator_punish(link)
+
+    elif old_status == -3 and link.status != -3:
+        creator_bonus(link)
+
+    else:
+        return -1
 
     return 0
 
 
-def bonus_link(link, bonus=''):
-    if bonus == 'creator':
-        check_credits(link.creator, 'add')
-        creator_happy(link)
+def creator_bonus(link):
 
-    elif bonus == 'reverse':
-        check_credits(link.creator, 'minus')
-        creator_punish(link)
-
-    elif bonus == 'all':
-        check_credits(link.creator, 'add')
-        all_happy(link)
-
-    else:
-        creator_happy(link)
-
-
-def bonus_reverse(link):
-
-    now = timezone.now()
-    link.creator.extra.credits -= LINK_BONUS
-    link.creator.extra.save()
-
-    c = Credit(user=link.creator,
-               link=link,
-               action=-LINK_BONUS,
-               timestamp=now)
-    c.save()
-
-
-def creator_happy(link):
+    check_credits(link.creator, 'bonus')
 
     now = timezone.now()
     link.creator.extra.credits += LINK_BONUS
@@ -65,6 +47,8 @@ def creator_happy(link):
 
 def creator_punish(link):
 
+    check_credits(link.creator, 'punish')
+
     now = timezone.now()
     link.creator.extra.credits -= LINK_BONUS
     link.creator.extra.save()
@@ -76,11 +60,32 @@ def creator_punish(link):
     c.save()
 
 
-def all_happy(link):
-    link.creator.extra.credits += LINK_BONUS
-    link.creator.extra.save()
+# def all_happy(link):
+#     link.creator.extra.credits += LINK_BONUS
+#     link.creator.extra.save()
+#
+#
+# def peers_happy(link):
+#     link.creator.extra.credits += LINK_BONUS
+#     link.creator.extra.save()
 
 
-def others_happy(link):
-    link.creator.extra.credits += LINK_BONUS
-    link.creator.extra.save()
+
+# class LinkCreditManager:
+#     def __init__(self, link, strategy):
+#         self.link = link
+#         self.strategy = strategy
+#
+#     def link_updated(self):
+#         return
+#
+#     def check_credits(self, user, bonus=''):
+#         if bonus == 'add':
+#             if user.extra.credits > 9999:
+#                 return
+#         elif bonus == 'minus':
+#             if user.extra.credits < LINK_BONUS:
+#                 return
+#         else:
+#             return
+

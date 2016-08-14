@@ -65,15 +65,15 @@
                 }
                 $.each(data, function(i, d) {
                     if (settings.type == 'group')
-                        $ac.append('<li><a href="/group/'+ d.gid+'"><img class="img-circle user-image" src="/static/images/user_avatars/'+d.cid+'.png" alt="user image"> '+ d.name+'</a></li>');
+                        $ac.append('<li><a href="/group/'+ d.gid+'"><img class="img-circle user-image" src="/static/images/avatars/'+d.cid+'.png" alt="user image"> '+ d.name+'</a></li>');
                     else if (settings.type == 'global')
-                        $ac.append('<li><a href="/global/'+ d.gid+'"><img class="img-circle user-image" src="/static/images/user_avatars/'+d.cid+'.png" alt="user image"> '+ d.name+'</a></li>');
+                        $ac.append('<li><a href="/global/'+ d.gid+'"><img class="img-circle user-image" src="/static/images/avatars/'+d.cid+'.png" alt="user image"> '+ d.name+'</a></li>');
                     else if (settings.type == 'ego')
-                        $ac.append('<li><a href="/ego/'+ d.gid+'"><img class="img-circle user-image" src="/static/images/user_avatars/'+d.cid+'.png" alt="user image"> '+ d.name+'</a></li>');
+                        $ac.append('<li><a href="/ego/'+ d.gid+'"><img class="img-circle user-image" src="/static/images/avatars/'+d.cid+'.png" alt="user image"> '+ d.name+'</a></li>');
                     else if (settings.type == 'member') {
                         var uid = d.uid == 0 ? '' : d.uid,
                             id = 'srh-' + d.mid + '-' + uid + '-' + d.mname;
-                        $ac.append('<li><a id="'+id+'"><img class="img-circle user-image" src="/static/images/user_avatars/'+d.uid+'.png" alt="user image"> '+ d.mname+'</a></li>');
+                        $ac.append('<li><a id="'+id+'"><img class="img-circle user-image" src="/static/images/avatars/'+d.uid+'.png" alt="user image"> '+ d.mname+'</a></li>');
                     }
                 });
 

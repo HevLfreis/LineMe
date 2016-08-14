@@ -96,7 +96,7 @@
               </li>
               <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                    <img src="/static/images/user_avatars/{{ user.id }}.png" class="user-image" alt="User Image">
+                    <img src="/static/images/avatars/{{ user.id }}.png" class="user-image" alt="User Image">
                     <span class="hidden-xs">{{ user.username }}</span>
                     <span class="caret"></span>
                 </a>
@@ -117,7 +117,7 @@
         <section class="sidebar">
           <div class="user-panel">
             <div class="pull-left image">
-              <img onclick="window.location.href='{% url 'avatar' %}'" src="/static/images/user_avatars/{{ user.id }}.png" class="img-circle" alt="User Image" style="cursor:pointer">
+              <img onclick="window.location.href='{% url 'avatar' %}'" src="/static/images/avatars/{{ user.id }}.png" class="img-circle" alt="User Image" style="cursor:pointer">
             </div>
             <div class="pull-left info">
               <p>{{ user.username }}</p>
@@ -171,7 +171,7 @@
 {#            <div class="col-md-3 col-sm-12">#}
 {#              <div class="box box-primary">#}
 {#                <div class="box-body box-profile">#}
-{#                  <img class="profile-user-img img-responsive img-circle" src="/static/images/user_avatars/{{ creator.id }}.png" alt="User profile picture">#}
+{#                  <img class="profile-user-img img-responsive img-circle" src="/static/images/avatars/{{ creator.id }}.png" alt="User profile picture">#}
 {#                  <h3 class="profile-username text-center">{{ group.group_name }}</h3>#}
 {#                  <p class="text-muted text-center">Created by {{ creator.username }}</p>#}
 {#                  <ul class="list-group list-group-unbordered" style="padding-bottom: 50px">#}
@@ -221,7 +221,7 @@
                   <h5 class="widget-user-desc">created by {{ creator.username }}</h5>
                 </div>
                 <div class="widget-user-image">
-                  <img class="img-circle" src="/static/images/user_avatars/{{ creator.id }}.png"  alt="User Avatar">
+                  <img class="img-circle" src="/static/images/avatars/{{ creator.id }}.png"  alt="User Avatar">
                 </div>
                 <div class="box-footer">
                   <div class="row">

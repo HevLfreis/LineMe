@@ -146,7 +146,7 @@
 #
 #
 # def create_avatar(request, userid, username='Unknown'):
-#     save_path = os.path.join(STATIC_FOLDER, 'images/user_avatars/')
+#     save_path = os.path.join(STATIC_FOLDER, 'images/avatars/')
 #     word = ''.join(map(lambda x: x[0].upper(), username.split(' ')))
 #     beautifulRGB = ((245, 67, 101),
 #                     (252, 157, 154),
@@ -180,7 +180,7 @@
 #         image_string = cStringIO.StringIO(base64.b64decode(request.POST['imgBase64'].partition('base64,')[2]))
 #         image = Image.open(image_string)
 #
-#         path = os.path.join(STATIC_FOLDER, 'images/user_avatars/')
+#         path = os.path.join(STATIC_FOLDER, 'images/avatars/')
 #         image.resize((200, 200)).save(path+str(userid)+".png", image.format, quality=100)
 #         # print image.format, image.size, image.mode
 #     except Exception, e:
