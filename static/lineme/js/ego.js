@@ -71,7 +71,7 @@ $(function() {
         var ids = id.split('-');
         return {group: Math.floor(Math.random() * 10) + 1,
             name: ids[3],
-            userid: ids[2] == ''? -1: parseInt(ids[2]),
+            userid: ids[2] == '' ? -1: parseInt(ids[2]),
             id: parseInt(ids[1]),
             creator: false}
     }

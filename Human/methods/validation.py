@@ -18,7 +18,7 @@ def validate_username(name):
 
 
 def validate_username_exist(name):
-    if re.match("^[a-zA-Z][a-zA-Z0-9]{5,20}$", name):
+    if validate_username(name):
         if not User.objects.filter(username=name).exists():
             return True
     return False

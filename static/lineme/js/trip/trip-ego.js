@@ -7,7 +7,7 @@
 $(function() {
     var trip1 = new Trip([
     { sel: $("#main-panel"), header: "Mapping", content: "Map your friend network here.", position: "e", expose: true},
-        {
+    {
         sel: $("#rcmd-panel"), header: "Member", content: "" +
         "Recommended members in group are <br>" +
         " shown here. Click to add him/her <br>" +

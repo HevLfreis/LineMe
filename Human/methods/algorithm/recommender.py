@@ -6,7 +6,8 @@
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
-from Human.methods.basic.group import get_user_member_in_group
+from Human.methods.basic.group import get_member_in_group
+from Human.methods.basic.groupmember import myself_member
 from Human.methods.basic.user import get_user_name
 from Human.models import GroupMember, Group
 from Human.models import Link
@@ -38,7 +39,7 @@ class Recommender:
         if groupid < 0:
             return None
 
-        my_member = get_object_or_404(GroupMember, group__id=groupid, user=self.user)
+        my_member = myself_member(self.user, groupid)
 
         links = Link.objects.filter(group__id=groupid)
 
@@ -87,11 +88,11 @@ class Recommender:
 
         gms = GroupMember.objects.filter(member_name=get_user_name(self.user), is_joined=False)
 
-        sug = set(gm.group for gm in gms if get_user_member_in_group(self.user, gm.group.id) is not None)
+        sug = set(gm.group for gm in gms if get_member_in_group(self.user, gm.group.id) is not None)
 
         # Todo: only recommend 5 no validation public group, may add algo
         for no_val_group in Group.objects.filter(identifier=2).exclude(creator=self.user)[0:5]:
-            if not get_user_member_in_group(self.user, no_val_group):
+            if not GroupMember.objects.filter(group=no_val_group, user=self.user).exists():
                 sug.add(no_val_group)
 
         return sug

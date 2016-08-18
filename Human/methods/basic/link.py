@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
 from Human.methods.basic.credit import credit_processor
+from Human.methods.basic.groupmember import myself_member
 from Human.methods.session import get_session_id
 from Human.methods.utils import logger_join
 from Human.models import GroupMember
@@ -26,16 +27,16 @@ def get_link(linkid):
 
 def link_confirm(request, user, link):
 
-    gm = get_object_or_404(GroupMember, user=user, group=link.group, is_joined=True)
+    my_member = myself_member(user, link.group.id)
 
     now = timezone.now()
     link.confirmed_time = now
     old_status = link.status
 
-    if link.source_member == gm:
+    if link.source_member == my_member:
         link.status = SOURCE_LINK_CONFIRM_STATUS_TRANSITION_TABLE[old_status]
 
-    elif link.target_member == gm:
+    elif link.target_member == my_member:
         link.status = TARGET_LINK_CONFIRM_STATUS_TRANSITION_TABLE[old_status]
 
     else:
@@ -51,16 +52,16 @@ def link_confirm(request, user, link):
 
 def link_reject(request, user, link):
 
-    gm = get_object_or_404(GroupMember, user=user, group=link.group, is_joined=True)
+    my_member = myself_member(user, link.group.id)
 
     now = timezone.now()
     link.confirmed_time = now
     old_status = link.status
 
-    if link.source_member == gm:
+    if link.source_member == my_member:
         link.status = SOURCE_LINK_REJECT_STATUS_TRANSITION_TABLE[old_status]
 
-    elif link.target_member == gm:
+    elif link.target_member == my_member:
         link.status = TARGET_LINK_REJECT_STATUS_TRANSITION_TABLE[old_status]
 
     else:
@@ -76,7 +77,7 @@ def link_reject(request, user, link):
 
 def link_aggregate(user, this_link):
 
-    my_member = get_object_or_404(GroupMember, user=user, group=this_link.group)
+    my_member = myself_member(user, this_link.group.id)
 
     if this_link.source_member == my_member:
         another_member = this_link.target_member
@@ -139,7 +140,7 @@ def update_links(request, new_links, creator, groupid):
         else:
             links_index[link["source"] + ',' + link["target"]] = 1
 
-    my_member = GroupMember.objects.get(group__id=groupid, user=creator)
+    my_member = myself_member(creator, groupid)
 
     for k, v in links_index.items():
         if v is 0:

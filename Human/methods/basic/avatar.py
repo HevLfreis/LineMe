@@ -23,13 +23,13 @@ from LineMe.settings import logger
 def create_avatar(request, userid, username='Unknown'):
     save_path = os.path.join(STATIC_FOLDER, 'images/avatars/')
     word = ''.join(map(lambda x: x[0].upper(), username.split(' ')))
-    # beautifulRGB = ((245, 67, 101),
-    #                 (252, 157, 154),
-    #                 (249, 205, 173),
-    #                 (131, 175, 155),
-    #                 (6, 128, 67),
-    #                 (38, 157, 128),
-    #                 (137, 157, 192))
+    # colors = ((245, 67, 101),
+    #           (252, 157, 154),
+    #           (249, 205, 173),
+    #           (131, 175, 155),
+    #           (6, 128, 67),
+    #           (38, 157, 128),
+    #           (137, 157, 192))
 
     colors = map(hex_to_rgb, ['#3498db',
                               '#1abc9c',

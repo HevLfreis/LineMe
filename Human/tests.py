@@ -11,12 +11,12 @@ from django.test import TestCase
 # print j["People's Republic of China"]
 
 
-
-def b(a):
-    a = a + 'm'
-
-
-
-a = 'm'
-b(a)
-print a
+#
+# def b(a):
+#     a = a + 'm'
+#
+#
+#
+# a = 'm'
+# b(a)
+# print a

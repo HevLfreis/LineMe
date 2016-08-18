@@ -35,11 +35,6 @@ def create_user(request, (name, email, password, password2)):
             u = User.objects.create_user(name, email, password)
             login_user(request, name, password)
 
-            if DEBUG:
-                credit = 100
-            else:
-                credit = 30
-
             pri = Privacy(user=u)
             pri.save()
             extra = Extra(user=u,
@@ -47,7 +42,7 @@ def create_user(request, (name, email, password, password2)):
 
                           # Todo: django timezone?
                           birth=datetime.date.today(),
-                          credits=credit,
+                          credits=100,
                           privacy=pri)
 
             extra.save()

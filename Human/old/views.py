@@ -13,8 +13,8 @@ from Human.methods.algorithm.recommender import simple_recommender
 from Human.methods.algorithm.recommender import friend_recommender
 from Human.methods.basic.avatar import create_avatar, handle_uploaded_avatar
 from Human.methods.basic.group import get_group_joined_num, group_recommender, create_group, get_user_join_status, \
-    get_user_member_in_group, group_privacy_check
-from Human.methods.basic.groupmember import create_group_member, create_group_member_from_file, member_join, \
+    get_member_in_group, group_privacy_check
+from Human.methods.basic.groupmember import create_group_member, create_group_member_from_file, follow, \
     create_request
 from Human.methods.basic.link import link_confirm, get_link, link_reject, link_confirm_aggregate, link_reject_aggregate, \
     update_links
@@ -727,19 +727,19 @@ def join(request, groupid):
                 return HttpResponse(-4)
 
         elif group.identifier == 1:
-            gm = get_user_member_in_group(user, group)
+            gm = get_member_in_group(user, group)
 
             if not gm:
                 return HttpResponse(-2)
 
-            status = member_join(request, user, group, user.email)
+            status = follow(request, user, group, user.email)
             if status != 0:
                 logger.warning(logger_join('Join', get_session_id(request), 'failed', gid=group.id))
 
             return HttpResponse(status)
 
         elif group.identifier == 0:
-            gm = get_user_member_in_group(user, group)
+            gm = get_member_in_group(user, group)
 
             if not gm:
                 return HttpResponse(-2)
@@ -753,7 +753,7 @@ def join(request, groupid):
             identifier = jf.cleaned_data['identifier']
 
             if identifier != '':
-                status = member_join(request, user, group, identifier)
+                status = follow(request, user, group, identifier)
                 if status == 0:
                     return redirect('egoId', groupid=groupid)
 

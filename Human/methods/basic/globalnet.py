@@ -9,6 +9,7 @@ import networkx as nx
 from django.shortcuts import get_object_or_404
 
 from Human.methods.algorithm.graph import create_global_graph, graph_analyzer
+from Human.methods.basic.groupmember import myself_member
 from Human.models import GroupMember
 from Human.models import Link
 from LineMe.constants import CITIES_TABLE
@@ -20,7 +21,7 @@ def get_user_global_graph(user, groupid):
 
     nodes, links = [], []
 
-    my_member = get_object_or_404(GroupMember, group__id=groupid, user=user)
+    my_member = myself_member(user, groupid)
     nodes.append({'id': my_member.id, 'userid': my_member.user.id, 'name': my_member.member_name,
                   'self': True, 'group': 0})
 
@@ -44,7 +45,7 @@ def get_user_global_map(user, groupid):
     # Todo: status should =3
     ls = Link.objects.filter(group__id=groupid, status=3)
     gms = GroupMember.objects.filter(group__id=groupid)
-    my_member = gms.get(group__id=groupid, user=user)
+    my_member = gms.get(user=user)
 
     G = create_global_graph(gms, ls, user)
 

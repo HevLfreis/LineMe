@@ -72,8 +72,9 @@
                         $ac.append('<li><a href="/ego/'+ d.gid+'"><img class="img-circle user-image" src="/static/images/avatars/'+d.cid+'.png" alt="user image"> '+ d.name+'</a></li>');
                     else if (settings.type == 'member') {
                         var uid = d.uid == 0 ? '' : d.uid,
+                            pic = d.uid == 0 ? 'default' : d.uid,
                             id = 'srh-' + d.mid + '-' + uid + '-' + d.mname;
-                        $ac.append('<li><a id="'+id+'"><img class="img-circle user-image" src="/static/images/avatars/'+d.uid+'.png" alt="user image"> '+ d.mname+'</a></li>');
+                        $ac.append('<li><a id="'+id+'"><img class="img-circle user-image" src="/static/images/avatars/'+pic+'.png" alt="user image"> '+ d.mname+'</a></li>');
                     }
                 });
 

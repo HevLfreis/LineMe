@@ -28,16 +28,16 @@ class SearchEngine:
             return []
 
         if groupid:
-            return self.__group_search(groupid, kw, limit)
+            return self.__member_search(groupid, kw, limit)
 
         else:
-            return self.__member_search(kw, limit)
+            return self.__group_search(kw, limit)
 
-    def __group_search(self, groupid, kw, limit):
+    def __member_search(self, groupid, kw, limit):
         res = []
         gms = GroupMember.objects.filter(Q(member_name__istartswith=kw) |
                                          Q(member_name__icontains=kw),
-                                         group__id=groupid).order_by('member_name')[0:limit]
+                                         group__id=groupid).exclude(user=self.user).order_by('member_name')[0:limit]
         for gm in gms:
             if gm.is_joined:
                 res.append({"mid": gm.id, "uid": gm.user.id, "mname": gm.member_name})
@@ -46,7 +46,7 @@ class SearchEngine:
 
         return res
 
-    def __member_search(self, kw, limit):
+    def __group_search(self, kw, limit):
         res = []
 
         gs = Group.objects.filter(group_name__istartswith=kw).order_by('group_name')

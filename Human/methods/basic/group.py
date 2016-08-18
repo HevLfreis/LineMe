@@ -94,7 +94,7 @@ def get_group_joined_num(group):
     return str(joined) + '/' + str(total)
 
 
-def get_user_member_in_group(user, group):
+def get_member_in_group(user, group):
     gm = GroupMember.objects.filter(
         (Q(member_name=get_user_name(user)) | Q(member_name=user.username)), group=group)
     if gm.exists():
@@ -126,7 +126,7 @@ def get_user_join_status(request, user, group):
 # Todo: fix func
 def group_privacy_check(user, group):
     if group.type == 1:
-        if not get_user_member_in_group(user, group):
+        if not get_member_in_group(user, group):
             raise Http404()
 
 

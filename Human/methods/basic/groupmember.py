@@ -67,7 +67,7 @@ def create_group_member_from_file(request, group):
 
 
 # Todo: fix the func
-def member_join(request, user, group, identifier):
+def follow(request, user, group, identifier):
     if not GroupMember.objects.filter((Q(member_name=get_user_name(user)) | Q(member_name=user.username)),
                                       group=group, token=identifier).exists():
         return -1
@@ -86,6 +86,10 @@ def member_join(request, user, group, identifier):
 
     logger.info(logger_join('Join', get_session_id(request), mid=m.id))
     return 0
+
+
+def myself_member(user, groupid):
+    return get_object_or_404(GroupMember, user=user, group__id=groupid, is_joined=True)
 
 
 def create_request(request, user, group, mesg):
