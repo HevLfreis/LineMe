@@ -14,20 +14,18 @@
     <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
     <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
     <link rel="stylesheet" href="/static/plugins/hint/css/hint.css">
+    <link rel="stylesheet" href="/static/plugins/trip/css/trip.min.css">
     <style>
-
       .box-body .form-group {
         width: 250px;
       }
       .btn-group > button{
         width: 125px;
       }
-
     </style>
   </head>
   <body class="hold-transition skin-black sidebar-mini">
     <div class="wrapper">
-
       <div class="modal fade" id="member-create-modal">
         <div class="modal-dialog">
           <form method="post" class="modal-content">
@@ -78,7 +76,7 @@
                 </a>
               </li>
               <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="帮助">
-                <a href="#">
+                <a id="help" href="#">
                   <i class="fa fa-question"></i>
                 </a>
               </li>
@@ -283,7 +281,10 @@
                           </span>
                           {{ req.message }}
                         </div>
-                        <a href="{% url 'joinConfirm' group.id req.id %}" class="btn bg-navy btn-xs pull-right"><i class="fa fa-flash"></i> 接受</a>
+                        <div class="pull-right">
+                          <a href="{% url 'joinConfirm' group.id req.id %}" class="btn bg-navy btn-xs"> 接受</a>
+                          <a href="{% url 'joinDecline' group.id req.id %}" class="btn bg-red btn-xs"> 拒绝</a>
+                        </div>
                       </div>
                     {% endfor %}
                   </div>
@@ -310,6 +311,8 @@
     <script src="/static/plugins/rollbar/js/jquery.rollbar.min.js"></script>
     <script src="/static/lineme/js/rollbar.js"></script>
     <script src="/static/lineme/js/autocomplete.js"></script>
+    <script src="/static/plugins/trip/js/trip.js"></script>
+    <script src="/static/lineme/js/zh_cn/trip/trip-none.js"></script>
     <script type="text/javascript">
 
       var emails = "{{ user.email }}".split("@");

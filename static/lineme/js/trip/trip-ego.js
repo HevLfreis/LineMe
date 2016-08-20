@@ -6,14 +6,8 @@
 
 $(function() {
     var trip1 = new Trip([
-    { sel: $("#main-panel"), header: "Mapping", content: "Map your friend network here.", position: "e", expose: true},
-    {
-        sel: $("#rcmd-panel"), header: "Member", content: "" +
-        "Recommended members in group are <br>" +
-        " shown here. Click to add him/her <br>" +
-        "to your network.", position: "w", expose: true
-    },
-
+    { sel: $("#main-panel"), header: "Mapping", content: "Map your friend network here.", position: "e", expose: true },
+    { sel: $("#rcmd-panel"), header: "Member", content: "Click to add him/her to your network.<br>" , position: "w", expose: true },
     {
         sel: $(".bt-menu-trigger"), header: "Tool", content: "" +
         "Click to expand the tool bar. <br>" +
@@ -25,7 +19,7 @@ $(function() {
         "You can also search and add <br>" +
         "a member by his/her name.", position: "e"
     },
-    { sel: $(".fa-globe"), header: "Global Net", content: "Switch to global network.", position: "s"},
+    { sel: $(".fa-globe"), header: "Global Net", content: "Switch to global network.", position: "s" },
     ], {
         showHeader: true,
         showCloseBox: true,
@@ -60,7 +54,7 @@ $(function() {
         '<svg height="10" width="50" style="padding-top:5px"><line x1="0" y1="0" x2="50" y2="0" style="stroke:#38363a;stroke-opacity: 0.5;stroke-width:5;" /></svg> : Confirmed link<br>' +
         '<svg height="10" width="50" style="padding-top:5px"><line x1="0" y1="0" x2="50" y2="0" style="stroke:#572dcd;stroke-width:5;" /></svg> : New link<br>' +
         '<svg height="10" width="50" style="padding-top:5px"><line x1="0" y1="0" x2="50" y2="0" style="stroke:#cd0500;stroke-width:5;" /></svg> : Rejected link<br>' +
-        '</div>',
+        '</div><br>',
         position: "screen-center"
     },
     ], {

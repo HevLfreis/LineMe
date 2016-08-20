@@ -56,6 +56,7 @@ urlpatterns = [
     url(r'^join/(?P<groupid>[0-9]+)/$', views.join, name='join'),
     url(r'^jreq/(?P<groupid>[0-9]+)/$', views.join_request, name='joinRequest'),
     url(r'^jcof/(?P<groupid>[0-9]+)/(?P<requestid>[0-9]+)/$', views.join_confirm, name='joinConfirm'),
+    url(r'^jdec/(?P<groupid>[0-9]+)/(?P<requestid>[0-9]+)/$', views.join_decline, name='joinDecline'),
     url(r'^upload/(?P<groupid>[0-9]+)/$', views.upload_members, name='uploadMembers'),
     #
     #

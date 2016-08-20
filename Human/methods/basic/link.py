@@ -26,7 +26,6 @@ def get_link(linkid):
 
 
 def link_confirm(request, user, link):
-
     my_member = myself_member(user, link.group.id)
 
     now = timezone.now()
@@ -51,7 +50,6 @@ def link_confirm(request, user, link):
 
 
 def link_reject(request, user, link):
-
     my_member = myself_member(user, link.group.id)
 
     now = timezone.now()
@@ -76,7 +74,6 @@ def link_reject(request, user, link):
 
 
 def link_aggregate(user, this_link):
-
     my_member = myself_member(user, this_link.group.id)
 
     if this_link.source_member == my_member:
@@ -96,7 +93,6 @@ def link_aggregate(user, this_link):
 
 
 def link_confirm_aggregate(request, user, link):
-
     all_links = link_aggregate(user, link)
 
     for l in all_links:
@@ -107,7 +103,6 @@ def link_confirm_aggregate(request, user, link):
 
 
 def link_reject_aggregate(request, user, link):
-
     all_links = link_aggregate(user, link)
 
     for l in all_links:
@@ -118,15 +113,20 @@ def link_reject_aggregate(request, user, link):
 
 
 def update_links(request, new_links, creator, groupid):
+    if not GroupMember.objects.filter(
+            user=creator,
+            group__id=groupid,
+            is_joined=True
+    ).exists():
 
-    if not GroupMember.objects.filter(user=creator,
-                                      group__id=groupid,
-                                      is_joined=True).exists():
         return -1
-        
+
     now = timezone.now()
 
-    old_links = Link.objects.filter(creator=creator, group__id=groupid)
+    old_links = Link.objects.filter(
+        creator=creator,
+        group__id=groupid
+    )
     links_index = {}
 
     for link in old_links:
@@ -151,20 +151,36 @@ def update_links(request, new_links, creator, groupid):
                 target = int(k.split(',')[1])
 
                 if source == my_member.id:
-                    if not GroupMember.objects.filter(id=target, group__id=groupid).exists():
+                    if not GroupMember.objects.filter(
+                            id=target,
+                            group__id=groupid
+                    ).exists():
+
                         continue
                     else:
                         status = 1
                 elif target == my_member.id:
-                    if not GroupMember.objects.filter(id=source, group__id=groupid).exists():
+                    if not GroupMember.objects.filter(
+                            id=source,
+                            group__id=groupid
+                    ).exists():
+
                         continue
                     else:
                         status = 2
                 else:
 
                     # Todo: maybe wrong ?
-                    if not (GroupMember.objects.filter(id=source, group__id=groupid).exists() or
-                            GroupMember.objects.filter(id=target, group__id=groupid).exists()):
+                    if not (
+                                GroupMember.objects.filter(
+                                    id=source,
+                                    group__id=groupid
+                                ).exists() or
+                                GroupMember.objects.filter(
+                                    id=target,
+                                    group__id=groupid
+                                ).exists()):
+
                         continue
                     else:
                         status = 0

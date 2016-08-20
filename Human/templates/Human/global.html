@@ -180,16 +180,17 @@
                           <td>{{ average_degree|floatformat:"2" }}</td>
                         </tr>
                       </thead>
-                      <tbody>
+                      <thead>
                         <tr>
                           {% if average_distance == -1 %}
                             <th>Network Not Connected</th>
+                            <td></td>
                           {% else %}
                             <th>Average Distance</th>
                             <td>{{ average_distance|floatformat:"2" }}</td>
                           {% endif %}
                         </tr>
-                      </tbody>
+                      </thead>
                     </table>
                     </br>
                     <blockquote>

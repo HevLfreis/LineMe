@@ -15,11 +15,12 @@
     <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
     <link rel="stylesheet" href="/static/plugins/switchery/css/switchery.min.css">
     <link rel="stylesheet" href="/static/plugins/hint/css/hint.css">
+    <link rel="stylesheet" href="/static/plugins/trip/css/trip.min.css">
     <link rel="stylesheet" href="/static/lineme/css/settings.css">
   </head>
   <body class="hold-transition skin-black sidebar-mini">
     <div class="wrapper">
-      <div class="modal fade" id="reset-passwd-modal">
+      <div class="modal fade" id="modal-reset-passwd">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
@@ -55,7 +56,7 @@
                 </a>
               </li>
               <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="帮助">
-                <a href="#">
+                <a id="help" href="#">
                   <i class="fa fa-question"></i>
                 </a>
               </li>
@@ -104,12 +105,12 @@
                 {% if user.extra.gender  %}
                   <i class="menu-icon fa fa-venus bg-yellow" title="性别"></i>
                   <div class="menu-info">
-                    <h4 class="control-sidebar-subheading">美女</h4>
+                    <h4 class="control-sidebar-subheading">女生</h4>
                   </div>
                 {% else %}
                   <i class="menu-icon fa fa-mars bg-yellow" title="性别"></i>
                   <div class="menu-info">
-                    <h4 class="control-sidebar-subheading">帅哥</h4>
+                    <h4 class="control-sidebar-subheading">男生</h4>
                   </div>
                 {% endif %}
               </a>
@@ -220,7 +221,7 @@
                               <button id="select" class="btn btn-primary btn-flat" ><i class="fa fa-image pull-left"></i>图片</button>
                             </div>
                             <div class="row">
-                              <button id="upload" class="export btn btn-success btn-flat disabled" style="" disabled><i class="fa fa-upload pull-left"></i>上传</button>
+                              <button id="upload" class="export btn btn-success btn-flat" disabled><i class="fa fa-upload pull-left"></i>上传</button>
                             </div>
                           </div>
                         </div>
@@ -264,7 +265,7 @@
                       </div>
                     </div>
                     <div class="timeline-footer">
-                      <button class="btn bg-blue btn-flat btn-xs" data-toggle="modal" data-target="#reset-passwd-modal">更改密码</button>
+                      <button class="btn bg-blue btn-flat btn-xs" data-toggle="modal" data-target="#modal-reset-passwd">更改密码</button>
                     </div>
                   </div>
                 </li>
@@ -291,11 +292,11 @@
                   </div>
                 </li>
                 <li>
-                  <i class="fa fa-video-camera bg-maroon"></i>
+                  <i class="fa fa-code bg-maroon"></i>
                   <div class="timeline-item">
                     <h3 class="timeline-header">关于 LineMe</h3>
                     <div class="timeline-body">
-                      <div class="embed-responsive embed-responsive-16by9"></div>
+                      <img src="/static/images/logo.jpg" class="img-responsive" alt="LineMe Logo">
                     </div>
                   </div>
                 </li>
@@ -325,6 +326,8 @@
     <script src="/static/plugins/switchery/js/switchery.min.js"></script>
     <script src="/static/plugins/cropit/js/jquery.cropit.js"></script>
     <script src="/static/lineme/js/autocomplete.js"></script>
+    <script src="/static/plugins/trip/js/trip.js"></script>
+    <script src="/static/lineme/js/zh_cn/trip/trip-none.js"></script>
     <script type="text/javascript">
 
       var emails = "{{ user.email }}".split("@");
@@ -346,13 +349,13 @@
       });
       $('#profile-location2').text(locations[1]);
       $('#profile-institution1').text(function(){
-        return institutions[0]=="None"?"Blank":locations[0];
+        return institutions[0]=="None"?"Blank":institutions[0];
       });
       $('#profile-institution2').text(institutions[1]);
 
       $('#search').autocomplete();
 
     </script>
-    <script src="/static/lineme/js/settings.js"></script>
+    <script src="/static/lineme/js/zh_cn/settings.js"></script>
   </body>
 </html>

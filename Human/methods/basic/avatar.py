@@ -19,7 +19,6 @@ from LineMe.constants import STATIC_FOLDER
 from LineMe.settings import logger
 
 
-# Todo: make duplicate of 400px
 def create_avatar(request, userid, username='Unknown'):
     save_path = os.path.join(STATIC_FOLDER, 'images/avatars/')
     word = ''.join(map(lambda x: x[0].upper(), username.split(' ')))

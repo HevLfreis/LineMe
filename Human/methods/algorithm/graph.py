@@ -109,8 +109,13 @@ def graph_analyzer(user, groupid):
         heart = None
         heart_count = None
 
-    return {'distribution': json.dumps(distribution), 'top3': top3, 'my_rank': myRank,
-            'average_degree': average_degree, 'average_distance': average_distance,
+    return {'distribution': json.dumps(distribution),
+            'top3': top3,
+            'my_rank': myRank,
+            'average_degree': average_degree,
+            'average_distance': average_distance,
             'cover': int(cover*100),
-            'bestfriend': bestfriend, 'bf_ratio': int(bf_ratio*100),
-            'heart': heart, 'heart_count': heart_count}
+            'bestfriend': bestfriend,
+            'bf_ratio': int(bf_ratio*100),
+            'heart': heart,
+            'heart_count': heart_count}

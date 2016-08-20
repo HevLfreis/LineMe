@@ -17,33 +17,47 @@ from LineMe.constants import CITIES_TABLE
 
 def get_user_global_graph(user, groupid):
     # Todo: status should = 3
-    ls = Link.objects.filter(group__id=groupid, status=3)
+    ls = Link.objects.filter(
+        group__id=groupid,
+        status=3
+    )
 
     nodes, links = [], []
 
     my_member = myself_member(user, groupid)
-    nodes.append({'id': my_member.id, 'userid': my_member.user.id, 'name': my_member.member_name,
-                  'self': True, 'group': 0})
+    nodes.append({'id': my_member.id,
+                  'userid': my_member.user.id,
+                  'name': my_member.member_name,
+                  'self': True,
+                  'group': 0})
 
     # Todo: implement group color
     gms = GroupMember.objects.filter(group__id=groupid).exclude(user=user)
     for gm in gms:
-        nodes.append({'id': gm.id, 'userid': (-1 if gm.user is None else gm.user.id), 'name': gm.member_name,
-                      'self': False, 'group': random.randint(1, 4)})
+        nodes.append({'id': gm.id,
+                      'userid': (-1 if gm.user is None else gm.user.id),
+                      'name': gm.member_name,
+                      'self': False,
+                      'group': random.randint(1, 4)})
 
     if ls.count() != 0:
-
         G = create_global_graph(gms, ls, user)
 
         for s, t, d in G.edges_iter(data='created'):
-            links.append({'source': s.id, 'target': t.id, 'status': d, 'value': 1})
+            links.append({'source': s.id,
+                          'target': t.id,
+                          'status': d,
+                          'value': 1})
 
     return {"nodes": nodes, "links": links}
 
 
 def get_user_global_map(user, groupid):
     # Todo: status should =3
-    ls = Link.objects.filter(group__id=groupid, status=3)
+    ls = Link.objects.filter(
+        group__id=groupid,
+        status=3
+    )
     gms = GroupMember.objects.filter(group__id=groupid)
     my_member = gms.get(user=user)
 
@@ -86,7 +100,8 @@ def get_user_global_map(user, groupid):
     for (node, d) in GMap.nodes(data=True):
         # print d
         country, city = node.split('-')
-        nodes.append({"name": city, "value": CITIES_TABLE[country][city][-1::-1] + [d['weight'], d['friends']],
+        nodes.append({"name": city,
+                      "value": CITIES_TABLE[country][city][-1::-1] + [d['weight'], d['friends']],
                       "self": True if 'self' in d else False})
 
     # print nodes

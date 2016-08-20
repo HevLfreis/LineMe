@@ -6,6 +6,7 @@
 import networkx as nx
 from django.db.models import Q
 from django.http import Http404
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
 from Human.methods.basic.groupmember import create_group_member
@@ -68,7 +69,10 @@ def create_group(request, user, name, identifier, gtype):
 
 
 def get_user_groups(user):
-    gms = GroupMember.objects.filter(user=user, is_joined=True)
+    gms = GroupMember.objects.filter(
+        user=user,
+        is_joined=True
+    )
     groups = [gm.group for gm in gms]
     return groups
 
@@ -95,12 +99,27 @@ def get_group_joined_num(group):
 
 
 def get_member_in_group(user, group):
+    """
+    check if there is a member matching the user's name or account name
+    in specific group. if existed, return the member, or none
+    :param user:
+    :param group:
+    :return:
+    """
+
     gm = GroupMember.objects.filter(
-        (Q(member_name=get_user_name(user)) | Q(member_name=user.username)), group=group)
-    if gm.exists():
-        return gm
+        member_name=get_user_name(user),
+        group=group,
+        is_joined=False
+    )
+    return gm.exists()
+
+
+def has_member(group, user):
+    if type(group) is not Group:
+        return get_object_or_404(Group, id=group).has_member(user)
     else:
-        return None
+        return group.has_member(user)
 
 
 def get_user_join_status(request, user, group):
@@ -109,9 +128,13 @@ def get_user_join_status(request, user, group):
     if join_failed:
         del request.session['join_failed']
 
-    joined = GroupMember.objects.filter(user=user, group=group, is_joined=True).exists()
+    joined = has_member(group, user)
 
-    requested = MemberRequest.objects.filter(user=user, group=group, is_valid=True).exists()
+    requested = MemberRequest.objects.filter(
+        user=user,
+        group=group,
+        is_valid=True
+    ).exists()
 
     if joined:
         return 1
@@ -123,11 +146,22 @@ def get_user_join_status(request, user, group):
         return 0
 
 
-# Todo: fix func
 def group_privacy_check(user, group):
+    """
+    check group privacy when user access to one group
+    users who have access: creator, name in group, already in group
+
+    :param user:
+    :param group:
+    :return:
+    """
     if group.type == 1:
-        if not get_member_in_group(user, group):
-            raise Http404()
+        if group.creator == user or \
+                group.has_member(user) or \
+                get_member_in_group(user, group):
+            return
+        else:
+            raise Http404
 
 
 ########################################################################

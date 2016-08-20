@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="/static/plugins/d3/css/d3-tip.css">
     <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
     <link rel="stylesheet" href="/static/plugins/hint/css/hint.css">
+    <link rel="stylesheet" href="/static/plugins/trip/css/trip.min.css">
   </head>
   <body class="hold-transition skin-black sidebar-mini">
     <div class="wrapper">
@@ -64,7 +65,7 @@
                 </a>
               </li>
               <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="帮助">
-                <a href="#">
+                <a id="help" href="#">
                   <i class="fa fa-question"></i>
                 </a>
               </li>
@@ -156,19 +157,14 @@
                     <div id="bt-menu" class="bt-menu">
                       <a href="#" class="bt-menu-trigger"><span>Menu</span></a>
                       <ul>
-                        <li><a id="lineme">Lineme</a></li>
-                        <li><a id="submit">Submit</a></li>
-                        <li><a id="reset">Reset</a></li>
-                        <li><a id="clear">Clear</a></li>
-                        <li><a id="info">Info</a></li>
-                        <li><a id="howto">Howto</a></li>
+                        <li><a id="lineme">连我</a></li>
+                        <li><a id="submit">保存</a></li>
+                        <li><a id="reset">重置</a></li>
+                        <li><a id="clear">清除</a></li>
+                        <li><a id="info">信息</a></li>
+                        <li><a id="howto">帮助</a></li>
                       </ul>
                     </div>
-{#                    <h1 class="panel-text-bottom text-navy text-bold">#}
-{#                      Tools Menu</br>#}
-{#                      <span class="fa fa-arrow-down"></span>#}
-{##}
-{#                    </h1>#}
                   {% endif %}
                 </div>
               </div>
@@ -194,10 +190,6 @@
     <script src="/static/plugins/jQuery/jQuery-2.1.4.min.js"></script>
     <script src="/static/bootstrap/js/bootstrap.min.js"></script>
     <script src="/static/dist/js/app.min.js"></script>
-    {% if group %}
-      <script src="/static/lineme/js/classie.js"></script>
-      <script src="/static/lineme/js/borderMenu.js"></script>
-    {% endif %}
     <script src="/static/plugins/d3/js/d3.js"></script>
     <script src="/static/plugins/d3/js/d3-tip.js"></script>
     <script src="/static/plugins/rollbar/js/jquery.easing.1.3.js"></script>
@@ -205,16 +197,20 @@
     <script src="/static/plugins/rollbar/js/jquery.rollbar.min.js"></script>
     <script src="/static/lineme/js/rollbar.js"></script>
     <script src="/static/lineme/js/autocomplete.js"></script>
-
+    <script src="/static/plugins/trip/js/trip.js"></script>
     {% if group %}
+      <script src="/static/lineme/js/classie.js"></script>
+      <script src="/static/lineme/js/borderMenu.js"></script>
+      <script src="/static/lineme/js/zh_cn/trip/trip-ego.js"></script>
       <script type="text/javascript">
         var groupid = {{ group.id }};
         var rcmdUrl = "{% url 'rcmd' group.id %}";
         var eGraphUrl = "{% url 'eGraph' group.id %}";
         var updateGraphUrl = "{% url 'updateGraph' group.id %}";
       </script>
-      <script src="/static/lineme/js/ego.js"></script>
+      <script src="/static/lineme/js/zh_cn/ego.js"></script>
     {% else %}
+      <script src="/static/lineme/js/zh_cn/trip/trip-none.js"></script>
       <script type="text/javascript">
         $('#search').autocomplete({
           type: 'ego'

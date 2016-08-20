@@ -34,7 +34,8 @@ from LineMe.settings import logger, DEPLOYED_LANGUAGE
 # Todo: ///check all place with user input///, deal with utf-8 chinese, check all filter to get
 # Todo: member in group multiple?
 
-if DEPLOYED_LANGUAGE == 'zh-cn':
+lang = DEPLOYED_LANGUAGE
+if lang == 'zh-cn':
     template_dir = 'Human/zh_cn/'
 else:
     template_dir = 'Human/'
@@ -45,7 +46,8 @@ def redirect2main(request):
 
 
 def view_404(request):
-    context = {"project_name": PROJECT_NAME}
+    context = {"project_name": PROJECT_NAME,
+               "lang": lang}
     return render(request, '404.html', context)
 
 
@@ -64,7 +66,9 @@ def lm_login(request):
     if request.user.is_authenticated():
         return redirect('home')
 
-    context = {"project_name": PROJECT_NAME, "status": ''}
+    context = {"project_name": PROJECT_NAME,
+               "lang": lang,
+               "status": ''}
 
     if request.method == 'GET':
         return render(request, template_dir+'login.html', context)
@@ -93,7 +97,9 @@ def lm_logout(request):
 
 def lm_register(request):
 
-    context = {"project_name": PROJECT_NAME, "status": 0}
+    context = {"project_name": PROJECT_NAME,
+               "lang": lang,
+               "status": 0}
 
     if request.method == 'GET':
         return render(request, template_dir+'register.html', context)
@@ -132,10 +138,16 @@ def home(request):
     msgs_count = get_user_msgs_count(user)
     rcmd_groups = Recommender(user).group()
 
-    context = {"project_name": PROJECT_NAME, "user": user, "my_groups": my_groups,
-               "in_groups": in_groups, "rcmd_groups": rcmd_groups, "msgs_count": msgs_count,
-               "group_created_status": 0, "identifier": IDENTIFIER,
-               'group_cost': GROUP_CREATED_CREDITS_COST}
+    context = {"project_name": PROJECT_NAME,
+               "lang": lang,
+               "user": user,
+               "my_groups": my_groups,
+               "in_groups": in_groups,
+               "rcmd_groups": rcmd_groups,
+               "msgs_count": msgs_count,
+               "group_created_status": 0,
+               "identifier": IDENTIFIER,
+               "group_cost": GROUP_CREATED_CREDITS_COST}
 
     if request.method == 'GET':
         return render(request, template_dir+'home.html', context)
@@ -187,8 +199,10 @@ def msg_panel(request):
         msg_creators = {xp: GroupMember.objects.get(user=xp.creator, group=xp.group).member_name for xp in p}
 
         return render(request, template_dir+'home_msg.html',
-                      {'msgs': p, 'msg_index': msg_index, 'my_members': my_members,
-                       'msg_creators': msg_creators})
+                      {"msgs": p,
+                       "msg_index": msg_index,
+                       "my_members": my_members,
+                       "msg_creators": msg_creators})
 
     else:
         return HttpResponse(status=403)
@@ -222,7 +236,7 @@ def msg_handle(request, mtype='0', handleid=0):
 
         count = 0
         for link in confirm_list:
-            status = link_confirm(request, user, int(link))
+            status = link_confirm(request, user, get_link(int(link)))
             if status == 0:
                 count += 1
 
@@ -239,9 +253,7 @@ def inv_panel(request):
     if request.is_ajax():
 
         page = request.GET.get('page')
-
-        group_name = request.GET.get('groupname')
-        group_name = input_filter(group_name)
+        group_name = input_filter(request.GET.get('groupname'))
 
         if group_name:
             invs = get_user_invs(user, group_name)
@@ -259,7 +271,8 @@ def inv_panel(request):
 
         my_members = GroupMember.objects.filter(user=user)
 
-        return render(request, template_dir+'home_inv.html', {'invs': p, 'my_members': my_members})
+        return render(request, template_dir+'home_inv.html', {"invs": p, "my_members": my_members})
+
     else:
         return HttpResponse(status=403)
 
@@ -287,8 +300,13 @@ def ego_network(request, groupid=0):
     else:
         group = get_object_or_404(Group, id=groupid)
 
-    context = {"project_name": PROJECT_NAME, "user": user, "groups": groups,
-               "group": group, "rcmd_groups": rcmd_groups, "msgs_count": msgs_count}
+    context = {"project_name": PROJECT_NAME,
+               "lang": lang,
+               "user": user,
+               "groups": groups,
+               "group": group,
+               "rcmd_groups": rcmd_groups,
+               "msgs_count": msgs_count}
 
     return render(request, template_dir+'ego.html', context)
 
@@ -298,7 +316,7 @@ def ego_graph(request, groupid=0):
     user = request.user
     groupid = check_groupid(user, groupid)
 
-    if groupid == 0:
+    if groupid == 0 or groupid == -2:
         return JsonResponse({"nodes": None, "links": None}, safe=False)
 
     data = get_user_ego_graph(user, groupid)
@@ -366,8 +384,12 @@ def global_network(request, groupid=0):
         group = get_object_or_404(Group, id=groupid)
         context.update(get_user_global_info(user, groupid))
 
-    context.update({"project_name": PROJECT_NAME, "user": user, "groups": groups,
-                    "group": group, "msgs_count": msgs_count})
+    context.update({"project_name": PROJECT_NAME,
+                    "lang": lang,
+                    "user": user,
+                    "groups": groups,
+                    "group": group,
+                    "msgs_count": msgs_count})
 
     return render(request, template_dir+'global.html', context)
 
@@ -415,8 +437,15 @@ def profile(request):
     else:
         country, city = "", ""
 
-    context = {"project_name": PROJECT_NAME, "user": user, "username": username, "msgs_count": msgs_count,
-               "first_login": first_login, 'cities_table': CITIES_TABLE, 'country': country, 'city': city}
+    context = {"project_name": PROJECT_NAME,
+               "lang": lang,
+               "user": user,
+               "username": username,
+               "msgs_count": msgs_count,
+               "first_login": first_login,
+               "cities_table": CITIES_TABLE,
+               "country": country,
+               "city": city}
 
     if request.method == 'GET':
         return render(request, template_dir+'profile.html', context)
@@ -457,8 +486,12 @@ def settings(request):
             else:
                 pris[i] = pri+(False,)
 
-        context = {"project_name": PROJECT_NAME, "user": user, "msgs_count": msgs_count,
+        context = {"project_name": PROJECT_NAME,
+                   "lang": lang,
+                   "user": user,
+                   "msgs_count": msgs_count,
                    "privacies": pris}
+
         return render(request, template_dir+'settings.html', context)
 
     else:
@@ -475,8 +508,6 @@ def passwd_reset(request):
         passwd = request.POST.get('old')
         new_passwd = request.POST.get('new')
         new_passwd2 = request.POST.get('new2')
-
-        print passwd, new_passwd, new_passwd2
 
         if user.check_password(passwd):
             if validate_passwd(new_passwd, new_passwd2):
@@ -528,7 +559,10 @@ def avatar(request):
     user = request.user
     msgs_count = get_user_msgs_count(user)
 
-    context = {"project_name": PROJECT_NAME, "user": user, "msgs_count": msgs_count}
+    context = {"project_name": PROJECT_NAME,
+               "user": user,
+               "msgs_count": msgs_count}
+
     return render(request, 'Human/avatar.html', context)
 
 
@@ -544,7 +578,6 @@ def img_handle(request):
 
 
 ########################################################################
-
 
 # Todo: learn from ego and global
 @login_required
@@ -563,8 +596,15 @@ def manage_group(request, groupid=0):
 
     group_privacy_check(user, group)
 
-    context = {"project_name": PROJECT_NAME, "user": user, "group": group, "groups": groups,
-               "rcmd_groups": rcmd_groups, "update_status": us, "name": nm, "msgs_count": msgs_count}
+    context = {"project_name": PROJECT_NAME,
+               "lang": lang,
+               "user": user,
+               "group": group,
+               "groups": groups,
+               "rcmd_groups": rcmd_groups,
+               "update_status": us,
+               "name": nm,
+               "msgs_count": msgs_count}
 
     if request.method == 'GET':
         if user != group.creator:
@@ -572,7 +612,10 @@ def manage_group(request, groupid=0):
             members_count = members.count()
 
             follow_status = get_user_join_status(request, user, group)
-            context.update({'creator': group.creator, 'members_count': members_count, 'follow_status': follow_status})
+            context.update({"creator": group.creator,
+                            "members_count": members_count,
+                            "follow_status": follow_status})
+
             return render(request, template_dir+'group2.html', context)
 
         else:
@@ -594,7 +637,11 @@ def manage_group(request, groupid=0):
                 p = paginator.page(paginator.num_pages)
 
             members_count = members.count()
-            context.update({'members': p, 'creator': user, 'members_count': members_count, 'requests': request_members})
+            context.update({"members": p,
+                            "creator": user,
+                            "members_count": members_count,
+                            "requests": request_members})
+
             return render(request, template_dir+'group1.html', context)
 
     elif request.method == 'POST':
@@ -657,7 +704,7 @@ def join(request, groupid):
     :return status code
      403: already in this group
      0: success
-    -1: failed
+    -1: failed (already in)
     -2: member not existed
     -3: more than maxsize
     -4: internal error
@@ -674,6 +721,7 @@ def join(request, groupid):
 
     if request.is_ajax():
 
+        # no validation group, if i am not in this group, create and join
         if group.identifier == 2:
             if get_user_join_status(request, user, group) == 0:
                 status = create_group_member(request,
@@ -737,8 +785,8 @@ def join_request(request, groupid):
     group_privacy_check(user, group)
 
     if request.method == 'POST' and not GroupMember.objects.filter(user=user, group=group).exists():
-        mesg = request.POST.get('message')
-        status = create_request(request, user, group, mesg)
+        msg = request.POST.get('message')
+        status = create_request(request, user, group, msg)
         return redirect('group', groupid=groupid)
 
     else:
@@ -773,4 +821,9 @@ def join_confirm(request, groupid, requestid):
 
     else:
         return HttpResponse(status=403)
+
+
+@login_required
+def join_decline(request, groupid, requestid):
+    return redirect('group', groupid)
 

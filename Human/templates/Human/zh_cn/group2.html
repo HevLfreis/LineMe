@@ -14,20 +14,18 @@
     <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
     <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
     <link rel="stylesheet" href="/static/plugins/hint/css/hint.css">
+    <link rel="stylesheet" href="/static/plugins/trip/css/trip.min.css">
     <style>
-
       blockquote {
         margin: 0 0 10px;
       }
-
     </style>
   </head>
   <body class="hold-transition skin-black sidebar-mini">
     <div class="wrapper">
-
-      <div class="modal fade" id="member-join-modal">
+      <div class="modal fade" id="modal-join">
         <div class="modal-dialog">
-          <form method="post" action="{% url 'join' group.id %}" class="modal-content" id="modal-content-wrong">
+          <form method="post" action="{% url 'join' group.id %}" class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
               <h4 class="modal-title">秘钥错误</h4>
@@ -47,8 +45,12 @@
               <button type="submit" class="btn btn-primary btn-flat">加入</button>
             </div>
           </form>
+        </div>
+      </div>
 
-          <form method="post" action="{% url 'joinRequest' group.id %}" class="modal-content" id="modal-content-notin">
+      <div class="modal fade" id="modal-notin">
+        <div class="modal-dialog">
+          <form method="post" action="{% url 'joinRequest' group.id %}" class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
               <h4 class="modal-title">注意</h4>
@@ -88,7 +90,7 @@
                 </a>
               </li>
               <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="帮助">
-                <a href="#">
+                <a id="help" href="#">
                   <i class="fa fa-question"></i>
                 </a>
               </li>
@@ -216,7 +218,7 @@
                   <div class="widget-user-header bg-blue text-center">
                 {% endif %}
                   <h3 class="widget-user-username"><strong>{{ group.group_name }}</strong></h3>
-                  <h5 class="widget-user-desc">{{ creator.username }} 创建</h5>
+                  <h5 class="widget-user-desc">由 {{ creator.username }} 创建</h5>
                 </div>
                 <div class="widget-user-image">
                   <img class="img-circle" src="/static/images/avatars/{{ creator.id }}.png"  alt="User Avatar">
@@ -282,6 +284,8 @@
     <script src="/static/plugins/rollbar/js/jquery.rollbar.min.js"></script>
     <script src="/static/lineme/js/rollbar.js"></script>
     <script src="/static/lineme/js/autocomplete.js"></script>
+    <script src="/static/plugins/trip/js/trip.js"></script>
+    <script src="/static/lineme/js/zh_cn/trip/trip-none.js"></script>
     <script type="text/javascript">
 
       var groupid = {{ group.id }};
@@ -306,6 +310,6 @@
       $('#search').autocomplete();
 
     </script>
-    <script src="/static/lineme/js/group2.js"></script>
+    <script src="/static/lineme/js/zh_cn/group2.js"></script>
   </body>
 </html>

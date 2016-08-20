@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="/static/plugins/d3/css/d3-tip.css">
     <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
     <link rel="stylesheet" href="/static/plugins/hint/css/hint.css">
+    <link rel="stylesheet" href="/static/plugins/trip/css/trip.min.css">
   </head>
   <body class="hold-transition skin-black sidebar-mini">
     <div class="wrapper">
@@ -47,7 +48,7 @@
                 </a>
               </li>
               <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="帮助">
-                <a href="#">
+                <a id="help" href="#">
                   <i class="fa fa-question"></i>
                 </a>
               </li>
@@ -146,7 +147,7 @@
             <div class="col-md-3 col-sm-12" id="info-panel">
               <div class="box box-warning">
                 <div class="box-header with-border">
-                  <h3 class="box-title">群信息</h3>
+                  <h3 class="box-title">拓扑信息</h3>
                 </div>
                 <div class="box-body box-global-info-body">
                   {% if group %}
@@ -183,6 +184,7 @@
                         <tr>
                           {% if average_distance == -1 %}
                             <th>网络未连通</th>
+                            <td></td>
                           {% else %}
                             <th>平均距离</th>
                             <td>{{ average_distance|floatformat:"2" }}</td>
@@ -232,12 +234,14 @@
     <script src="/static/plugins/rollbar/js/jquery.rollbar.min.js"></script>
     <script src="/static/lineme/js/rollbar.js"></script>
     <script src="/static/lineme/js/autocomplete.js"></script>
+    <script src="/static/plugins/trip/js/trip.js"></script>
     <script type="text/javascript">
       $('#search').autocomplete({
         type: 'global'
       });
     </script>
     {% if group %}
+      <script src="/static/lineme/js/zh_cn/trip/trip-global.js"></script>
       <script type="text/javascript">
         var groupid = {{ group.id }};
         var disData = {{ distribution|safe }};
@@ -245,7 +249,9 @@
         var gGraphUrl = "{% url 'gGraph' group.id %}";
         var gMapUrl = "{% url 'gMap' group.id %}";
       </script>
-      <script src="/static/lineme/js/global.js"></script>
+      <script src="/static/lineme/js/zh_cn/global.js"></script>
+    {% else %}
+      <script src="/static/lineme/js/zh_cn/trip/trip-none.js"></script>
     {% endif %}
   </body>
 </html>

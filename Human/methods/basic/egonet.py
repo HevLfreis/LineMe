@@ -10,13 +10,24 @@ from Human.models import Link
 
 
 def get_user_ego_graph(user, groupid):
-    ls = Link.objects.filter(group__id=groupid, creator=user)
+    ls = Link.objects.filter(
+        group__id=groupid,
+        creator=user
+    )
 
     gms, nodes, links = [], [], []
 
-    self = GroupMember.objects.get(group__id=groupid, user=user, is_joined=True)
-    nodes.append({'id': self.id, 'userid': self.user.id, 'name': self.member_name,
-                  'self': True, 'group': 0})
+    self = GroupMember.objects.get(
+        group__id=groupid,
+        user=user,
+        is_joined=True
+    )
+
+    nodes.append({'id': self.id,
+                  'userid': self.user.id,
+                  'name': self.member_name,
+                  'self': True,
+                  'group': 0})
 
     if ls.count() != 0:
 
@@ -29,11 +40,18 @@ def get_user_ego_graph(user, groupid):
 
         # Todo: implement group color
         for gm in gms:
-            nodes.append({'id': gm.id, 'userid': (-1 if gm.user is None else gm.user.id), 'name': gm.member_name,
-                          'self': False, 'group': random.randint(1, 4)})
+            nodes.append({'id': gm.id,
+                          'userid': (-1 if gm.user is None else gm.user.id),
+                          'name': gm.member_name,
+                          'self': False,
+                          'group': random.randint(1, 4)})
 
         for link in ls:
-            links.append({'id': link.id, 'source': link.source_member.id, 'target': link.target_member.id,
-                          'status': link.status, 'value': 1, 'group': link.group.id})
+            links.append({'id': link.id,
+                          'source': link.source_member.id,
+                          'target': link.target_member.id,
+                          'status': link.status,
+                          'value': 1,
+                          'group': link.group.id})
 
     return {"nodes": nodes, "links": links}

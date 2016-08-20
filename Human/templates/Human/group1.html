@@ -281,7 +281,10 @@
                           </span>
                           {{ req.message }}
                         </div>
-                        <a href="{% url 'joinConfirm' group.id req.id %}" class="btn bg-navy btn-xs pull-right"><i class="fa fa-flash"></i> Accept</a>
+                        <div class="pull-right">
+                          <a href="{% url 'joinConfirm' group.id req.id %}" class="btn bg-navy btn-xs"> Accept</a>
+                          <a href="{% url 'joinDecline' group.id req.id %}" class="btn bg-red btn-xs"> Decline</a>
+                        </div>
                       </div>
                     {% endfor %}
                   </div>

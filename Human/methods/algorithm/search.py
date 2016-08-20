@@ -4,7 +4,10 @@
 # Date: 2016/8/12
 # Time: 23:06
 from django.db.models import Q
+from django.http import Http404
+from django.shortcuts import get_object_or_404
 
+from Human.methods.basic.group import has_member
 from Human.methods.session import get_session_id
 from Human.methods.utils import logger_join, input_filter
 from Human.models import GroupMember, Group
@@ -35,9 +38,16 @@ class SearchEngine:
 
     def __member_search(self, groupid, kw, limit):
         res = []
-        gms = GroupMember.objects.filter(Q(member_name__istartswith=kw) |
-                                         Q(member_name__icontains=kw),
-                                         group__id=groupid).exclude(user=self.user).order_by('member_name')[0:limit]
+
+        if not has_member(groupid, self.user):
+            raise Http404
+
+        gms = GroupMember.objects.filter(
+            Q(member_name__istartswith=kw) |
+            Q(member_name__icontains=kw),
+            group__id=groupid
+        ).exclude(user=self.user).order_by('member_name')[0:limit]
+
         for gm in gms:
             if gm.is_joined:
                 res.append({"mid": gm.id, "uid": gm.user.id, "mname": gm.member_name})

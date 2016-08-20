@@ -80,9 +80,11 @@ def get_user_msgs(user):
         #                              Q(source_member=mm, status=-2) |
         #                              Q(source_member=mm, status=-1), ~Q(creator=user))
 
-        msgs += Link.objects.filter((Q(source_member=mm) & (Q(status=0) | Q(status=2) | Q(status=-2))) |
-                                    (Q(target_member=mm) & (Q(status=0) | Q(status=1) | Q(status=-1))),
-                                    ~Q(creator=user)).order_by('source_member', 'target_member')
+        msgs += Link.objects.filter(
+            (Q(source_member=mm) & (Q(status=0) | Q(status=2) | Q(status=-2))) |
+            (Q(target_member=mm) & (Q(status=0) | Q(status=1) | Q(status=-1))),
+            ~Q(creator=user)
+        ).order_by('source_member', 'target_member')
 
     msg_index = {}
     for msg in msgs:
@@ -107,15 +109,21 @@ def get_user_msgs_count(user):
 
     count = 0
     for mm in my_members:
-        count += Link.objects.filter((Q(source_member=mm) & (Q(status=0) | Q(status=2) | Q(status=-2))) |
-                                     (Q(target_member=mm) & (Q(status=0) | Q(status=1) | Q(status=-1))),
-                                     ~Q(creator=user)).count()
+        count += Link.objects.filter(
+            (Q(source_member=mm) & (Q(status=0) | Q(status=2) | Q(status=-2))) |
+            (Q(target_member=mm) & (Q(status=0) | Q(status=1) | Q(status=-1))),
+            ~Q(creator=user)
+        ).count()
+
     return count
 
 
 def get_user_invs(user, group_name=None):
     if group_name:
-        invs = Link.objects.filter(creator=user, group__group_name__iexact=group_name).order_by('-created_time')
+        invs = Link.objects.filter(
+            creator=user,
+            group__group_name__iexact=group_name
+        ).order_by('-created_time')
     else:
         invs = Link.objects.filter(creator=user).order_by('-created_time')
     return invs

@@ -16,14 +16,15 @@ $(function() {
         "Let's check it out !!!<br><br>" +
         "Here is the homepage of LineMe, and we will tour you some functions.", position: "screen-center"
     },
-    { sel: $(".user-panel"), header: "Avatar", content: "Click avatar to upload yours.", position: "e"},
-    { sel: $("#search"), header: "Search", content: "You can search group by name.", position: "e"},
+    { sel: $(".user-panel"), header: "Avatar", content: "Click avatar to upload yours.", position: "e" },
+    { sel: $("#search"), header: "Search", content: "You can search group by name.", position: "e" },
     {
         sel: $("#credits"), header: "Credit", content: "" +
         "Here is your credits in LineMe.<br>" +
         "Credits can be used to create your own group.<br><br>" +
         "A confirmed link will bonus you 10 points.<br>" +
-        "A rejected link will also cost you 10 points.<br>", position: "e"},
+        "A rejected link will also cost you 10 points.<br>", position: "e"
+    },
     {
         sel: $("#box-msg"), header: "Request", content: "" +
         "The link requests linking you <br>" +
@@ -37,17 +38,17 @@ $(function() {
     },
     {
         sel: $("#box-group"), header: "Group", content: "" +
-        "Here are our recommended groups<br> " +
-        "for you, click one to follow.<br><br> " +
+        "Here are our recommended groups<br>" +
+        "for you, click one to follow.<br><br>" +
         "Also you can check the group you <br>" +
         "have created and joined here.", position: "e", expose: true
     },
     {
         sel: $(".fa-question"), header: "Help", content: "" +
-        "When you are confused in LineMe, <br> " +
+        "When you are confused in LineMe, <br>" +
         "click help to get more infomation.", position: "s"
     },
-
+    { header: "LineMe", content: "Have fun with LineMe ~<br>", position: "screen-center" },
     ], {
         showHeader: true,
         showCloseBox: true,

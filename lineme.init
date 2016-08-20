@@ -1,8 +1,0 @@
-create database lineme;
-
-python manage.py makemigrations
-python manage.py migrate
-
-service apache2 reload
-
-mysql -uroot -p lineme < LineMe/initial_data.sql

@@ -19,8 +19,31 @@
   </head>
   <body class="hold-transition skin-black sidebar-mini">
     <div class="wrapper">
+      <div class="modal fade" id="modal-msg">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+              <h4 class="modal-title">注意</h4>
+            </div>
+            <div class="modal-body">
+              <h4></h4>
+            </div>
+            <div class="modal-footer">
+              <div class="checkbox icheck pull-left">
+                <label>
+                  <input type="checkbox" value="" name="">
+                  不再显示
+                </label>
+              </div>
+              <button id="btn-msg-all" class="btn btn-primary btn-flat" data-dismiss="modal">所有</button>
+              <button id="btn-msg-this" class="btn btn-warning btn-flat" data-dismiss="modal">仅这条</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <div class="modal fade" id="group-create-modal">
+      <div class="modal fade" id="modal-create-group">
         <div class="modal-dialog">
           <form method="post" class="modal-content">
             <div class="modal-header">
@@ -83,7 +106,7 @@
                 </a>
               </li>
               <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="帮助">
-                <a href="#" id="howto">
+                <a id="help" href="#">
                   <i class="fa fa-question"></i>
                 </a>
               </li>
@@ -132,12 +155,12 @@
                 {% if user.extra.gender  %}
                   <i class="menu-icon fa fa-venus bg-yellow" title="性别"></i>
                   <div class="menu-info">
-                    <h4 class="control-sidebar-subheading">美女</h4>
+                    <h4 class="control-sidebar-subheading">女生</h4>
                   </div>
                 {% else %}
                   <i class="menu-icon fa fa-mars bg-yellow" title="性别"></i>
                   <div class="menu-info">
-                    <h4 class="control-sidebar-subheading">帅哥</h4>
+                    <h4 class="control-sidebar-subheading">男生</h4>
                   </div>
                 {% endif %}
               </a>
@@ -179,7 +202,7 @@
               </a>
             </li>
             <li>
-              <a>
+              <a id="credits">
                 <i class="menu-icon fa fa-star bg-teal" title="积分"></i>
                 <div class="menu-info">
                   <h4 class="control-sidebar-subheading">{{ user.extra.credits }}</h4>
@@ -246,16 +269,12 @@
                 <div class="box-header">
                   <i class="ion ion-paper-airplane"></i>
                   <h3 class="box-title">连边请求</h3>
-{#                  <div class="box-tools pull-right" title="" style="top:10px">#}
-{#                    <h3 class="box-title">Select All&nbsp;&nbsp;</h3>#}
-{#                    <input type="checkbox" value="" name="" >#}
-{#                  </div>#}
                 </div>
               </div>
               <div id="box-group" class="box box-warning">
                 <div class="box-header">
                   <i class="ion ion-crop"></i>
-                  <h3 class="box-title">群推荐</h3>
+                  <h3 class="box-title">我的群推荐</h3>
                   <div class="box-tools pull-right" title="">
                     <div class="btn-group" data-toggle="btn-toggle">
                       <button id="btn-rd-group" type="button" class="btn btn-default btn-sm active"><i class="fa fa-square text-yellow"></i></button>
@@ -384,13 +403,13 @@
                 <div class="box-footer clearfix no-border">
                   <div class="box-tools pull-right">
                     {% if group_created_status == 0 %}
-                      <a class="btn bg-aqua btn-flat" data-toggle="modal" data-target="#group-create-modal" style=""><i class="fa fa-plus pull-left"></i>创建新群</a>
+                      <a class="btn bg-aqua btn-flat" data-toggle="modal" data-target="#modal-create-group" style=""><i class="fa fa-plus pull-left"></i>创建群</a>
                     {% elif group_created_status == -1 %}
-                      <a class="btn bg-yellow btn-flat" data-toggle="modal" data-target="#group-create-modal" style=""><i class="fa fa-info pull-left"></i>群名字无效</a>
+                      <a class="btn bg-yellow btn-flat" data-toggle="modal" data-target="#modal-create-group" style=""><i class="fa fa-info pull-left"></i>无效群名</a>
                     {% elif group_created_status == -2 %}
-                      <a class="btn bg-yellow btn-flat" data-toggle="modal" data-target="#group-create-modal" style=""><i class="fa fa-info pull-left"></i>积分不足</a>
+                      <a class="btn bg-yellow btn-flat" data-toggle="modal" data-target="#modal-create-group" style=""><i class="fa fa-info pull-left"></i>积分不足</a>
                     {% else %}
-                      <a class="btn bg-red btn-flat" data-toggle="modal" data-target="#group-create-modal" style=""><i class="fa fa-info pull-left"></i>请重试</a>
+                      <a class="btn bg-red btn-flat" data-toggle="modal" data-target="#modal-create-group" style=""><i class="fa fa-info pull-left"></i>请重试</a>
                     {% endif %}
                   </div>
                   <div class="box-tools pull-left">
@@ -446,7 +465,7 @@
     <script src="/static/lineme/js/rollbar.js"></script>
     <script src="/static/lineme/js/autocomplete.js"></script>
     <script src="/static/plugins/trip/js/trip.js"></script>
-    <script src="/static/lineme/js/trip/trip-home.js"></script>
+    <script src="/static/lineme/js/zh_cn/trip/trip-home.js"></script>
     <script type="text/javascript">
 
       var emails = "{{ user.email }}".split("@");
@@ -473,6 +492,6 @@
       $('#search').autocomplete();
 
     </script>
-    <script src="/static/lineme/js/home.js"></script>
+    <script src="/static/lineme/js/zh_cn/home.js"></script>
   </body>
 </html>

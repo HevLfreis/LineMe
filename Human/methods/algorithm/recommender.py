@@ -22,14 +22,20 @@ class Recommender:
             return None
 
         gmout, gmin = [], []
-        ls = Link.objects.filter(group__id=groupid, creator=self.user)
+        ls = Link.objects.filter(
+            group__id=groupid,
+            creator=self.user
+        )
 
         for l in ls:
             if l.source_member not in gmin or l.target_member not in gmin:
                 gmin.append(l.source_member)
                 gmin.append(l.target_member)
 
-        for gm in GroupMember.objects.filter(group__id=groupid).exclude(user=self.user).order_by('-is_joined'):
+        for gm in GroupMember.objects.filter(
+                group__id=groupid
+        ).exclude(user=self.user).order_by('-is_joined'):
+
             if gm not in gmin:
                 gmout.append(gm)
 
@@ -51,11 +57,14 @@ class Recommender:
                 gmin.add(l.target_member)
 
         # group members already not in your ego graph
-        gms = set(GroupMember.objects.filter(group__id=groupid).exclude(user=self.user)) - gmin
+        gms = set(GroupMember.objects.filter(
+            group__id=groupid
+        ).exclude(user=self.user)) - gmin
 
         ls = links.filter(
-            (Q(source_member=my_member) | Q(target_member=my_member))
-            , group__id=groupid).exclude(creator=self.user)
+            (Q(source_member=my_member) | Q(target_member=my_member)),
+            group__id=groupid
+        ).exclude(creator=self.user)
 
         friends = {}
         for l in ls:
@@ -86,13 +95,21 @@ class Recommender:
         if not self.user.privacy.allow_group_recommendation:
             return []
 
-        gms = GroupMember.objects.filter(member_name=get_user_name(self.user), is_joined=False)
+        gms = GroupMember.objects.filter(
+            member_name=get_user_name(self.user),
+            is_joined=False
+        )
 
-        sug = set(gm.group for gm in gms if get_member_in_group(self.user, gm.group.id) is not None)
+        sug = set(gm.group for gm in gms if not gm.group.has_member(self.user))
 
         # Todo: only recommend 5 no validation public group, may add algo
-        for no_val_group in Group.objects.filter(identifier=2).exclude(creator=self.user)[0:5]:
-            if not GroupMember.objects.filter(group=no_val_group, user=self.user).exists():
+        for no_val_group in Group.objects.filter(
+                identifier=2
+        ).exclude(creator=self.user)[0:5]:
+            if not GroupMember.objects.filter(
+                    group=no_val_group,
+                    user=self.user
+            ).exists():
                 sug.add(no_val_group)
 
         return sug

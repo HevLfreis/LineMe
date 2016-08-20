@@ -15,11 +15,18 @@ from LineMe.constants import GROUP_MAXSIZE
 from LineMe.settings import logger
 
 
+# Todo: check member duplicate
 def create_group_member(request, group, name, identifier, user=None, is_creator=False, is_joined=False):
     now = timezone.now()
 
-    if GroupMember.objects.filter(member_name=name, group=group).exists():
+    if user is not None and \
+            GroupMember.objects.filter(
+                group=group,
+                user=user
+            ).exists():
+
         return -1
+
     elif GroupMember.objects.filter(group=group).count() >= GROUP_MAXSIZE:
         return -3
 
@@ -42,6 +49,7 @@ def create_group_member(request, group, name, identifier, user=None, is_creator=
         # print 'Group member create: ', e
         logger.error(logger_join('Create', get_session_id(request), 'failed', e=e))
         return -4
+
     logger.info(logger_join('Create', get_session_id(request), mid=m.id))
     return 0
 
@@ -68,14 +76,32 @@ def create_group_member_from_file(request, group):
 
 # Todo: fix the func
 def follow(request, user, group, identifier):
-    if not GroupMember.objects.filter((Q(member_name=get_user_name(user)) | Q(member_name=user.username)),
-                                      group=group, token=identifier).exists():
+    """
+
+    :param request:
+    :param user:
+    :param group:
+    :param identifier:
+    :return:
+    """
+    if not GroupMember.objects.filter(
+            member_name=get_user_name(user),
+            group=group,
+            token=identifier,
+            is_joined=False
+    ).exists():
+
         return -1
 
     now = timezone.now()
     try:
-        m = GroupMember.objects.get((Q(member_name=get_user_name(user)) | Q(member_name=user.username)),
-                                    group=group, token=identifier)
+        m = GroupMember.objects.filter(
+            member_name=get_user_name(user),
+            group=group,
+            token=identifier,
+            is_joined=False,
+        )[0]
+
         m.is_joined = True
         m.user = user
         m.joined_time = now
@@ -89,19 +115,28 @@ def follow(request, user, group, identifier):
 
 
 def myself_member(user, groupid):
-    return get_object_or_404(GroupMember, user=user, group__id=groupid, is_joined=True)
+    return get_object_or_404(GroupMember,
+                             user=user,
+                             group__id=groupid,
+                             is_joined=True)
 
 
-def create_request(request, user, group, mesg):
+def create_request(request, user, group, msg):
     try:
-        if MemberRequest.objects.filter(user=user, group=group).exists():
-            mr = get_object_or_404(MemberRequest, user=user, group=group)
-            mr.message = mesg
+        if MemberRequest.objects.filter(
+                user=user,
+                group=group
+        ).exists():
+
+            mr = get_object_or_404(MemberRequest,
+                                   user=user,
+                                   group=group)
+            mr.message = msg
 
         else:
             mr = MemberRequest(user=user,
                                group=group,
-                               message=mesg,
+                               message=msg,
                                created_time=timezone.now(),
                                is_valid=True)
         mr.save()
