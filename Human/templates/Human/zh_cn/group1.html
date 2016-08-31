@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>{{ project_name }} | 群</title>
 {#    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">#}
-    <link rel="shortcut icon" href="/static/favicon.ico">
+    <link rel="shortcut icon" href="/media/favicon.ico">
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/plugins/icheck/all.css">
     <link rel="stylesheet" href="//cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css">
@@ -82,7 +82,7 @@
               </li>
               <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                    <img src="/static/images/avatars/{{ user.id }}.png" class="user-image" alt="User Image">
+                    <img src="/media/images/avatars/{{ user.id }}.png" class="user-image" alt="User Image">
                     <span class="hidden-xs">{{ user.username }}</span>
                     <span class="caret"></span>
                 </a>
@@ -103,7 +103,7 @@
         <section class="sidebar">
           <div class="user-panel">
             <div class="pull-left image">
-              <img onclick="window.location.href='{% url 'avatar' %}'" src="/static/images/avatars/{{ user.id }}.png" class="img-circle" alt="User Image" style="cursor:pointer">
+              <img onclick="window.location.href='{% url 'avatar' %}'" src="/media/images/avatars/{{ user.id }}.png" class="img-circle" alt="User Image" style="cursor:pointer">
             </div>
             <div class="pull-left info">
               <p>{{ user.username }}</p>
@@ -273,7 +273,7 @@
                   <div class="box-footer box-comments">
                     {% for req in requests %}
                       <div class="box-comment">
-                        <img class="img-circle img-sm" src="/static/images/avatars/{{ req.user.id }}.png" alt="user image">
+                        <img class="img-circle img-sm" src="/media/images/avatars/{{ req.user.id }}.png" alt="user image">
                         <div class="comment-text">
                           <span class="username">
                             {{ req.user.first_name }} {{ req.user.last_name }}
@@ -302,7 +302,7 @@
       </footer>
     </div>
 
-    <script src="/static/plugins/jQuery/jQuery-2.1.4.min.js"></script>
+    <script src="/static/plugins/jquery/jquery.min.js"></script>
     <script src="/static/bootstrap/js/bootstrap.min.js"></script>
     <script src="/static/dist/js/app.min.js"></script>
     <script src="/static/plugins/icheck/icheck.min.js"></script>

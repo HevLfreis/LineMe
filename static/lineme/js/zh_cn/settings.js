@@ -58,7 +58,7 @@ $(function() {
     $('.cropit-preview').width(width);
     $('#image-cropper').cropit({
         imageState: {
-            src: '/static/images/avatars/hdpi/'+userid+'.png'
+            src: '/media/images/avatars/hdpi/'+userid+'.png'
         },
         smallImage: 'stretch',
         onFileChange: function () {

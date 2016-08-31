@@ -33,6 +33,7 @@ from LineMe.settings import logger, DEPLOYED_LANGUAGE
 
 # Todo: ///check all place with user input///, deal with utf-8 chinese, check all filter to get
 # Todo: member in group multiple?
+# Todo: cookie based first login
 
 lang = DEPLOYED_LANGUAGE
 if lang == 'zh-cn':
@@ -48,7 +49,7 @@ def redirect2main(request):
 def view_404(request):
     context = {"project_name": PROJECT_NAME,
                "lang": lang}
-    return render(request, '404.html', context)
+    return render(request, '_404.html', context)
 
 
 def search(request):

@@ -108,7 +108,7 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-static/images/avatars/*.png
-static/images/avatars/hdpi/*.png
+media/images/avatars/*.png
+media/images/avatars/hdpi/*.png
 *.ids
 

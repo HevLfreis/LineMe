@@ -14,8 +14,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
 from django.conf.urls import url
+from django.conf.urls.static import static
 
 from Human import views
+from LineMe import settings
 
 urlpatterns = [
     url(r'^$', views.redirect2main, name='redirect'),
@@ -73,3 +75,6 @@ urlpatterns = [
     #
     # url(r'^admin/', include(admin.site.urls)),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

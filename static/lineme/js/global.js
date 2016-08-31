@@ -219,7 +219,7 @@ $(function() {
             .attr('height', 50)
             .attr("xlink:href", function(d) {
                 if (d.userid != -1)
-                    return "/static/images/avatars/"+ d.userid+".png"
+                    return "/media/images/avatars/"+ d.userid+".png"
             })
             .attr("clip-path", "url(#clip-circle)");
 

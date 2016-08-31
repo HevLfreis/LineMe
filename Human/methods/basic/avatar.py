@@ -15,12 +15,12 @@ from PIL import ImageFont
 from Human.methods.session import get_session_id
 from Human.methods.utils import logger_join
 from LineMe import settings
-from LineMe.constants import STATIC_FOLDER
+from LineMe.constants import STATIC_FOLDER, MEDIA_FOLDER
 from LineMe.settings import logger
 
 
 def create_avatar(request, userid, username='Unknown'):
-    save_path = os.path.join(STATIC_FOLDER, 'images/avatars/')
+    save_path = os.path.join(MEDIA_FOLDER, 'images/avatars/')
     word = ''.join(map(lambda x: x[0].upper(), username.split(' ')))
     # colors = ((245, 67, 101),
     #           (252, 157, 154),
@@ -68,7 +68,7 @@ def handle_uploaded_avatar(request):
         image_string = cStringIO.StringIO(base64.b64decode(request.POST['imgBase64'].partition('base64,')[2]))
         image = Image.open(image_string)
 
-        path = os.path.join(STATIC_FOLDER, 'images/avatars/')
+        path = os.path.join(MEDIA_FOLDER, 'images/avatars/')
 
         if image.size != (400, 400):
             image.resize((400, 400)).save(path + 'hdpi/' + str(user.id) + ".png", image.format, quality=100)

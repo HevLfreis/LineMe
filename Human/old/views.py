@@ -45,7 +45,7 @@ def redirect2main(request):
 
 def view_404(request):
     context = {"project_name": PROJECT_NAME}
-    return render(request, '404.html', context)
+    return render(request, '_404.html', context)
 
 
 def search(request):
