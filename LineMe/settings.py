@@ -24,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '0jh#joni6e@5j!s%6a0%05xs%%^$x3@=l7fs5&ndfrchq5-tn-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['lime.seeleit.com']
 
@@ -39,7 +39,7 @@ if DEPLOYMENT:
     SESSION_COOKIE_SECURE = True
     # SECURE_SSL_REDIRECT = True
 
-DEPLOYED_LANGUAGE = ''
+DEPLOYED_LANGUAGE = 'zh-cn'
 
 
 # Application definition

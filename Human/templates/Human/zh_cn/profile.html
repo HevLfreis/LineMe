@@ -128,8 +128,8 @@
                       </div>
                       <div class="form-group" id="city-form">
                         {% load filters %}
-                        <label>故乡</label>
-                        <input type="text" class="form-control form-dummy" placeholder="故乡">
+                        <label>出生地</label>
+                        <input type="text" class="form-control form-dummy" placeholder="出生地">
                         {% for country in cities_table.keys %}
                           <select name="city" id="{{ country.split|join:'-'|safe }}" class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true" disabled>
                             {% for c in cities_table|get_value_dict_keys:country|sort_list %}
@@ -143,7 +143,7 @@
                         {% endfor %}
                       </div>
                       <div class="form-group has-feedback">
-                        <label>所属</label>
+                        <label>所属学院</label>
                         <input name="institution" type="text" class="form-control" {% if user.extra.institution %}value="{{ user.extra.institution }}"{% endif %}>
                       </div>
                       <div class="form-group">
@@ -200,6 +200,7 @@
     <script src="/static/plugins/rollbar/js/jquery.mousewheel.js"></script>
     <script src="/static/plugins/rollbar/js/jquery.rollbar.js"></script>
     <script src="/static/lineme/js/rollbar.js"></script>
+    <script src="/static/lineme/js/analytics.js"></script>
     <script src="/static/plugins/trip/js/trip.js"></script>
     <script src="/static/lineme/js/zh_cn/trip/trip-none.js"></script>
     <script type="text/javascript">

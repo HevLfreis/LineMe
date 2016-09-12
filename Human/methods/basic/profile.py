@@ -50,12 +50,13 @@ class Profile:
         return 0
 
     def is_valid(self):
-        if re.match("^[A-Za-z]{0,30}$", self.first_name) and re.match("^[A-Za-z]{0,30}$", self.last_name):
+        if re.match(u"^[A-Za-z]{0,30}[\u4e00-\u9fa5]{0,10}$", self.first_name) and \
+                re.match(u"^[A-Za-z]{0,30}[\u4e00-\u9fa5]{0,10}$", self.last_name):
             if self.gender == 0 or self.gender == 1:
                 if re.match("^(?:(?!0000)[0-9]{4}/(?:(?:0[1-9]|1[0-2])/(?:0[1-9]|1[0-9]|2[0-8])|"
                             "(?:0[13-9]|1[0-2])/(?:29|30)|(?:0[13578]|1[02])-31)|(?:[0-9]{2}(?:0[48]|"
                             "[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)/02/29)$", self.birth):
-                    if re.match("^[A-Za-z0-9\s.!@#&\\\/\|:{}()';\"]{0,100}$", self.institution):
+                    if re.match(u"^[A-Za-z0-9\u4e00-\u9fa5\s.!@#&\\\/\|:{}()';\"]{0,100}$", self.institution):
                         if self.country in CITIES_TABLE and self.city in CITIES_TABLE[self.country]:
                             return True
         return False

@@ -108,6 +108,7 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+.idea/
 media/images/avatars/*.png
 media/images/avatars/hdpi/*.png
 *.ids

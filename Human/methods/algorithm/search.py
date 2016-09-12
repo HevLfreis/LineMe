@@ -25,7 +25,7 @@ class SearchEngine:
         kw = input_filter(self.request.GET.get('kw'))
         groupid = self.request.GET.get('gid')
 
-        logger.info(logger_join('Search', get_session_id(self.request), kw=kw))
+        logger.info(logger_join('Search', get_session_id(self.request), kw=kw.encode('utf-8')))
 
         if kw == '':
             return []

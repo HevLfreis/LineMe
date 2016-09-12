@@ -34,7 +34,7 @@ def login_user(request, username, password):
 
 def input_filter(arg):
     if arg and (type(arg) is str or unicode):
-        return re.sub(r"[^a-zA-Z0-9]", '', arg)
+        return re.sub(ur"[^a-zA-Z0-9\u4e00-\u9fa5]", '', arg)
     else:
         return None
 
@@ -78,3 +78,4 @@ def logger_join(*args, **kwargs):
             return str_arg
         else:
             return str_arg + ' ' + ' '.join([k.upper()+':'+str(v) for k, v in kwargs.items()])
+

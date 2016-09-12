@@ -5,6 +5,7 @@
 # Time: 13:51
 import datetime
 
+import re
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -65,7 +66,10 @@ def get_user_name(user):
     if len(first) is 0 and len(last) is 0:
         return user.username
     else:
-        return first + ' ' + last
+        if re.match(u"[\u4e00-\u9fa5]{0,10}", last):
+            return last + first
+        else:
+            return first + ' ' + last
 
 
 def get_user_msgs(user):

@@ -8,6 +8,7 @@ import cStringIO
 import os
 import random
 
+import re
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
@@ -21,7 +22,10 @@ from LineMe.settings import logger
 
 def create_avatar(request, userid, username='Unknown'):
     save_path = os.path.join(MEDIA_FOLDER, 'images/avatars/')
-    word = ''.join(map(lambda x: x[0].upper(), username.split(' ')))
+    if re.match(u"[\u4e00-\u9fa5\s]+", username):
+        return 0
+    else:
+        word = ''.join(map(lambda x: x[0].upper(), username.split(' ')))
     # colors = ((245, 67, 101),
     #           (252, 157, 154),
     #           (249, 205, 173),
