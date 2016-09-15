@@ -7,7 +7,7 @@
 import json
 import os
 
-from Human.models import Privacy
+from friendnet.models import Privacy
 from settings import STATICFILES_DIRS
 
 

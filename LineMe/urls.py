@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls import url
 from django.conf.urls.static import static
 
-from Human import views
+from friendnet import views
 from LineMe import settings
 
 urlpatterns = [
