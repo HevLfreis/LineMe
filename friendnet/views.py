@@ -459,7 +459,7 @@ def profile(request):
         if pf.is_valid():
             if pf.update() == 0:
                 if first_login:
-                    create_avatar(request, user.id, username=pf.first_name + ' ' + pf.last_name)
+                    create_avatar(request, user.id, username=get_user_name(user))
                 return HttpResponse(0)
 
         else:

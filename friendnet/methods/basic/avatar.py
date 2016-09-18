@@ -22,10 +22,15 @@ from LineMe.settings import logger
 
 def create_avatar(request, userid, username='Unknown'):
     save_path = os.path.join(MEDIA_FOLDER, 'images/avatars/')
+
+    cn = False
     if re.match(u"[\u4e00-\u9fa5\s]+", username):
-        return 0
+        word = username[-1]
+        cn = True
+        xy = (38, 38)
     else:
         word = ''.join(map(lambda x: x[0].upper(), username.split(' ')))
+        xy = (40, 38)
     # colors = ((245, 67, 101),
     #           (252, 157, 154),
     #           (249, 205, 173),
@@ -50,10 +55,14 @@ def create_avatar(request, userid, username='Unknown'):
 
     img = Image.new('RGB', (200, 200), random.choice(colors))
     draw = ImageDraw.Draw(img)
-    if len(word) >= 2:
-        draw.text((40, 38), word[:2], (255, 255, 255), font=font)
-    if len(word) == 1:
+
+    if len(word) >= 2 or cn:
+        draw.text(xy, word[:2], (255, 255, 255), font=font)
+    elif len(word) == 1:
         draw.text((69, 38), word, (255, 255, 255), font=font)
+    else:
+        return 0
+
     try:
         img.save(save_path + 'hdpi/' + str(userid) + '.png')
         img.save(save_path + str(userid) + '.png')
