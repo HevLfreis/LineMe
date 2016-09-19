@@ -89,27 +89,28 @@ WSGI_APPLICATION = 'LineMe.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'lineme',
-#         'USER': 'root',
-#         'PASSWORD': '12345678',
-#         'HOST': '127.0.0.1',
-#         'PORT': '3306',
-#     }
-# }
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'lineme',
-        'USER': 'postgres',
-        'PASSWORD': '12345678',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+if not DEPLOYMENT:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'lineme',
+            'USER': 'root',
+            'PASSWORD': '12345678',
+            'HOST': '127.0.0.1',
+            'PORT': '3306',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'lineme',
+            'USER': 'postgres',
+            'PASSWORD': '12345678',
+            'HOST': '127.0.0.1',
+            'PORT': '5432',
+        }
+    }
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/

@@ -146,8 +146,7 @@
               <a>
                 <i class="menu-icon fa fa-institution bg-maroon" title="所属"></i>
                 <div class="menu-info">
-                  <h4 id="profile-institution1" class="control-sidebar-subheading"></h4>
-                  <p id="profile-institution2"></p>
+                  <h4 id="profile-institution" class="control-sidebar-subheading"></h4>
                 </div>
               </a>
             </li>
@@ -334,7 +333,7 @@
       var emails = "{{ user.email }}".split("@");
       var births = "{{ user.extra.birth }}".split(",");
       var locations = "{{ user.extra.location|safe }}".split("-");
-      var institutions = "{{ user.extra.institution }}".split(" ");
+      var institution = "{{ user.extra.institution }}";
 
       var userid = {{ user.id }};
       var loginUrl = "{% url 'login' %}";
@@ -345,14 +344,11 @@
       $('#profile-email1').text(emails[0]);
       $('#profile-email2').text('@'+emails[1]);
       $('#profile-birth').text(births[0]);
-      $('#profile-location1').text(function(){
-        return locations[0]=="None"?"Blank":locations[0];
-      });
+      $('#profile-location1').text(locations[0]);
       $('#profile-location2').text(locations[1]);
-      $('#profile-institution1').text(function(){
-        return institutions[0]=="None"?"Blank":institutions[0];
+      $('#profile-institution').text(function(){
+        return institution==""?"无":institution;
       });
-      $('#profile-institution2').text(institutions[1]);
 
       $('#search').autocomplete();
 

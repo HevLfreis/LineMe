@@ -139,6 +139,9 @@ def home(request):
     msgs_count = get_user_msgs_count(user)
     rcmd_groups = Recommender(user).group()
 
+    print request.session.get('new_login')
+    first_login = get_session_consume(request, 'new_login')
+
     context = {"project_name": PROJECT_NAME,
                "lang": lang,
                "user": user,
@@ -146,6 +149,7 @@ def home(request):
                "in_groups": in_groups,
                "rcmd_groups": rcmd_groups,
                "msgs_count": msgs_count,
+               "first_login": first_login,
                "group_created_status": 0,
                "identifier": IDENTIFIER,
                "group_cost": GROUP_CREATED_CREDITS_COST}
@@ -452,7 +456,7 @@ def profile(request):
         return render(request, template_dir+'profile.html', context)
 
     elif request.is_ajax():
-        first_login = get_session_consume(request, 'new_login')
+        # first_login = get_session_consume(request, 'new_login')
 
         pf = Profile(request)
 

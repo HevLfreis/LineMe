@@ -60,4 +60,6 @@ $(function() {
     $("#help").on("click", function () {
         trip.start();
     });
+
+    if (first === 'True') trip.start();
 });
