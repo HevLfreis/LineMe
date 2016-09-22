@@ -359,7 +359,7 @@ $(function() {
                     //},
 
                     // Todo: size relate to num of friends
-                    symbolSize: 25,
+                    symbolSize: 15,
                     label: {
                         emphasis : {
                             show: false
@@ -395,7 +395,7 @@ $(function() {
                     data: result.nodes.filter(function (d) {
                         return d.self == true;
                     }),
-                    symbolSize: 35,
+                    symbolSize: 25,
                     showEffectOn: 'render',
                     rippleEffect: {
                         brushType: 'stroke'

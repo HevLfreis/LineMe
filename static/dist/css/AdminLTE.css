@@ -3677,8 +3677,9 @@ table.text-center th {
 }
 
 .widget-user-2 .widget-user-desc {
-    margin-top: 0;
     padding-left: 3px;
+    font-size: 12px;
+    margin-top: 10px;
 }
 
 .widget-user-2 .widget-user-username,

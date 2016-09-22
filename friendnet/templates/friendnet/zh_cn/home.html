@@ -326,7 +326,7 @@
                       <thead>
                       <tr>
                         <th>群</th>
-                        <th>创建时间</th>
+                        <th>创建者</th>
                         <th>类型</th>
                         <th>验证方式</th>
                         <th>成员</th>
@@ -336,7 +336,7 @@
                       {% for group, v in in_groups.items %}
                         <tr>
                           <td><a href="{% url 'group' group.id %}">{{ group.group_name }}</a></td>
-                          <td>{{ group.created_time|date:'M d, Y' }}</td>
+                          <td>{{ group.creator.username }}</td>
                           <td>
                             {% if group.type == 0 %}
                               公开
@@ -364,18 +364,17 @@
                       <thead>
                       <tr>
                         <th>群</th>
-                        <th>创建时间</th>
+                        <th>创建者</th>
                         <th>类型</th>
                         <th>验证方式</th>
                         <th>成员</th>
                       </tr>
                       </thead>
                       <tbody>
-                      {% for group in rcmd_groups %}
+                      {% for group, v in rcmd_groups.items %}
                         <tr>
                           <td><a href="{% url 'group' group.id %}">{{ group.group_name }}</a></td>
                           <td>{{ group.creator.username }}</td>
-                          <td>{{ group.created_time|date:'M d, Y' }}</td>
                           <td>
                             {% if group.type == 0 %}
                               公开

@@ -59,9 +59,9 @@ $(function() {
 
                     if (!nodeInGraph(newNode, nodes)) {
                         nodes.push(newNode);
-                        rcmdAddedNode[newNode.id] = true
+                        rcmdAddedNode[newNode.id] = true;
                         //links.push({"source" : self, "target": newNode, "value": 1, "status": 4});
-                        //linkedIndex[self.id + "," + node.id] = true;
+                        //linkedIndex[self.id + "," + newNode.id] = true;
                         $(this).removeClass("bg-gray-light")
                             .addClass("bg-gray")
                             .off('mouseout')

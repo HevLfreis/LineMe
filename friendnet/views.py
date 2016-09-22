@@ -167,7 +167,7 @@ def home(request):
             context["group_created_status"] = status
 
             if status == 0:
-                groupid = Group.objects.get(group_name=name).id
+                groupid = Group.objects.get(group_name=name.upper()).id
                 return redirect('group', groupid=groupid)
 
             else:

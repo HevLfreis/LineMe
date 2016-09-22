@@ -327,7 +327,7 @@
                       <thead>
                       <tr>
                         <th>Group Name</th>
-                        <th>Created Time</th>
+                        <th>Creator</th>
                         <th>Type</th>
                         <th>Identifier</th>
                         <th>Members</th>
@@ -337,7 +337,7 @@
                       {% for group, v in in_groups.items %}
                         <tr>
                           <td><a href="{% url 'group' group.id %}">{{ group.group_name }}</a></td>
-                          <td>{{ group.created_time|date:'M d, Y' }}</td>
+                          <td>{{ group.creator.username }}</td>
                           <td>
                             {% if group.type == 0 %}
                               Public
@@ -366,17 +366,16 @@
                       <tr>
                         <th>Group Name</th>
                         <th>Creator</th>
-                        <th>Created Time</th>
                         <th>Type</th>
                         <th>Identifier</th>
+                        <th>Members</th>
                       </tr>
                       </thead>
                       <tbody>
-                      {% for group in rcmd_groups %}
+                      {% for group, v in rcmd_groups %}
                         <tr>
                           <td><a href="{% url 'group' group.id %}">{{ group.group_name }}</a></td>
                           <td>{{ group.creator.username }}</td>
-                          <td>{{ group.created_time|date:'M d, Y' }}</td>
                           <td>
                             {% if group.type == 0 %}
                               Public

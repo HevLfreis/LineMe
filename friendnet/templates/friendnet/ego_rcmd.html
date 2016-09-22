@@ -17,7 +17,7 @@
           {% endif %}
           <h3 class="widget-user-username">{{ member.member_name }}</h3>
           {% if member.user != None %}
-            <h4 class="widget-user-desc">{{ member.user.email|slice:":25" }}&nbsp</h4>
+            <h4 class="widget-user-desc">{{ member.user.extra.institution|slice:":12" }}&nbsp</h4>
           {% else %}
             <h4 class="widget-user-desc">On The Way ... </h4>
           {% endif %}
