@@ -29,6 +29,9 @@ class GroupMember(models.Model):
     created_time = models.DateTimeField()
     joined_time = models.DateTimeField(null=True)
 
+    def __repr__(self):
+        return self.member_name
+
 
 class MemberRequest(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

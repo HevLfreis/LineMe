@@ -96,6 +96,8 @@ $(function() {
             msg.find('.box-body').remove();
             msg.find('.box-footer').remove();
             msg.append(data);
+            msg.find('.box-body').hide().fadeIn();
+            //msg.find('.box-body').hide().fadeIn();
             $('input[type="checkbox"]').iCheck({
                 checkboxClass: 'icheckbox_square-blue',
             });

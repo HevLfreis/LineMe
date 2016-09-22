@@ -6,7 +6,6 @@
 
 // Todo: check
 $(function() {
-    //setTimeout(function () {$('.panel-text-bottom').fadeOut(500);}, 2000);
 
     $('.modal').on('show.bs.modal', function(e) {
         var $dialog = $(this).find('.modal-dialog');
@@ -17,6 +16,11 @@ $(function() {
             }
         });
     });
+
+    var saved = false, firstStart = true;
+    window.onbeforeunload = function(event) {
+        if (!saved) return "您的网络尚未保存！";
+    };
 
     /**
         rcmd panel
@@ -55,7 +59,9 @@ $(function() {
 
                     if (!nodeInGraph(newNode, nodes)) {
                         nodes.push(newNode);
-                        rcmdAddedNode[newNode.id] = true;
+                        rcmdAddedNode[newNode.id] = true
+                        //links.push({"source" : self, "target": newNode, "value": 1, "status": 4});
+                        //linkedIndex[self.id + "," + node.id] = true;
                         $(this).removeClass("bg-gray-light")
                             .addClass("bg-gray")
                             .off('mouseout')
@@ -253,6 +259,9 @@ $(function() {
 
 
     function start(){
+
+        saved = !!firstStart;
+        firstStart = false;
 
         force.nodes(nodes)
             .links(links);

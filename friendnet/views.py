@@ -7,20 +7,21 @@ from django.core.paginator import Paginator, EmptyPage
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render, get_object_or_404
 
+from LineMe.constants import PROJECT_NAME, IDENTIFIER, CITIES_TABLE, GROUP_CREATED_CREDITS_COST, PRIVACIES
+from LineMe.settings import logger, DEPLOYED_LANGUAGE
 from friendnet.forms import LoginForm, RegisterForm, GroupCreateForm, GroupMemberCreateForm, JoinForm, \
     FileUploadForm
 from friendnet.methods.algorithm.recommender import Recommender
 from friendnet.methods.algorithm.search import SearchEngine
-
 from friendnet.methods.basic.avatar import create_avatar, handle_uploaded_avatar
+from friendnet.methods.basic.egonet import get_user_ego_graph
+from friendnet.methods.basic.globalnet import get_user_global_info, get_user_global_graph, get_user_global_map
 from friendnet.methods.basic.group import create_group, get_user_join_status, \
     get_member_in_group, group_privacy_check, get_user_groups_split, get_user_groups
 from friendnet.methods.basic.groupmember import create_group_member, create_group_member_from_file, follow, \
     create_request
 from friendnet.methods.basic.link import link_confirm, get_link, link_reject, link_confirm_aggregate, link_reject_aggregate, \
     update_links
-from friendnet.methods.basic.egonet import get_user_ego_graph
-from friendnet.methods.basic.globalnet import get_user_global_info, get_user_global_graph, get_user_global_map
 from friendnet.methods.basic.profile import Profile
 from friendnet.methods.basic.user import get_user_msgs, get_user_invs, get_user_name, create_user
 from friendnet.methods.basic.user import get_user_msgs_count
@@ -28,8 +29,6 @@ from friendnet.methods.session import get_session_id, get_session_consume
 from friendnet.methods.utils import login_user, logger_join, input_filter
 from friendnet.methods.validation import check_groupid, validate_passwd
 from friendnet.models import Group, GroupMember, MemberRequest, Privacy
-from LineMe.constants import PROJECT_NAME, IDENTIFIER, CITIES_TABLE, GROUP_CREATED_CREDITS_COST, PRIVACIES
-from LineMe.settings import logger, DEPLOYED_LANGUAGE
 
 # Todo: ///check all place with user input///, deal with utf-8 chinese, check all filter to get
 # Todo: member in group multiple?
@@ -139,7 +138,6 @@ def home(request):
     msgs_count = get_user_msgs_count(user)
     rcmd_groups = Recommender(user).group()
 
-    print request.session.get('new_login')
     first_login = get_session_consume(request, 'new_login')
 
     context = {"project_name": PROJECT_NAME,

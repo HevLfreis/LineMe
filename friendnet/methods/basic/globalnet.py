@@ -8,7 +8,7 @@ import random
 import networkx as nx
 from django.shortcuts import get_object_or_404
 
-from friendnet.methods.algorithm.graph import create_global_graph, graph_analyzer
+from friendnet.methods.algorithm.graph import create_global_graph, graph_analyzer, graph_communities
 from friendnet.methods.basic.groupmember import myself_member
 from friendnet.models import GroupMember
 from friendnet.models import Link
@@ -33,16 +33,23 @@ def get_user_global_graph(user, groupid):
 
     # Todo: implement group color
     gms = GroupMember.objects.filter(group__id=groupid).exclude(user=user)
+    G = create_global_graph(gms, ls, user)
+    group_color = graph_communities(G)
+
     for gm in gms:
+
+        if gm in group_color:
+            color = group_color[gm]
+        else:
+            color = 9
+
         nodes.append({'id': gm.id,
                       'userid': (-1 if gm.user is None else gm.user.id),
                       'name': gm.member_name,
                       'self': False,
-                      'group': random.randint(1, 4)})
+                      'group': color})
 
     if ls.count() != 0:
-        G = create_global_graph(gms, ls, user)
-
         for s, t, d in G.edges_iter(data='created'):
             links.append({'source': s.id,
                           'target': t.id,

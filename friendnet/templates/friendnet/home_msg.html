@@ -23,18 +23,18 @@
         {% with source_count=msg_index|get_value:msg.source_member target_count=msg_index|get_value:msg.target_member %}
           <div class="tools">
             <i class="fa fa-check-circle-o fa-lg" onclick=
-              {% if source_count != None and source_count > 3 %}
+              {% if source_count != None and source_count > 2 %}
                 "msgAggregateConfirmed('{% url 'msgHandle' 3 msg.id %}', 3, '{{ msg.source_member.member_name }} in {{ msg.group.group_name }}', {{ source_count }})">
-              {% elif target_count != None and target_count > 3 %}
+              {% elif target_count != None and target_count > 2 %}
                 "msgAggregateConfirmed('{% url 'msgHandle' 3 msg.id %}', 3, '{{ msg.target_member.member_name }} in {{ msg.group.group_name }}', {{ target_count }})">
               {% else %}
                 "msgConfirmed('{% url 'msgHandle' 1 msg.id %}', 1, {{ msg.id }}, false)">
               {% endif %}
             </i>
             <i class="fa fa-ban fa-lg" onclick=
-              {% if source_count != None and source_count > 3 %}
+              {% if source_count != None and source_count > 2 %}
                 "msgAggregateConfirmed('{% url 'msgHandle' 2 msg.id %}', 2, '{{ msg.source_member.member_name }} in {{ msg.group.group_name }}', {{ source_count }})">
-              {% elif target_count != None and target_count > 3 %}
+              {% elif target_count != None and target_count > 2 %}
                 "msgAggregateConfirmed('{% url 'msgHandle' 2 msg.id %}', 2, '{{ msg.target_member.member_name }} in {{ msg.group.group_name }}', {{ target_count }})">
               {% else %}
                 "msgConfirmed('{% url 'msgHandle' 0 msg.id %}', 0, {{ msg.id }}, false)">

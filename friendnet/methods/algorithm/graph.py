@@ -36,6 +36,16 @@ def create_global_graph(nodes, links, user):
     return G
 
 
+def graph_communities(G):
+    a = nx.k_clique_communities(G, 3)
+    group_index = {}
+    for i, g in enumerate(a):
+        for m in g:
+            group_index[m] = i + 1
+
+    return group_index
+
+
 # Todo: link status should be 3
 # Todo: most contributor ? get most credits
 def graph_analyzer(user, groupid):
