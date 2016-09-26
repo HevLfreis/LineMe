@@ -11,6 +11,7 @@ from LineMe.constants import PROJECT_NAME, IDENTIFIER, CITIES_TABLE, GROUP_CREAT
 from LineMe.settings import logger, DEPLOYED_LANGUAGE
 from friendnet.forms import LoginForm, RegisterForm, GroupCreateForm, GroupMemberCreateForm, JoinForm, \
     FileUploadForm
+from friendnet.methods.algorithm.graph import Graph
 from friendnet.methods.algorithm.recommender import Recommender
 from friendnet.methods.algorithm.search import SearchEngine
 from friendnet.methods.basic.avatar import create_avatar, handle_uploaded_avatar
@@ -43,6 +44,23 @@ else:
 
 def redirect2main(request):
     return redirect('home')
+
+
+def three(request):
+    threegraph(request, 10000)
+    return render(request, 'friendnet/three.html')
+
+
+def threegraph(request, groupid):
+    gms = GroupMember.objects.filter(group__id=groupid)
+    group = Group.objects.get(id=groupid)
+
+    users = [gm.user for gm in gms if gm.user is not None]
+
+    data = [{user: Graph(user, group).ego_builder().dictify()} for user in users]
+
+    print data
+    return
 
 
 def view_404(request):
@@ -324,7 +342,7 @@ def ego_graph(request, groupid=0):
 
     data = get_user_ego_graph(user, groupid)
 
-    return JsonResponse(data, safe=False)
+    return HttpResponse(data)
 
 
 @login_required
@@ -407,7 +425,7 @@ def global_graph(request, groupid=0):
 
     data = get_user_global_graph(user, groupid)
 
-    return JsonResponse(data, safe=False)
+    return HttpResponse(data)
 
 
 @login_required
@@ -628,7 +646,7 @@ def manage_group(request, groupid=0):
             # Todo: implement request paginator
             rpage = request.GET.get('rpage')
 
-            members = GroupMember.objects.filter(group=group).order_by('-created_time')
+            members = GroupMember.objects.filter(group=group).order_by('-is_joined', 'created_time')
             request_members = MemberRequest.objects.filter(group=group).exclude(is_valid=False)
             paginator = Paginator(members, 15)
 

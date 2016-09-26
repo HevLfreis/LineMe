@@ -19,7 +19,7 @@ $(function() {
 
     var saved = false, firstStart = true;
     window.onbeforeunload = function(event) {
-        if (!saved) return "您的网络尚未保存！";
+        if (!saved) return "Network Unsaved !";
     };
 
     /**
@@ -231,19 +231,16 @@ $(function() {
 
         linkedIndexCopy = $.extend({}, linkedIndex);
 
-
         //console.logs(graph.nodes);
         link = vis.selectAll(".link");
         node = vis.selectAll(".node");
         start();
-
 
         var clipPath = defs.append('clipPath').attr('id', 'clip-circle')
             .append("circle")
             .attr("r", 25)
             .attr("cy", 0)
             .attr("cx", 0);
-
 
         force.on("tick", function() {
             link.attr("x1", function(d) { return d.source.x; })
@@ -292,6 +289,7 @@ $(function() {
             .on("mouseover", nodeMouseover)
 
             .call(drag);
+
         node.exit().remove();
 
         var updateNodes = node.filter(function(d){

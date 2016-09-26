@@ -88,7 +88,7 @@ def get_user_msgs(user):
             (Q(source_member=mm) & (Q(status=0) | Q(status=2) | Q(status=-2))) |
             (Q(target_member=mm) & (Q(status=0) | Q(status=1) | Q(status=-1))),
             ~Q(creator=user)
-        ).order_by('source_member', 'target_member')
+        ).order_by('source_member', 'target_member', '-created_time')
 
     msg_index = {}
     for msg in msgs:

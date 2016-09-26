@@ -8,55 +8,57 @@ import random
 import networkx as nx
 from django.shortcuts import get_object_or_404
 
-from friendnet.methods.algorithm.graph import create_global_graph, graph_analyzer, graph_communities
+from friendnet.methods.algorithm.graph import create_global_graph, graph_analyzer, Graph
 from friendnet.methods.basic.groupmember import myself_member
-from friendnet.models import GroupMember
+from friendnet.models import GroupMember, Group
 from friendnet.models import Link
 from LineMe.constants import CITIES_TABLE
 
 
 def get_user_global_graph(user, groupid):
     # Todo: status should = 3
-    ls = Link.objects.filter(
-        group__id=groupid,
-        status=3
-    )
+    # ls = Link.objects.filter(
+    #     group__id=groupid,
+    #     status=3
+    # )
+    #
+    # nodes, links = [], []
+    #
+    # my_member = myself_member(user, groupid)
+    # nodes.append({'id': my_member.id,
+    #               'userid': my_member.user.id,
+    #               'name': my_member.member_name,
+    #               'self': True,
+    #               'group': 0})
+    #
+    # # Todo: implement group color
+    # gms = GroupMember.objects.filter(group__id=groupid).exclude(user=user)
+    # G = create_global_graph(gms, ls, user)
+    # group_color = graph_communities(G)
+    #
+    # for gm in gms:
+    #
+    #     if gm in group_color:
+    #         color = group_color[gm]
+    #     else:
+    #         color = 9
+    #
+    #     nodes.append({'id': gm.id,
+    #                   'userid': (-1 if gm.user is None else gm.user.id),
+    #                   'name': gm.member_name,
+    #                   'self': False,
+    #                   'group': color})
+    #
+    # if ls.count() != 0:
+    #     for s, t, d in G.edges_iter(data='created'):
+    #         links.append({'source': s.id,
+    #                       'target': t.id,
+    #                       'status': d,
+    #                       'value': 1})
 
-    nodes, links = [], []
+    G = Graph(user, Group.objects.get(id=groupid)).global_builder(color=True).jsonify()
 
-    my_member = myself_member(user, groupid)
-    nodes.append({'id': my_member.id,
-                  'userid': my_member.user.id,
-                  'name': my_member.member_name,
-                  'self': True,
-                  'group': 0})
-
-    # Todo: implement group color
-    gms = GroupMember.objects.filter(group__id=groupid).exclude(user=user)
-    G = create_global_graph(gms, ls, user)
-    group_color = graph_communities(G)
-
-    for gm in gms:
-
-        if gm in group_color:
-            color = group_color[gm]
-        else:
-            color = 9
-
-        nodes.append({'id': gm.id,
-                      'userid': (-1 if gm.user is None else gm.user.id),
-                      'name': gm.member_name,
-                      'self': False,
-                      'group': color})
-
-    if ls.count() != 0:
-        for s, t, d in G.edges_iter(data='created'):
-            links.append({'source': s.id,
-                          'target': t.id,
-                          'status': d,
-                          'value': 1})
-
-    return {"nodes": nodes, "links": links}
+    return G
 
 
 def get_user_global_map(user, groupid):
@@ -68,8 +70,8 @@ def get_user_global_map(user, groupid):
     gms = GroupMember.objects.filter(group__id=groupid)
     my_member = gms.get(user=user)
 
-    G = create_global_graph(gms, ls, user)
-
+    # G = create_global_graph(gms, ls, user)
+    G = Graph(user, Group.objects.get(id=groupid)).global_builder().bingo()
     GMap = nx.Graph()
 
     for gm in gms:
