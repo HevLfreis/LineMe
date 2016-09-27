@@ -47,20 +47,20 @@ def redirect2main(request):
 
 
 def three(request):
-    threegraph(request, 10000)
+    # threegraph(request, 10000)
     return render(request, 'friendnet/three.html')
 
 
-def threegraph(request, groupid):
+def threegraph(request, groupid=10000):
     gms = GroupMember.objects.filter(group__id=groupid)
     group = Group.objects.get(id=groupid)
 
     users = [gm.user for gm in gms if gm.user is not None]
 
-    data = [{user: Graph(user, group).ego_builder().dictify()} for user in users]
+    data = [Graph(user, group).ego_builder().dictify() for user in users]
 
-    print data
-    return
+    # print data
+    return JsonResponse(data, safe=False)
 
 
 def view_404(request):

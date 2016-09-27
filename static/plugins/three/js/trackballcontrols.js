@@ -85,9 +85,9 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 			this.screen = this.domElement.getBoundingClientRect();
 			// adjustments come from similar code in the jquery offset() function
-			var d = this.domElement.ownerDocument.documentElement
-			this.screen.left += window.pageXOffset - d.clientLeft
-			this.screen.top += window.pageYOffset - d.clientTop
+			var d = this.domElement.ownerDocument.documentElement;
+			this.screen.left += window.pageXOffset - d.clientLeft;
+			this.screen.top += window.pageYOffset - d.clientTop;
 
 		}
 
@@ -152,7 +152,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 			_eye.copy( _this.object.position ).sub( _this.target );
 
-			projection.copy( _this.object.up ).setLength( mouseOnBall.y )
+			projection.copy( _this.object.up ).setLength( mouseOnBall.y );
 			projection.add( objectUp.copy( _this.object.up ).cross( _eye ).setLength( mouseOnBall.x ) );
 			projection.add( _eye.setLength( mouseOnBall.z ) );
 

@@ -164,6 +164,8 @@ $(function() {
         node = vis.selectAll(".node");
         start();
 
+        $('#loader').remove();
+        $('#normal-mode').show();
 
         var clipPath = defs.append('clipPath').attr('id', 'clip-circle')
             .append("circle")
@@ -222,7 +224,6 @@ $(function() {
                     return "/media/images/avatars/"+ d.userid+".png"
             })
             .attr("clip-path", "url(#clip-circle)");
-
 
         force.start();
 

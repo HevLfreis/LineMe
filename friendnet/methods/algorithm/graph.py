@@ -245,8 +245,8 @@ def graph_analyzer(user, groupid):
             'my_rank': myRank,
             'average_degree': average_degree,
             'average_distance': average_distance,
-            'cover': int(cover*100),
+            'cover': round(cover*100, 2),
             'bestfriend': bestfriend,
-            'bf_ratio': int(bf_ratio*100),
+            'bf_ratio': round(bf_ratio*100, 2),
             'heart': heart,
             'heart_count': heart_count}

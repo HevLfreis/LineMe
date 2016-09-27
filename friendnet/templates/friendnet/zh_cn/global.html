@@ -137,7 +137,14 @@
                   {% endif %}
                   {% if group %}
                     <a id="map-mode" class="map text-center" hidden>地图模式</a>
-                    <a id="normal-mode" class="normal text-center">普通模式</a>
+                    <a id="normal-mode" class="normal text-center" hidden>普通模式</a>
+                    <div id="loader" class="loader-inner line-scale panel-text-center text-center">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
                     <div id="network"></div>
                     <div id="map"></div>
                   {% endif %}
