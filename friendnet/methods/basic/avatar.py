@@ -27,7 +27,7 @@ def create_avatar(request, userid, username='Unknown'):
     if re.match(u"[\u4e00-\u9fa5\s]+", username):
         word = username[-1]
         cn = True
-        xy = (38, 38)
+        xy = (39, 38)
     else:
         word = ''.join(map(lambda x: x[0].upper(), username.split(' ')))
         xy = (40, 38)

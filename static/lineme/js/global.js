@@ -52,7 +52,7 @@ $(function() {
     var yScale = d3.scale.linear()
         .domain([0,height]).range([0, height]);
 
-    var charge = -800;
+    var charge = -1200;
 
     var color = d3.scale.category10();
     //var color = function(i){
@@ -70,7 +70,7 @@ $(function() {
 
     var force = d3.layout.force()
         .charge(charge)
-        .linkDistance(200)
+        .linkDistance(400)
         .size([width, height]);
 
 
@@ -184,7 +184,6 @@ $(function() {
                 return "translate(" + d.x + "," + d.y + ")";
             });
 
-
         });
 
     });
@@ -291,7 +290,7 @@ $(function() {
             borderWidth: 1,
 
             formatter: function(obj) {
-                return 'k : '+obj.value[0]+'</br>P(k) : '+obj.value[1].toFixed(2);
+                return 'k : '+obj.value[0]+'</br>P(k) : '+obj.value[1].toFixed(3);
             }
         },
 

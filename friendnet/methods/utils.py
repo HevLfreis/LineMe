@@ -20,6 +20,8 @@ from LineMe.settings import logger
 
 def login_user(request, username, password):
 
+    username = username.lower()
+
     if validate_username(username) and validate_passwd(password, password):
         user = authenticate(username=username, password=password)
         if user is not None:

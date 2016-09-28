@@ -53,7 +53,7 @@ $(function() {
         });
     });
 
-    var width = $('.col-md-7').width();
+    var width = $('.col-md-7').width() - 8;
     $('.cropit-preview').height(width);
     $('.cropit-preview').width(width);
     $('#image-cropper').cropit({

@@ -17,7 +17,9 @@ Location: http://lime.seeleit.com/
 * Trip.js
 * select2
 * cropit
-* django+postgresql
+* django
+* networkx
+* postgresql
 
 ## License
 MIT

@@ -85,6 +85,7 @@
 
                 $ac.find('a').click(function(){
                     settings.onclick(this);
+                    $input.val('');
                     hideField();
                 });
             }

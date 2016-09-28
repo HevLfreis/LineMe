@@ -100,7 +100,7 @@ h5 {
   font-weight: bold;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: rgba(249, 249, 249, 0.75);
+  background-color: rgba(255, 255, 255, 0.75);
   border: 5px solid rgba(61, 61, 61, 0.25);
   border-radius: 8px;
   text-align: center;

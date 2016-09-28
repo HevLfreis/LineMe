@@ -3,6 +3,7 @@
 # created by hevlhayt@foxmail.com 
 # Date: 2016/7/9
 # Time: 13:52
+import json
 import random
 
 import networkx as nx
@@ -58,6 +59,7 @@ def get_user_global_graph(user, groupid):
 
     G = Graph(user, Group.objects.get(id=groupid)).global_builder(color=True).jsonify()
 
+    # return json.dumps({"nodes": nodes, "links": links})
     return G
 
 

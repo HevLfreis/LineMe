@@ -10,7 +10,7 @@ from collections import Counter
 import networkx as nx
 from django.db.models import Count, Q
 
-from friendnet.models import GroupMember
+from friendnet.models import GroupMember, Group
 from friendnet.models import Link
 
 
@@ -19,9 +19,13 @@ class Graph:
         self.G = nx.Graph()
         self.user = user
         self.group = group
-        self.me = self.myself()
+        self.me = self.__myself()
+        self.raw_links = None
 
     def myself(self):
+        return self.me
+
+    def __myself(self):
         return GroupMember.objects.get(
             group=self.group,
             user=self.user,
@@ -30,14 +34,14 @@ class Graph:
 
     def ego_builder(self):
 
-        links = Link.objects.filter(
+        self.raw_links = Link.objects.filter(
             group=self.group,
             creator=self.user
         )
 
         self.G.add_node(self.me, creator=True, group=0)
 
-        for link in links:
+        for link in self.raw_links:
             self.G.add_edge(link.source_member,
                             link.target_member,
                             id=link.id,
@@ -52,7 +56,7 @@ class Graph:
 
     def global_builder(self, color=False):
 
-        links = Link.objects.filter(
+        self.raw_links = Link.objects.filter(
             group=self.group,
             status=3
         )
@@ -63,7 +67,7 @@ class Graph:
         for member in members:
             self.G.add_node(member, creator=False, group=random.randint(1, 4))
 
-        for link in links:
+        for link in self.raw_links:
             if not self.G.has_edge(link.source_member, link.target_member):
                 if link.creator == self.user:
                     self.G.add_edge(link.source_member, link.target_member, id=link.id, weight=1, status=True)
@@ -77,7 +81,7 @@ class Graph:
                     self.G[link.source_member][link.target_member]['weight'] += 1
 
         if color:
-            group_color = GraphAnalyzer(self.G).graph_communities()
+            group_color = GraphAnalyzer(self.G, self.me).graph_communities()
             for node in self.G.nodes():
                 if node in group_color:
                     self.G.node[node]['group'] = group_color[node]
@@ -88,6 +92,23 @@ class Graph:
 
     def bingo(self):
         return self.G
+
+    def cover(self):
+        if self.raw_links and self.G.number_of_edges() != 0:
+            return self.raw_links.filter(creator=self.user).count() / float(self.G.number_of_edges())
+        else:
+            return 0
+
+    def heart(self):
+        links_of_me = self.raw_links \
+            .filter(Q(source_member=self.me) | Q(target_member=self.me))\
+            .exclude(creator=self.user) \
+            .values('creator').annotate(count=Count('pk')).order_by('-count')
+
+        if len(links_of_me) != 0:
+            return GroupMember.objects.get(user__id=links_of_me[0]['creator'], group=self.group)
+        else:
+            return None
 
     def dictify(self):
 
@@ -121,8 +142,36 @@ class Graph:
 
 
 class GraphAnalyzer:
-    def __init__(self, G):
+    def __init__(self, G, me):
         self.G = G
+        self.me = me
+        self.number_of_nodes = self.G.number_of_nodes()
+        self.number_of_edges = self.G.number_of_edges()
+
+    def average_degree(self):
+        return 2.0 * self.number_of_edges / self.number_of_nodes
+
+    def sorted_degree(self):
+        return sorted(self.G.degree().items(), key=lambda x: x[1], reverse=True)
+
+    def degree_distribution(self):
+        return {k: v / float(self.number_of_nodes) for k, v in dict(Counter(self.G.degree().values())).items() if k != 0}
+
+    def average_distance(self):
+        if nx.is_connected(self.G) and self.number_of_nodes > 1:
+            return nx.average_shortest_path_length(self.G)
+        else:
+            return -1
+
+    def best_friend(self):
+        friends = self.G.neighbors(self.me)
+        friends = [(friend, self.G[friend][self.me]['weight']) for friend in friends]
+        sorted_friends = sorted(friends, key=lambda x: x[1], reverse=True)
+
+        if len(sorted_friends) > 0:
+            return sorted_friends[0][0], sorted_friends[0][1] / float(self.number_of_nodes)
+        else:
+            return None, 0
 
     def graph_communities(self):
         communities = nx.k_clique_communities(self.G, 3)
@@ -156,7 +205,6 @@ def create_global_graph(nodes, links, user):
 
     return G
 
-
 # def graph_communities(G):
 #     a = nx.k_clique_communities(G, 3)
 #     group_index = {}
@@ -170,83 +218,40 @@ def create_global_graph(nodes, links, user):
 # Todo: link status should be 3
 # Todo: most contributor ? get most credits
 def graph_analyzer(user, groupid):
-    nodes = GroupMember.objects.filter(group__id=groupid)
-    links = Link.objects.filter(group__id=groupid, status=3)
-    my_member = nodes.get(user=user)
 
-    G = create_global_graph(nodes, links, user)
+    Global = Graph(user, Group.objects.get(id=groupid)).global_builder()
+    G = Global.bingo()
+    my_member = Global.myself()
+    analyzer = GraphAnalyzer(G, my_member)
 
-    # print my_member
+    distribution = analyzer.degree_distribution()
 
-    # print G.edges(data=True)
-
-    distribution = {k: v / float(G.number_of_nodes()) for k, v in dict(Counter(G.degree().values())).items()}
-
-    # print distribution, dict(Counter(G.degree().values()))
-
-    # distribution = {str(k): v for k, v in nx.degree_centrality(G)}
-
-    top = sorted(G.degree().items(), key=lambda x: x[1], reverse=True)
+    top = analyzer.sorted_degree()
     top3 = top[0:3]
 
-    myRank = top.index((my_member, G.degree(my_member))) + 1
+    rank = top.index((my_member, G.degree(my_member))) + 1
 
-    # print top3, myRank
-
-    myGraph = links.filter(creator=user).count()
-
-    cover = myGraph / float(G.number_of_edges()) if not G.number_of_edges() == 0 else 0
-
-    # print cover
+    cover = Global.cover()
 
     # Todo: fix 0.00 ??
-    average_degree = 2.0 * G.number_of_edges() / G.number_of_nodes()
+    average_degree = analyzer.average_degree()
 
     # If the network is not connected,
     # return -1
+    # Todo: warning, when the net is big, very slow !!!!
+    average_distance = analyzer.average_distance()
 
-    # Todo: warning, when the net is big, maybe slow
-    if nx.is_connected(G) and G.number_of_nodes() > 1:
-        average_distance = nx.average_shortest_path_length(G)
-    else:
-        average_distance = -1
-
-    # print average_degree, average_distance
-
-    friends = G.neighbors(my_member)
-    friends = [(friend, G[friend][my_member]['weight']) for friend in friends]
-    friends = sorted(friends, key=lambda x: x[1], reverse=True)
-
-    # print friends
-    # print friends[0][0].id
-    if len(friends) > 0:
-        bestfriend = friends[0][0]
-        bf_ratio = friends[0][1] / float(G.number_of_nodes())
-    else:
-        bestfriend = None
-        bf_ratio = 0
+    best_friend, bf_ratio = analyzer.best_friend()
 
     # Todo: ratio not correct fixed...
-    links_of_me = links\
-        .filter(Q(source_member=my_member) | Q(target_member=my_member), group__id=groupid)\
-        .exclude(creator=user) \
-        .values('creator').annotate(count=Count('pk')).order_by('-count')
-
-    # print links_of_me
-    if len(links_of_me) != 0:
-        heart = GroupMember.objects.get(user__id=links_of_me[0]['creator'], group__id=groupid)
-        heart_count = links_of_me[0]['count']
-    else:
-        heart = None
-        heart_count = None
+    heart = Global.heart()
 
     return {'distribution': json.dumps(distribution),
             'top3': top3,
-            'my_rank': myRank,
+            'my_rank': rank,
             'average_degree': average_degree,
             'average_distance': average_distance,
             'cover': round(cover*100, 2),
-            'bestfriend': bestfriend,
+            'bestfriend': best_friend,
             'bf_ratio': round(bf_ratio*100, 2),
-            'heart': heart,
-            'heart_count': heart_count}
+            'heart': heart}
