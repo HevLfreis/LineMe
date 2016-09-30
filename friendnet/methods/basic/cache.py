@@ -7,6 +7,7 @@ from django.core.cache import cache
 
 
 def get_or_set(kw, func, user, groupid):
+    kw = kw + str(user.id) + str(groupid)
     data = cache.get(kw)
     if not data:
         data = func(user, groupid)

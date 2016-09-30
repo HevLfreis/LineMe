@@ -478,15 +478,13 @@ def profile(request):
         # first_login = get_session_consume(request, 'new_login')
 
         pf = Profile(request)
-
         if pf.is_valid():
             if pf.update() == 0:
                 if first_login:
                     create_avatar(request, user.id, username=get_user_name(user))
                 return HttpResponse(0)
 
-        else:
-            return HttpResponse(-1)
+        return HttpResponse(-1)
 
     else:
         return HttpResponse(status=403)

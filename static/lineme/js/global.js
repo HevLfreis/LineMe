@@ -164,7 +164,7 @@ $(function() {
         node = vis.selectAll(".node");
         start();
 
-        $('#loader').remove();
+        $('#network').find('.loader-inner').remove();
         $('#normal-mode').show();
 
         var clipPath = defs.append('clipPath').attr('id', 'clip-circle')
@@ -311,8 +311,6 @@ $(function() {
 
     $('#map').width(width).height(height);
 
-    var myMap = echarts.init(document.getElementById('map'), 'roma');
-
     $.get(gMapUrl, function(result){
 
         //console.logs(result.nodes);
@@ -429,8 +427,9 @@ $(function() {
                 }
             ]
         };
-
+        var myMap = echarts.init(document.getElementById('map'), 'roma');
         myMap.setOption(option2);
+        $('#map').find('.loader-inner').remove();
     });
 
 });

@@ -95,10 +95,12 @@ class Graph:
         gms = GroupMember.objects.filter(group=self.group)
 
         GMap = nx.Graph()
+        location_index = {}
 
         for gm in gms:
             if gm.user is not None:
                 g_l = gm.user.extra.location
+                location_index[gm] = g_l
                 if g_l is not None:
                     if not GMap.has_node(g_l):
                         GMap.add_node(g_l, weight=1, friends=0)
@@ -107,7 +109,8 @@ class Graph:
 
         for friend in self.G.neighbors(self.me):
             if friend.user is not None:
-                f_l = friend.user.extra.location
+                # f_l = friend.user.extra.location
+                f_l = location_index[friend]
                 if f_l is not None:
                     GMap.node[f_l]['friends'] += 1
 
@@ -118,8 +121,10 @@ class Graph:
 
         for link in self.raw_links:
             if link.source_member.user is not None and link.target_member.user is not None:
-                s_l = link.source_member.user.extra.location
-                t_l = link.target_member.user.extra.location
+                # s_l = link.source_member.user.extra.location
+                # t_l = link.target_member.user.extra.location
+                s_l = location_index[link.source_member]
+                t_l = location_index[link.target_member]
                 if s_l is not None and t_l is not None and s_l != t_l:
                     if not GMap.has_edge(s_l, t_l):
                         GMap.add_edge(s_l, t_l)
@@ -138,9 +143,10 @@ class Graph:
         # print nodes
 
         for (s, t) in GMap.edges():
-            s_country, s_city = s.split('-')
-            t_country, t_city = t.split('-')
-            links.append({"source": s_city, "target": t_city})
+            if GMap.node[s]['friends'] != 0 and GMap.node[t]['friends'] != 0:
+                s_country, s_city = s.split('-')
+                t_country, t_city = t.split('-')
+                links.append({"source": s_city, "target": t_city})
 
         # print links
 
@@ -176,7 +182,7 @@ class Graph:
                       'self': True,
                       'group': 0})
 
-        for node, d in self.G.nodes(data='group'):
+        for (node, d) in self.G.nodes(data='group'):
             if node != self.me:
                 nodes.append({'id': node.id,
                               'userid': (-1 if node.user is None else node.user.id),
@@ -218,6 +224,12 @@ class GraphAnalyzer:
             return nx.average_shortest_path_length(self.G)
         else:
             return -1
+
+    def average_shortest_path_length(self):
+        d = [nx.average_shortest_path_length(g)
+             for g in nx.connected_component_subgraphs(self.G)
+             if g.number_of_nodes() > 1]
+        return sum(d) / len(d)
 
     def best_friend(self):
         friends = self.G.neighbors(self.me)
@@ -263,7 +275,7 @@ def graph_analyzer(user, groupid):
     # If the network is not connected,
     # return -1
     # Todo: warning, when the net is big, very slow !!!!
-    average_distance = analyzer.average_distance()
+    average_distance = analyzer.average_shortest_path_length()
 
     best_friend, bf_ratio = analyzer.best_friend()
 

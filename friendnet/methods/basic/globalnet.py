@@ -9,7 +9,6 @@ from friendnet.models import Group
 
 
 def get_user_global_graph(user, groupid):
-    print 'global'
     return Graph(user, Group.objects.get(id=groupid)).global_builder(color=True).dictify()
 
 
