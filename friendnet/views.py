@@ -14,6 +14,7 @@ from friendnet.forms import LoginForm, RegisterForm, GroupCreateForm, GroupMembe
 from friendnet.methods.algorithm.graph import Graph
 from friendnet.methods.algorithm.recommender import Recommender
 from friendnet.methods.algorithm.search import SearchEngine
+from friendnet.methods.basic import cache
 from friendnet.methods.basic.avatar import create_avatar, handle_uploaded_avatar
 from friendnet.methods.basic.egonet import get_user_ego_graph
 from friendnet.methods.basic.globalnet import get_user_global_info, get_user_global_graph, get_user_global_map
@@ -403,7 +404,8 @@ def global_network(request, groupid=0):
         group = None
     else:
         group = get_object_or_404(Group, id=groupid)
-        context.update(get_user_global_info(user, groupid))
+        info = cache.get_or_set('globalinfo', get_user_global_info, user, groupid)
+        context.update(info)
 
     context.update({"project_name": PROJECT_NAME,
                     "lang": lang,
@@ -423,9 +425,10 @@ def global_graph(request, groupid=0):
     if groupid == 0:
         return JsonResponse({"nodes": None, "links": None}, safe=False)
 
-    data = get_user_global_graph(user, groupid)
+    # data = get_user_global_graph(user, groupid)
+    data = cache.get_or_set('globalnet', get_user_global_graph, user, groupid)
 
-    return HttpResponse(data)
+    return JsonResponse(data, safe=False)
 
 
 @login_required
@@ -436,8 +439,8 @@ def global_map(request, groupid=0):
     if groupid == 0:
         return JsonResponse({"nodes": None, "links": None}, safe=False)
 
-    data = get_user_global_map(user, groupid)
-
+    # data = get_user_global_map(user, groupid)
+    data = cache.get_or_set('globalmap', get_user_global_map, user, groupid)
     return JsonResponse(data, safe=False)
 
 

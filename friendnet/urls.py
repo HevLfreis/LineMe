@@ -9,5 +9,4 @@ from django.conf.urls import url
 from friendnet import views
 
 urlpatterns = [
-
 ]

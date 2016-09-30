@@ -10,6 +10,7 @@ from collections import Counter
 import networkx as nx
 from django.db.models import Count, Q
 
+from LineMe.constants import CITIES_TABLE
 from friendnet.models import GroupMember, Group
 from friendnet.models import Link
 
@@ -89,6 +90,61 @@ class Graph:
                     self.G.node[node]['group'] = 9
 
         return self
+
+    def map_dictify(self):
+        gms = GroupMember.objects.filter(group=self.group)
+
+        GMap = nx.Graph()
+
+        for gm in gms:
+            if gm.user is not None:
+                g_l = gm.user.extra.location
+                if g_l is not None:
+                    if not GMap.has_node(g_l):
+                        GMap.add_node(g_l, weight=1, friends=0)
+                    else:
+                        GMap.node[g_l]['weight'] += 1
+
+        for friend in self.G.neighbors(self.me):
+            if friend.user is not None:
+                f_l = friend.user.extra.location
+                if f_l is not None:
+                    GMap.node[f_l]['friends'] += 1
+
+        if self.user.extra.location is not None:
+            GMap.node[self.user.extra.location]['self'] = True
+
+        # print GMap.nodes(data=True)
+
+        for link in self.raw_links:
+            if link.source_member.user is not None and link.target_member.user is not None:
+                s_l = link.source_member.user.extra.location
+                t_l = link.target_member.user.extra.location
+                if s_l is not None and t_l is not None and s_l != t_l:
+                    if not GMap.has_edge(s_l, t_l):
+                        GMap.add_edge(s_l, t_l)
+
+        # print GMap.edges(data=True)
+
+        nodes, links = [], []
+
+        for (node, d) in GMap.nodes(data=True):
+            # print d
+            country, city = node.split('-')
+            nodes.append({"name": city,
+                          "value": CITIES_TABLE[country][city][-1::-1] + [d['weight'], d['friends']],
+                          "self": True if 'self' in d else False})
+
+        # print nodes
+
+        for (s, t) in GMap.edges():
+            s_country, s_city = s.split('-')
+            t_country, t_city = t.split('-')
+            links.append({"source": s_city, "target": t_city})
+
+        # print links
+
+        return {"nodes": nodes, "links": links}
 
     def bingo(self):
         return self.G
@@ -181,38 +237,6 @@ class GraphAnalyzer:
                 communities_index[member] = i + 1
 
         return communities_index
-
-
-def create_global_graph(nodes, links, user):
-    G = nx.Graph()
-
-    # Todo: all members are calculated as nodes or only linked member are nodes
-    for node in nodes:
-        G.add_node(node)
-
-    for link in links:
-        if not G.has_edge(link.source_member, link.target_member):
-            if link.creator == user:
-                G.add_edge(link.source_member, link.target_member, weight=1, created=True)
-            else:
-                G.add_edge(link.source_member, link.target_member, weight=1)
-        else:
-            if link.creator == user:
-                G[link.source_member][link.target_member]['weight'] += 1
-                G[link.source_member][link.target_member]['created'] = True
-            else:
-                G[link.source_member][link.target_member]['weight'] += 1
-
-    return G
-
-# def graph_communities(G):
-#     a = nx.k_clique_communities(G, 3)
-#     group_index = {}
-#     for i, g in enumerate(a):
-#         for m in g:
-#             group_index[m] = i + 1
-#
-#     return group_index
 
 
 # Todo: link status should be 3

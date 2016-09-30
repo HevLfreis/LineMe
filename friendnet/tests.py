@@ -20,3 +20,8 @@ from django.test import TestCase
 # a = 'm'
 # b(a)
 # print a
+
+# ls = Link.objects.filter(
+#     group__id=groupid,
+#     status=3
+# ).filter(Q(source_member__user=F('creator')) | Q(target_member__user=F('creator')))
