@@ -109,9 +109,9 @@ $(function() {
         })
         .direction('e').offset([0, -20]);
 
-    var mp = $("#main-panel");
-    var width = mp.width(),
-        height = mp.height();
+    var $mp = $("#main-panel");
+    var width = $mp.width(),
+        height = $mp.height();
 
     var xScale = d3.scale.linear()
         .domain([0,width]).range([0,width]);
@@ -438,9 +438,12 @@ $(function() {
     //    classie.add( menu, 'bt-menu-close' );
     //}
 
+    var submiting = false;
     $('#submit').click(function() {
 
+        if (submiting) return;
         saved = true;
+        submiting = true;
 
         var data = JSON.stringify(links.map(function(a){
             return {"source":a.source.id.toString(), "target":a.target.id.toString()};
@@ -456,12 +459,14 @@ $(function() {
                 linkedIndexCopy = $.extend({}, linkedIndex);
 
                 if (msg == 0) $('#modal-success').modal('show');
-                else alert("Update Failed");
+                else alert("更新失败");
                 updateRcmdPanel(1);
                 resetMenu();
+
+                submiting = false;
             },
             error: function() {
-                alert("Update Failed");
+                alert("更新失败");
             }
         });
     });

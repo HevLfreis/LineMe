@@ -5,6 +5,7 @@
 # Time: 13:52
 import json
 
+from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -112,6 +113,7 @@ def link_reject_aggregate(request, user, link):
     return 0
 
 
+@transaction.atomic
 def update_links(request, new_links, creator, groupid):
     if not GroupMember.objects.filter(
             user=creator,
@@ -121,13 +123,20 @@ def update_links(request, new_links, creator, groupid):
 
         return -1
 
+    def group_member_existed(*ids):
+        for i in ids:
+            if not GroupMember.objects.filter(
+                            id=i,
+                            group__id=groupid
+                    ).exists():
+                return False
+        return True
+
     now = timezone.now()
 
-    old_links = Link.objects.filter(
-        creator=creator,
-        group__id=groupid
-    )
-    links_index = {}
+    old_links = Link.check_redundancy(creator, groupid)
+
+    links_index, save_list = {}, []
 
     for link in old_links:
         links_index[str(link.source_member.id) + ',' + str(link.target_member.id)] = link
@@ -142,45 +151,31 @@ def update_links(request, new_links, creator, groupid):
 
     my_member = myself_member(creator, groupid)
 
+    print links_index
+
     for k, v in links_index.items():
-        if v is 0:
-            continue
-        elif v is 1:
-            try:
+        try:
+            if v == 0:
+                continue
+            elif v == 1:
+
                 source = int(k.split(',')[0])
                 target = int(k.split(',')[1])
 
                 if source == my_member.id:
-                    if not GroupMember.objects.filter(
-                            id=target,
-                            group__id=groupid
-                    ).exists():
-
+                    if not group_member_existed(target):
                         continue
                     else:
                         status = 1
                 elif target == my_member.id:
-                    if not GroupMember.objects.filter(
-                            id=source,
-                            group__id=groupid
-                    ).exists():
-
+                    if not group_member_existed(source):
                         continue
                     else:
                         status = 2
                 else:
 
                     # Todo: maybe wrong ?
-                    if not (
-                                GroupMember.objects.filter(
-                                    id=source,
-                                    group__id=groupid
-                                ).exists() or
-                                GroupMember.objects.filter(
-                                    id=target,
-                                    group__id=groupid
-                                ).exists()):
-
+                    if not group_member_existed(source, target):
                         continue
                     else:
                         status = 0
@@ -193,11 +188,13 @@ def update_links(request, new_links, creator, groupid):
                          created_time=now)
                 l.save()
 
-            except Exception, e:
-                logger.error(logger_join('Update', get_session_id(request), 'failed', e=e))
-                return -1
-        else:
-            v.delete()
+            else:
+                v.delete()
+
+        except Exception, e:
+            logger.error(logger_join('Update', get_session_id(request), 'failed', e=e))
+            return -1
 
     logger.info(logger_join('Update', get_session_id(request), gid=groupid))
     return 0
+

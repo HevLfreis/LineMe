@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# coding: utf-8
 import json
 
 from django.contrib.auth import logout
@@ -647,7 +649,7 @@ def manage_group(request, groupid=0):
             # Todo: implement request paginator
             rpage = request.GET.get('rpage')
 
-            members = GroupMember.objects.filter(group=group).order_by('-is_joined', 'created_time')
+            members = GroupMember.objects.filter(group=group).order_by('-created_time')
             request_members = MemberRequest.objects.filter(group=group).exclude(is_valid=False)
             paginator = Paginator(members, 15)
 

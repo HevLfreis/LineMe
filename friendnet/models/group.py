@@ -30,7 +30,7 @@ class GroupMember(models.Model):
     joined_time = models.DateTimeField(null=True)
 
     def __repr__(self):
-        return self.member_name
+        return str(self.id)
 
 
 class MemberRequest(models.Model):

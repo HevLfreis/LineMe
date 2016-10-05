@@ -92,14 +92,24 @@ WSGI_APPLICATION = 'LineMe.wsgi.application'
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
 if not DEPLOYMENT:
+    # DATABASES = {
+    #     'default': {
+    #         'ENGINE': 'django.db.backends.mysql',
+    #         'NAME': 'lineme',
+    #         'USER': 'root',
+    #         'PASSWORD': '12345678',
+    #         'HOST': '127.0.0.1',
+    #         'PORT': '3306',
+    #     }
+    # }
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.mysql',
+            'ENGINE': 'django.db.backends.postgresql',
             'NAME': 'lineme',
-            'USER': 'root',
+            'USER': 'postgres',
             'PASSWORD': '12345678',
             'HOST': '127.0.0.1',
-            'PORT': '3306',
+            'PORT': '5432',
         }
     }
     CACHES = {
@@ -125,6 +135,7 @@ else:
         'default': {
             'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
             'LOCATION': '127.0.0.1:11211',
+            'TIMEOUT': 60 * 15,
         }
     }
 
@@ -140,7 +151,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/

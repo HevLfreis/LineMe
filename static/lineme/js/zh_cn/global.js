@@ -43,9 +43,9 @@ $(function() {
         })
         .direction('e').offset([0, -20]);
 
-    var mp = $("#main-panel");
-    var width = mp.width(),
-        height = mp.height();
+    var $mp = $("#main-panel");
+    var width = $mp.width(),
+        height = $mp.height();
 
     var xScale = d3.scale.linear()
         .domain([0,width]).range([0,width]);
@@ -164,7 +164,7 @@ $(function() {
         node = vis.selectAll(".node");
         start();
 
-        $('#network').find('.loader-inner').remove();
+        $mp.find('.loader-inner:first').remove();
         $('#normal-mode').show();
 
         var clipPath = defs.append('clipPath').attr('id', 'clip-circle')
