@@ -19,7 +19,8 @@ from friendnet.methods.algorithm.search import SearchEngine
 from friendnet.methods.basic import cache
 from friendnet.methods.basic.avatar import create_avatar, handle_uploaded_avatar
 from friendnet.methods.basic.egonet import get_user_ego_graph
-from friendnet.methods.basic.globalnet import get_user_global_info, get_user_global_graph, get_user_global_map
+from friendnet.methods.basic.globalnet import get_user_global_info, get_user_global_graph, get_user_global_map, \
+    get_user_global_basic
 from friendnet.methods.basic.group import create_group, get_user_join_status, \
     get_member_in_group, group_privacy_check, get_user_groups_split, get_user_groups
 from friendnet.methods.basic.groupmember import create_group_member, create_group_member_from_file, follow, \
@@ -406,7 +407,7 @@ def global_network(request, groupid=0):
         group = None
     else:
         group = get_object_or_404(Group, id=groupid)
-        info = cache.get_or_set('globalinfo', get_user_global_info, user, groupid)
+        info = get_user_global_info(user, groupid)
         context.update(info)
 
     context.update({"project_name": PROJECT_NAME,
@@ -427,8 +428,9 @@ def global_graph(request, groupid=0):
     if groupid == 0:
         return JsonResponse({"nodes": None, "links": None}, safe=False)
 
-    # data = get_user_global_graph(user, groupid)
-    data = cache.get_or_set('globalnet', get_user_global_graph, user, groupid)
+    data = get_user_global_graph(user, groupid)
+    # get_user_global_basic(user, groupid)
+    # data = cache.get_or_set('globalnet', get_user_global_graph, user, groupid)
 
     return JsonResponse(data, safe=False)
 
@@ -441,8 +443,8 @@ def global_map(request, groupid=0):
     if groupid == 0:
         return JsonResponse({"nodes": None, "links": None}, safe=False)
 
-    # data = get_user_global_map(user, groupid)
-    data = cache.get_or_set('globalmap', get_user_global_map, user, groupid)
+    data = get_user_global_map(user, groupid)
+    # data = cache.get_or_set('globalmap', get_user_global_map, user, groupid)
     return JsonResponse(data, safe=False)
 
 

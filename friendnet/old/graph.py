@@ -55,7 +55,7 @@ class Graph:
 
         return self
 
-    def global_builder(self):
+    def global_builder(self, color=False):
 
         self.raw_links = Link.objects.filter(
             group=self.group,
@@ -81,15 +81,13 @@ class Graph:
                 else:
                     self.G[link.source_member][link.target_member]['weight'] += 1
 
-        return self
-
-    def color(self):
-        group_color = GraphAnalyzer(self.G, self.me).graph_communities()
-        for node in self.G.nodes():
-            if node in group_color:
-                self.G.node[node]['group'] = group_color[node]
-            else:
-                self.G.node[node]['group'] = 9
+        if color:
+            group_color = GraphAnalyzer(self.G, self.me).graph_communities()
+            for node in self.G.nodes():
+                if node in group_color:
+                    self.G.node[node]['group'] = group_color[node]
+                else:
+                    self.G.node[node]['group'] = 9
 
         return self
 
@@ -145,9 +143,7 @@ class Graph:
         # print nodes
 
         for (s, t) in GMap.edges():
-            if (GMap.node[s]['friends'] != 0 and GMap.node[t]['friends'] != 0) or \
-                    ('self' in GMap.node[s] and GMap.node[t]['friends'] != 0) or \
-                    (GMap.node[s]['friends'] != 0 and 'self' in GMap.node[t]):
+            if GMap.node[s]['friends'] != 0 and GMap.node[t]['friends'] != 0:
                 s_country, s_city = s.split('-')
                 t_country, t_city = t.split('-')
                 links.append({"source": s_city, "target": t_city})
@@ -253,3 +249,45 @@ class GraphAnalyzer:
                 communities_index[member] = i + 1
 
         return communities_index
+
+
+# Todo: link status should be 3
+# Todo: most contributor ? get most credits
+def graph_analyzer(user, groupid):
+
+    Global = Graph(user, Group.objects.get(id=groupid)).global_builder()
+    G = Global.bingo()
+    my_member = Global.myself()
+    analyzer = GraphAnalyzer(G, my_member)
+
+    distribution = analyzer.degree_distribution()
+
+    top = analyzer.sorted_degree()
+    top3 = top[0:3]
+
+    rank = top.index((my_member, G.degree(my_member))) + 1
+
+    cover = Global.cover()
+
+    # Todo: fix 0.00 ??
+    average_degree = analyzer.average_degree()
+
+    # If the network is not connected,
+    # return -1
+    # Todo: warning, when the net is big, very slow !!!!
+    average_distance = analyzer.average_shortest_path_length()
+
+    best_friend, bf_ratio = analyzer.best_friend()
+
+    # Todo: ratio not correct fixed...
+    heart = Global.heart()
+
+    return {'distribution': json.dumps(distribution),
+            'top3': top3,
+            'my_rank': rank,
+            'average_degree': average_degree,
+            'average_distance': average_distance,
+            'cover': round(cover*100, 2),
+            'bestfriend': best_friend,
+            'bf_ratio': round(bf_ratio*100, 2),
+            'heart': heart}
