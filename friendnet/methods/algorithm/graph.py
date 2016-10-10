@@ -159,6 +159,10 @@ class Graph:
     def bingo(self):
         return self.G
 
+    def proceeding(self, func):
+        func(self.G)
+        return self
+
     def cover(self):
         if self.raw_links and self.G.number_of_edges() != 0:
             return self.raw_links.filter(creator=self.user).count() / float(self.G.number_of_edges())
@@ -229,7 +233,10 @@ class GraphAnalyzer:
         else:
             return -1
 
+    # Todo: division zero warning
     def average_shortest_path_length(self):
+        if self.number_of_edges < 2:
+            return 1.0
         d = [nx.average_shortest_path_length(g)
              for g in nx.connected_component_subgraphs(self.G)
              if g.number_of_nodes() > 1]

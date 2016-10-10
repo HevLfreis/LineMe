@@ -20,7 +20,7 @@ from friendnet.methods.basic import cache
 from friendnet.methods.basic.avatar import create_avatar, handle_uploaded_avatar
 from friendnet.methods.basic.egonet import get_user_ego_graph
 from friendnet.methods.basic.globalnet import get_user_global_info, get_user_global_graph, get_user_global_map, \
-    get_user_global_basic
+    get_user_global_basic, get_user_global_exp
 from friendnet.methods.basic.group import create_group, get_user_join_status, \
     get_member_in_group, group_privacy_check, get_user_groups_split, get_user_groups
 from friendnet.methods.basic.groupmember import create_group_member, create_group_member_from_file, follow, \
@@ -852,4 +852,17 @@ def join_confirm(request, groupid, requestid):
 @login_required
 def join_decline(request, groupid, requestid):
     return redirect('group', groupid)
+
+
+def show(request, groupid):
+    context = {'groupid': groupid}
+    if request.method == 'GET':
+        return render(request, 'friendnet/show.html', context)
+
+
+def show_data(request, groupid):
+    data = get_user_global_exp(request.user, groupid)
+    # print data
+    return JsonResponse(data, safe=False)
+
 

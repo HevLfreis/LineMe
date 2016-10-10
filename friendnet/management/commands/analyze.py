@@ -43,18 +43,18 @@ class Command(BaseCommand):
         friend_links = links.filter(Q(source_member__user=F('creator')) | Q(target_member__user=F('creator')))
         other_links = links.exclude(Q(source_member__user=F('creator')) | Q(target_member__user=F('creator')))
 
-        for m in self.members:
-            if m is not None:
-                G = Graph(m.user, Group.objects.get(id=10001)).ego_builder().bingo()
-                es = links.filter(creator=m.user)
-
-                for e in es:
-                    if not G.has_edge(e.source_member, e.target_member):
-                        print m.user, es.count(), G.number_of_edges()
-                        break
-
-                if es.count() != G.number_of_edges():
-                    print m.user, es.count(), G.number_of_edges()
+        # for m in self.members:
+        #     if m is not None:
+        #         G = Graph(m.user, Group.objects.get(id=10001)).ego_builder().bingo()
+        #         es = links.filter(creator=m.user)
+        #
+        #         for e in es:
+        #             if not G.has_edge(e.source_member, e.target_member):
+        #                 print m.user, es.count(), G.number_of_edges()
+        #                 break
+        #
+        #         if es.count() != G.number_of_edges():
+        #             print m.user, es.count(), G.number_of_edges()
         # link = links.get(status=-3)
         # print male_count, female_count
 
@@ -86,18 +86,25 @@ class Command(BaseCommand):
         # print 'average added friends fenmale: ', links_female.count() / float(female_count)
         print 'average added friends: ', friend_links.count() / float(self.members.count()), '\n'
 
-        # for link in links:
-        #     simi = links.filter((Q(source_member=link.source_member, target_member=link.target_member) |
-        #                         Q(source_member=link.target_member, target_member=link.source_member)),
-        #                         creator=link.creator).exclude(id=link.id)
-        #     if simi.exists():
-        #
-        #         print link.creator
-                #
-                # for l in simi:
-                #     print l.id
-                #
-                # print ''
+        a, b, c = 0, 0, 0
+        for link in links:
+            simi = links.filter((Q(source_member=link.source_member, target_member=link.target_member) |
+                                Q(source_member=link.target_member, target_member=link.source_member)),
+                                creator=link.creator).exclude(id=link.id)
+            if simi.exists():
+
+                s = simi.filter(Q(creator=link.target_member.user)|Q(creator=link.source_member.user))[0]
+
+                # print link.creator
+                if link.status == 3 and s.status != 3:
+                    print link.source_member.member_name, link.target_member.member_name, s.source_member.member_name, s.target_member.member_name
+                    a += 1
+
+                if (link.status == 2 and s.status == 1) or (link.status == 1 and s.status == 2):
+                    print link.source_member.member_name, link.target_member.member_name, s.source_member.member_name, s.target_member.member_name
+                    b += 1
+
+        print a, b
         # G_all = self.build_graph(links)
         # G_friend = self.build_graph(friend_links)
         # G_other = self.build_graph(other_links)

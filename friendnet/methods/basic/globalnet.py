@@ -7,6 +7,7 @@ import json
 
 from friendnet.methods.algorithm.graph import Graph, GraphAnalyzer
 from friendnet.methods.basic import cache
+import friendnet.methods.basic.exp as exp
 from friendnet.models import Group
 
 
@@ -40,6 +41,11 @@ def get_user_global_map(user, groupid):
 @cache.get_or_set('globalinfo')
 def get_user_global_info(user, groupid):
     return graph_analyzer(user, groupid)
+
+
+def get_user_global_exp(user, groupid):
+    func = exp.global_core
+    return Graph(user, Group.objects.get(id=groupid)).global_builder().color().proceeding(func).dictify()
 
 
 # Todo: link status should be 3

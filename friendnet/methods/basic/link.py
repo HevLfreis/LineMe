@@ -151,8 +151,6 @@ def update_links(request, new_links, creator, groupid):
 
     my_member = myself_member(creator, groupid)
 
-    print links_index
-
     for k, v in links_index.items():
         try:
             if v == 0:

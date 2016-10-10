@@ -19,7 +19,8 @@ Location: http://lime.seeleit.com/
 * cropit
 * django
 * networkx
-* postgresql
+* PostgreSQL
+* Redis
 
 ## License
 MIT
