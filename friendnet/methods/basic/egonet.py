@@ -55,6 +55,6 @@ def get_user_ego_graph(user, groupid):
     #                       'value': 1,
     #                       'group': link.group.id})
 
-    G = Graph(user, Group.objects.get(id=groupid)).ego_builder().jsonify()
+    G = Graph(Group.objects.get(id=groupid)).ego_builder(user).jsonify()
 
     return G

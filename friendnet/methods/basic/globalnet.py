@@ -11,9 +11,15 @@ import friendnet.methods.basic.exp as exp
 from friendnet.models import Group
 
 
+@cache.get_or_set('globalcore')
+def get_user_global_core(groupid):
+    return Graph(Group.objects.get(id=groupid)).core_builder()
+
+
 @cache.get_or_set('global')
 def get_user_global_basic(user, groupid):
-    return Graph(user, Group.objects.get(id=groupid)).global_builder()
+    # return Graph(Group.objects.get(id=groupid)).global_builder(user)
+    return get_user_global_core(groupid).core(user)
 
 
 # def get_user_global_graph(user, groupid):
@@ -30,7 +36,8 @@ def get_user_global_basic(user, groupid):
 
 @cache.get_or_set('globalnet')
 def get_user_global_graph(user, groupid):
-    return get_user_global_basic(user, groupid).color().dictify()
+    # without color, save 70% time
+    return get_user_global_basic(user, groupid).dictify()
 
 
 @cache.get_or_set('globalmap')
@@ -45,17 +52,22 @@ def get_user_global_info(user, groupid):
 
 def get_user_global_exp(user, groupid):
     func = exp.global_core
-    return Graph(user, Group.objects.get(id=groupid)).global_builder().color().proceeding(func).dictify()
+    G = Graph(Group.objects.get(id=groupid)).global_builder(user).color()
+    return G.dictify()
 
 
 # Todo: link status should be 3
 # Todo: most contributor ? get most credits
 def graph_analyzer(user, groupid):
-
     # Global = Graph(user, Group.objects.get(id=groupid)).global_builder()
     Global = get_user_global_basic(user, groupid)
     G = Global.bingo()
     my_member = Global.myself()
+
+    # Todo: exception
+    if my_member is None:
+        raise Exception('Member is None')
+
     analyzer = GraphAnalyzer(G, my_member)
 
     distribution = analyzer.degree_distribution()
@@ -85,9 +97,7 @@ def graph_analyzer(user, groupid):
             'my_rank': rank,
             'average_degree': average_degree,
             'average_distance': average_distance,
-            'cover': round(cover*100, 2),
+            'cover': round(cover * 100, 2),
             'bestfriend': best_friend,
-            'bf_ratio': round(bf_ratio*100, 2),
+            'bf_ratio': round(bf_ratio * 100, 2),
             'heart': heart}
-
-

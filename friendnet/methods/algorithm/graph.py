@@ -16,12 +16,18 @@ from friendnet.models import Link
 
 
 class Graph:
-    def __init__(self, user, group):
+    def __init__(self, group):
         self.G = nx.Graph()
-        self.user = user
+        # self.user = user
+        self.user = None
         self.group = group
-        self.me = self.__myself()
+        # self.me = self.__myself()
+        self.me = None
         self.raw_links = None
+
+    def __user_init(self, user):
+        self.user = user
+        self.me = self.__myself()
 
     def myself(self):
         return self.me
@@ -33,7 +39,9 @@ class Graph:
             is_joined=True
         )
 
-    def ego_builder(self):
+    def ego_builder(self, user):
+
+        self.__user_init(user)
 
         self.raw_links = Link.objects.filter(
             group=self.group,
@@ -55,7 +63,40 @@ class Graph:
 
         return self
 
-    def global_builder(self):
+    def core_builder(self):
+
+        self.raw_links = Link.objects.filter(
+            group=self.group,
+            status=3
+        )
+
+        members = GroupMember.objects.filter(group=self.group)
+
+        for member in members:
+            self.G.add_node(member, creator=False, group=random.randint(1, 4))
+
+        for link in self.raw_links:
+            if not self.G.has_edge(link.source_member, link.target_member):
+                self.G.add_edge(link.source_member, link.target_member, id=link.id, weight=1, status=False)
+            else:
+                self.G[link.source_member][link.target_member]['weight'] += 1
+
+        return self
+
+    def core(self, user):
+
+        self.__user_init(user)
+
+        self.G.node[self.me]['creator'] = True
+
+        for link in self.raw_links.filter(creator=user):
+            self.G[link.source_member][link.target_member]['status'] = True
+
+        return self
+
+    def global_builder(self, user):
+
+        self.__user_init(user)
 
         self.raw_links = Link.objects.filter(
             group=self.group,
@@ -108,6 +149,8 @@ class Graph:
                         GMap.add_node(g_l, weight=1, friends=0)
                     else:
                         GMap.node[g_l]['weight'] += 1
+            else:
+                location_index[gm] = None
 
         for friend in self.G.neighbors(self.me):
             if friend.user is not None:
@@ -122,14 +165,14 @@ class Graph:
         # print GMap.nodes(data=True)
 
         for link in self.raw_links:
-            if link.source_member.user is not None and link.target_member.user is not None:
+            # if link.source_member.user is not None and link.target_member.user is not None:
                 # s_l = link.source_member.user.extra.location
                 # t_l = link.target_member.user.extra.location
-                s_l = location_index[link.source_member]
-                t_l = location_index[link.target_member]
-                if s_l is not None and t_l is not None and s_l != t_l:
-                    if not GMap.has_edge(s_l, t_l):
-                        GMap.add_edge(s_l, t_l)
+            s_l = location_index[link.source_member]
+            t_l = location_index[link.target_member]
+            if s_l is not None and t_l is not None and s_l != t_l:
+                if not GMap.has_edge(s_l, t_l):
+                    GMap.add_edge(s_l, t_l)
 
         # print GMap.edges(data=True)
 
