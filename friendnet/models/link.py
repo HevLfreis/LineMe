@@ -12,8 +12,10 @@ from friendnet.models.group import Group, GroupMember
 
 class Link(models.Model):
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
-    source_member = models.ForeignKey(GroupMember, related_name='source_member')
-    target_member = models.ForeignKey(GroupMember, related_name='target_member')
+
+    # Todo: new cascade, need check
+    source_member = models.ForeignKey(GroupMember, related_name='source_member', on_delete=models.CASCADE)
+    target_member = models.ForeignKey(GroupMember, related_name='target_member', on_delete=models.CASCADE)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
     status = models.IntegerField()
     confirmed_time = models.DateTimeField(null=True)

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <link rel="stylesheet" type="text/css" href="/static/plugins/three/css/style.css">
     <link rel="stylesheet" type="text/css" href="/static/lineme/css/graph.css">
-    <title>delimited | CrunchBase Top Investors</title>
+    <title>Three and D3</title>
   </head>
   <body>
 
@@ -28,7 +28,7 @@
     <script>
       d3.json("/threegraph", function (error, data) {
         VIZ.drawElements(data);
-        VIZ.transform('helix');
+        VIZ.transform('flow');
         d3.select("#loading").remove();
         VIZ.render();
         VIZ.animate();

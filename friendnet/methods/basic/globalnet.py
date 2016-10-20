@@ -45,6 +45,11 @@ def get_user_global_map(user, groupid):
     return get_user_global_basic(user, groupid).map_dictify()
 
 
+@cache.get_or_set('globalthree')
+def get_user_global_three(groupid):
+    return get_user_global_core(groupid).three_dictify()
+
+
 @cache.get_or_set('globalinfo')
 def get_user_global_info(user, groupid):
     return graph_analyzer(user, groupid)

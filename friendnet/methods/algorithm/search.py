@@ -59,7 +59,7 @@ class SearchEngine:
     def __group_search(self, kw, limit):
         res = []
 
-        gs = Group.objects.filter(group_name__istartswith=kw).order_by('group_name')
+        gs = Group.objects.filter(group_name__istartswith=kw, deprecated=False).order_by('group_name')
         gs1 = gs.filter(creator=self.user)
         gs2 = gs.exclude(creator=self.user).filter(type=0)
 

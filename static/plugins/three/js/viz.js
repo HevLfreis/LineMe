@@ -1,13 +1,16 @@
 (function () {
     var VIZ = {};
-    var camera, renderer, controls, scene = new THREE.Scene();
-    var width = window.innerWidth, height = window.innerHeight;
+    var camera, renderer, scene = new THREE.Scene();
+    var $mp = $("#main-panel");
+    var width = $mp.width(),
+        height = $mp.height(),
+        zLookAt = -500;
 
-    camera = new THREE.PerspectiveCamera(40, width / height, 1, 10000);
-    camera.position.x = 800;
-    camera.position.y = 600;
-    camera.position.z = 2500;
-    camera.setLens(30);
+    camera = new THREE.PerspectiveCamera(20, width / height, 1, 10000);
+    camera.position.x = 1200;
+    camera.position.y = 750;
+    camera.position.z = 1000;
+    camera.lookAt(new THREE.Vector3(0, 25, zLookAt));
 
     VIZ.drawElements = function (datas) {
 
@@ -15,8 +18,8 @@
 
         var margin = {top: 17, right: 0, bottom: 16, left: 20},
             width = 800 - margin.left - margin.right,
-            height = 600 - margin.top - margin.bottom;
-
+            height = 600 - margin.top - margin.bottom,
+            radius = 2;
 
         var color = d3.scale.ordinal()
             .range(['rgb(166,206,227)', 'rgb(31,120,180)', 'rgb(178,223,138)', 'rgb(51,160,44)', 'rgb(251,154,153)', 'rgb(227,26,28)', 'rgb(253,191,111)', 'rgb(255,127,0)']);
@@ -30,16 +33,16 @@
             .attr("width", width)
             .attr("height", height);
 
-        var defs = vis.append("defs").attr("class", "imgdefs");
+        var defs = vis.append("defs").attr("id", "imgdefs");
 
         vis.each(function () {
             var force = d3.layout.force()
-                .charge(-100)
-                .linkDistance(250)
+                .charge(-50)
+                .linkDistance(100)
                 .size([width, height]);
 
-
             var $vis = d3.select(this);
+
             var node = $vis.selectAll(".node");
             var link = $vis.selectAll(".link");
 
@@ -65,7 +68,7 @@
             });
             link.enter().insert("line", ".node")
                 .attr("class", function (d) {
-                    return "link";
+                    return "link-unconfirmed";
                 });
 
             node = node.data(nodes, function (d) {
@@ -73,7 +76,7 @@
             });
 
             node.enter().append("g")
-                .attr("class", "node").attr("r", 20)
+                .attr("class", "node").attr("r", 10)
                 .style("fill", function (d) {
                     return color(d.group);
                 })
@@ -82,54 +85,49 @@
                 });
 
             node.append("circle")
-                .attr("r", 20);
+                .attr("class", "small-circle")
+                .attr("r", 10);
 
             node.append("image")
-                .attr('x', -20)
-                .attr('y', -20)
-                .attr('width', 40)
-                .attr('height', 40)
+                .attr('x', -10)
+                .attr('y', -10)
+                .attr('width', 20)
+                .attr('height', 20)
                 .attr("xlink:href", function (d) {
                     if (d.userid != -1)
                         return "/media/images/avatars/" + d.userid + ".png"
                 })
-                .attr("clip-path", "url(#clip-circle)");
+                .attr("clip-path", "url(#clip-circle2)");
 
-            force.start()
+            force.start();
 
             force.on("tick", function () {
-                link.attr("x1", function (d) {
-                        return d.source.x;
-                    })
-                    .attr("y1", function (d) {
-                        return d.source.y;
-                    })
-                    .attr("x2", function (d) {
-                        return d.target.x;
-                    })
-                    .attr("y2", function (d) {
-                        return d.target.y;
-                    });
+                link.attr("x1", function (d) { return d.source.x; })
+                    .attr("y1", function (d) { return d.source.y; })
+                    .attr("x2", function (d) { return d.target.x; })
+                    .attr("y2", function (d) { return d.target.y; });
 
                 node.attr("transform", function (d) {
                     return "translate(" + d.x + "," + d.y + ")";
                 });
 
+                node.attr("cx", function(d) { return d.x = Math.max(radius, Math.min(width - radius, d.x)); })
+                    .attr("cy", function(d) { return d.y = Math.max(radius, Math.min(height - radius, d.y)); });
 
             });
 
         });
 
-
-        var clipPath = defs.append('clipPath').attr('id', 'clip-circle')
-            .append("circle")
-            .attr("r", 20)
+        // clip-circle2 avoid conflict
+        var clipPath = defs.append('clipPath').attr('id', 'clip-circle2')
+            .append("circle").attr("class", "small-circle")
+            .attr("r", 10)
             .attr("cy", 0)
             .attr("cx", 0);
 
         vis.each(setData);
         vis.each(objectify);
-    }
+    };
 
     function objectify(d) {
         var object = new THREE.CSS3DObject(this);
@@ -138,7 +136,6 @@
     }
 
     function setData(d, i) {
-        var vector, phi, theta;
 
         var random = new THREE.Object3D();
         random.position.x = Math.random() * 4000 - 2000;
@@ -146,61 +143,24 @@
         random.position.z = Math.random() * 4000 - 2000;
         d['random'] = random;
 
-        var sphere = new THREE.Object3D();
-        vector = new THREE.Vector3();
-        phi = Math.acos(-1 + ( 2 * i ) / (VIZ.count - 1));
-        theta = Math.sqrt((VIZ.count - 1) * Math.PI) * phi;
-        sphere.position.x = 800 * Math.cos(theta) * Math.sin(phi);
-        sphere.position.y = 800 * Math.sin(theta) * Math.sin(phi);
-        sphere.position.z = 800 * Math.cos(phi);
-        vector.copy(sphere.position).multiplyScalar(2);
-        sphere.lookAt(vector);
-        //camera.position.x += 1000;
-        d['sphere'] = sphere;
+        var flow = new THREE.Object3D();
+        flow.position.x = 0;
+        flow.position.y = 0;
+        flow.position.z = -(Math.floor(i)) * 400;
 
-        var helix = new THREE.Object3D();
-        //vector = new THREE.Vector3();
-        //phi = (i + 12) * 0.250 + Math.PI;
-        //helix.position.x = 1000 * Math.sin(phi);
-        //helix.position.y = - (i * 8) + 500;
-        //helix.position.z = 1000 * Math.cos(phi);
-        //vector.x = helix.position.x * 2;
-        //vector.y = helix.position.y;
-        //vector.z = helix.position.z * 2;
-        //helix.lookAt(vector);
-        helix.position.x = 0;
-        helix.position.y = 0;
-        helix.position.z = (Math.floor(i)) * 400 - 1500;
-
-        d['helix'] = helix;
-
-        var grid = new THREE.Object3D();
-        //grid.position.x = (( i % 5 ) * 400) - 800;
-        //grid.position.y = ( - ( Math.floor( i / 5 ) % 5 ) * 400 ) + 800;
-        //grid.position.z = (Math.floor( i / 25 )) * 1000 - 2000;
-        grid.position.x = (( i % 5 ) * 400) - 800;
-        grid.position.y = ( -( Math.floor(i / 5) % 5 ) * 400 ) + 800;
-        grid.position.z = (Math.floor(i / 25)) * 1000 - 2000;
-        d['grid'] = grid;
+        d['flow'] = flow;
     }
 
     VIZ.render = function () {
         renderer.render(scene, camera);
     };
 
-    d3.select("#menu").selectAll('button')
-        .data(['sphere', 'helix', 'grid']).enter()
-        .append('button')
-        .html(function (d) {
-            return d;
-        })
-        .on('click', function (d) {
-            //VIZ.transform(d);
-            camera.position.z -= 100;
-            VIZ.render();
-        })
-
+    var prevLayout = 'random';
     VIZ.transform = function (layout) {
+
+        if (prevLayout == layout) return;
+        else prevLayout = layout;
+
         var duration = 1000;
 
         TWEEN.removeAll();
@@ -223,30 +183,45 @@
             .to({}, duration)
             .onUpdate(VIZ.render)
             .start();
-    }
+    };
 
     VIZ.animate = function () {
         requestAnimationFrame(VIZ.animate);
         TWEEN.update();
-        controls.update();
-    }
+    };
 
     renderer = new THREE.CSS3DRenderer();
     renderer.setSize(width, height);
     renderer.domElement.style.position = 'absolute';
-    document.getElementById('container').appendChild(renderer.domElement);
-
-    controls = new THREE.TrackballControls(camera, renderer.domElement);
-    controls.rotateSpeed = 0.25;
-    controls.minDistance = 0;
-    controls.maxDistance = 5000;
-    controls.addEventListener('change', VIZ.render);
+    document.getElementById('three').appendChild(renderer.domElement);
 
     VIZ.onWindowResize = function () {
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
         VIZ.render();
-    }
+    };
     window.VIZ = VIZ;
-}())
+
+    document.getElementById('three').addEventListener('mousewheel', function(event) {
+
+        event.preventDefault();
+		event.stopPropagation();
+
+        var delta = 0, p = 0.1, s = 400;
+
+		if (event.wheelDelta) { // WebKit / Opera / Explorer 9
+			delta = event.wheelDelta / 40;
+		} else if (event.detail) { // Firefox
+			delta = - event.detail / 3;
+		}
+
+        if (zLookAt - delta * p * s > 0 || zLookAt - delta * p * s < -400 * VIZ.count) return;
+        camera.position.z -= delta * p * s;
+        zLookAt -= delta * p * s;
+        camera.lookAt({x:0, y:25, z:zLookAt });
+        VIZ.render();
+        VIZ.animate();
+    });
+
+}());

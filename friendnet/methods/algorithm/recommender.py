@@ -103,7 +103,7 @@ class Recommender:
         sug = set(gm.group for gm in gms if not gm.group.has_member(self.user))
 
         # Todo: only recommend 5 no validation public group, may add algo
-        for no_val_group in Group.objects.filter(identifier=2).exclude(creator=self.user)[0:5]:
+        for no_val_group in Group.objects.filter(identifier=2, deprecated=False).exclude(creator=self.user)[0:5]:
             if not GroupMember.objects.filter(
                     group=no_val_group,
                     user=self.user

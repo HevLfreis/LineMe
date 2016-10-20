@@ -136,6 +136,7 @@
                     </h1>
                   {% endif %}
                   {% if group %}
+                    <a id="three-mode" class="three text-center" hidden>3D MODE</a>
                     <a id="map-mode" class="map text-center" hidden>MAP MODE</a>
                     <a id="normal-mode" class="normal text-center">NORMAL MODE</a>
                     <div class="loader-inner line-scale panel-text-center text-center">
@@ -147,6 +148,15 @@
                     </div>
                     <div id="network"></div>
                     <div id="map">
+                      <div class="loader-inner line-scale panel-text-center text-center">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                      </div>
+                    </div>
+                    <div id="three">
                       <div class="loader-inner line-scale panel-text-center text-center">
                         <div></div>
                         <div></div>
@@ -239,11 +249,6 @@
     <script src="/static/plugins/jquery/jquery.min.js"></script>
     <script src="/static/bootstrap/js/bootstrap.min.js"></script>
     <script src="/static/dist/js/app.min.js"></script>
-    <script src="/static/plugins/d3/js/d3.js"></script>
-    <script src="/static/plugins/d3/js/d3-tip.js"></script>
-    <script src="/static/plugins/echart/js/echarts.min.js"></script>
-    <script src="/static/plugins/echart/js/roma.js"></script>
-    <script src="/static/plugins/echart/js/china.js"></script>
     <script src="/static/plugins/rollbar/js/jquery.rollbar.min.js"></script>
     <script src="/static/lineme/js/rollbar.js"></script>
     <script src="/static/lineme/js/autocomplete.js"></script>
@@ -255,6 +260,15 @@
       });
     </script>
     {% if group %}
+      <script src="/static/plugins/d3/js/d3.js"></script>
+      <script src="/static/plugins/d3/js/d3-tip.js"></script>
+      <script src="/static/plugins/echart/js/echarts.min.js"></script>
+      <script src="/static/plugins/echart/js/roma.js"></script>
+      <script src="/static/plugins/echart/js/china.js"></script>
+      <script src="/static/plugins/three/js/three.min.js"></script>
+      <script src="/static/plugins/three/js/tween.js"></script>
+      <script src="/static/plugins/three/js/css3drenderer.js"></script>
+      <script src="/static/plugins/three/js/viz.js"></script>
       <script src="/static/lineme/js/trip/trip-global.js"></script>
       <script type="text/javascript">
         var groupid = {{ group.id }};
@@ -262,6 +276,7 @@
 
         var gGraphUrl = "{% url 'gGraph' group.id %}";
         var gMapUrl = "{% url 'gMap' group.id %}";
+        var gThreeUrl = "{% url 'gThree' group.id %}";
       </script>
       <script src="/static/lineme/js/global.js"></script>
     {% else %}

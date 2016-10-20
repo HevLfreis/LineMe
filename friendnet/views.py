@@ -20,7 +20,7 @@ from friendnet.methods.basic import cache
 from friendnet.methods.basic.avatar import create_avatar, handle_uploaded_avatar
 from friendnet.methods.basic.egonet import get_user_ego_graph
 from friendnet.methods.basic.globalnet import get_user_global_info, get_user_global_graph, get_user_global_map, \
-    get_user_global_basic, get_user_global_exp
+    get_user_global_basic, get_user_global_exp, get_user_global_three
 from friendnet.methods.basic.group import create_group, get_user_join_status, \
     get_member_in_group, group_privacy_check, get_user_groups_split, get_user_groups
 from friendnet.methods.basic.groupmember import create_group_member, create_group_member_from_file, follow, \
@@ -61,7 +61,7 @@ def threegraph(request, groupid=10000):
 
     users = [gm.user for gm in gms if gm.user is not None]
 
-    data = [Graph(user, group).ego_builder().dictify() for user in users]
+    data = [Graph(group).ego_builder(user).dictify() for user in users]
 
     # print data
     return JsonResponse(data, safe=False)
@@ -445,6 +445,18 @@ def global_map(request, groupid=0):
 
     data = get_user_global_map(user, groupid)
     # data = cache.get_or_set('globalmap', get_user_global_map, user, groupid)
+    return JsonResponse(data, safe=False)
+
+
+@login_required
+def global_three(request, groupid=0):
+    user = request.user
+    groupid = check_groupid(user, groupid)
+
+    if groupid == 0:
+        return JsonResponse({"nodes": None, "links": None}, safe=False)
+
+    data = get_user_global_three(groupid)
     return JsonResponse(data, safe=False)
 
 

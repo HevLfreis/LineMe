@@ -208,9 +208,6 @@ $(function() {
         nodesCopy = nodes.slice(0);
         linksCopy = links.slice(0);
 
-        //console.logs(nodes);
-        //console.logs(links);
-
         var nodeById = d3.map();
 
         nodes.forEach(function(node) {
@@ -231,7 +228,6 @@ $(function() {
 
         linkedIndexCopy = $.extend({}, linkedIndex);
 
-        //console.logs(graph.nodes);
         link = vis.selectAll(".link");
         node = vis.selectAll(".node");
         start();
@@ -321,7 +317,6 @@ $(function() {
     function linkClick(d){
         if (selected) return;
         linkedIndex[d.source.id + "," + d.target.id] = false;
-        //console.logs(links);
         links = links.filter(function(a) {
             return a.source.id + "," + a.target.id !== d.source.id + "," + d.target.id;
         });
@@ -333,7 +328,6 @@ $(function() {
 
         // prevent drag click
         if (d3.event.defaultPrevented) return;
-        //console.log('Node click: ', d.name);
         if(!selected){
             selected = d;
             d3.select(this).style('stroke', '#cd3b23');
@@ -346,7 +340,6 @@ $(function() {
         else {
 
             if (!linkedIndex[selected.id + "," + d.id]&&!linkedIndex[d.id + "," + selected.id]&&selected!= d) {
-                //console.logs('New link:', selected, d);
                 linkedIndex[selected.id + "," + d.id] = true;
                 links.push({"source": selected, "target": d, "value": 1, "status": 4});
                 start();
@@ -359,9 +352,9 @@ $(function() {
     }
 
     function nodeDbclick(d, i){
-        //console.logs('Node dbclick: ', d.name, i);
+
         if (d == self) return;
-        //console.logs(nodes);
+
         links = links.filter(function(a){
             if (d === a.source||d === a.target)
                 linkedIndex[a.source.id + "," + a.target.id] = false;
@@ -372,14 +365,14 @@ $(function() {
 
         rcmdAddedNode[d.id] = false;
 
-        //console.logs(nodes);
         selected = null;
         start();
     }
 
     function nodeMouseover(d, i) {
+
         if (selected) return;
-        //console.logs(d);
+
         tip.attr('class', 'd3-tip animate').show(d);
         node.style("stroke", function(n) {
             if (linkedIndex[d.id + "," + n.id]||linkedIndex[n.id + "," + d.id])
@@ -417,7 +410,6 @@ $(function() {
     }
 
     function dragstarted(d) {
-        //console.logs('drag start');
         d3.event.sourceEvent.stopPropagation();
     }
 

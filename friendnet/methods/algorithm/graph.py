@@ -199,6 +199,37 @@ class Graph:
 
         return {"nodes": nodes, "links": links}
 
+    def three_dictify(self):
+
+        layers, data = {}, []
+
+        for (s, t, d) in self.G.edges(data=True):
+            if d['weight'] in layers:
+                layers[d['weight']].append((s, t))
+            else:
+                layers[d['weight']] = [(s, t)]
+
+        for k, layer in layers.items():
+            nodes, links = set([]), []
+            
+            for (s, t) in layer:
+                nodes.add(s)
+                nodes.add(t)
+                links.append({'id': d['id'],
+                              'source': s.id,
+                              'target': t.id,
+                              'status': d['status'],
+                              'value': d['weight']})
+
+            data.append({"nodes": [{'id': node.id,
+                                    'userid': (-1 if node.user is None else node.user.id),
+                                    'name': node.member_name,
+                                    'self': False,
+                                    'group': random.randint(1, 4)} for node in nodes],
+                         "links": links})
+
+        return data
+
     def bingo(self):
         return self.G
 

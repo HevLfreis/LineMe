@@ -221,7 +221,6 @@ THREE.TrackballControls = function ( object, domElement ) {
 					_zoomStart.copy( _zoomEnd );
 
 				} else {
-
 					_zoomStart.y += ( _zoomEnd.y - _zoomStart.y ) * this.dynamicDampingFactor;
 
 				}

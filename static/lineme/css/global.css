@@ -1,4 +1,4 @@
-.map {
+.normal, .map, .three {
     width: 200px;
     z-index: 100;
     position: absolute;
@@ -6,20 +6,12 @@
     margin:75px;
 }
 
-.normal {
-    width: 200px;
-    z-index: 100;
-    position: absolute;
-    bottom: 0;
-    margin:75px
-}
-
 #network {
     position: absolute;
     z-index: 1;
 }
 
-#map {
+#map, #three{
     position: absolute;
     z-index: 1;
     visibility: hidden;
@@ -30,6 +22,9 @@
 }
 .cl-effect .map {
     color: #5f7e9c;
+}
+.cl-effect .three {
+    color: #cc3333;
 }
 .cl-effect a {
     font-family: 'Consolas', 'Deja Vu Sans Mono', 'Bitstream Vera Sans Mono', 'Microsoft YaHei', monospace;
@@ -50,6 +45,11 @@
 .cl-effect .map::before,
 .cl-effect .map::after {
     background: #5f7e9c;
+}
+
+.cl-effect .three::before,
+.cl-effect .three::after {
+    background: #cc3333;
 }
 
 .cl-effect a::before,
@@ -91,6 +91,11 @@
 .cl-effect .map:hover,
 .cl-effect .map:focus {
     color: #5f7e9c;
+}
+
+.cl-effect .three:hover,
+.cl-effect .three:focus {
+    color: #cc3333;
 }
 
 .cl-effect a:hover::before,

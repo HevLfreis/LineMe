@@ -5,35 +5,26 @@
  */
 
 $(function() {
-    //$('#info-panel').find('.box-body').on('mousewheel', function ( e ) {
-    //    var event = e.originalEvent,
-    //        d = event.wheelDelta || -event.detail;
-    //    //console.logs('wheel');
-    //    this.scrollTop += ( d < 0 ? 1 : -1 ) * 30;
-    //    e.preventDefault();
-    //});
 
-    $('#normal-mode').mouseover(function(){
-        $(this).text('MAP MODE');
-    }).mouseout(function(){
-        $(this).text('NORMAL MODE');
-    }).click(function(){
-        $('#network').removeClass('pt-page-scaleUpDown pt-page-delay300').addClass('pt-page-scaleDown');
-        $('#map').addClass('pt-page-scaleUpDown pt-page-delay300').css('visibility', 'visible');
-        $(this).hide();
-        $('#map-mode').show();
-    });
-    $('#map-mode').mouseover(function(){
-        $(this).text('NORMAL MODE');
-    }).mouseout(function(){
-        $(this).text('MAP MODE');
-    }).click(function(){
-        $('#map').removeClass('pt-page-scaleUpDown pt-page-delay300').addClass('pt-page-scaleDown');
-        $('#network').addClass('pt-page-scaleUpDown pt-page-delay300');
-        $(this).hide();
-        $('#normal-mode').show();
-    });
+    var changeMode = function(id1, id2, bid1, bid2, name1, name2, visible, viz) {
+        $(id1).mouseover(function(){
+            $(this).text(name2);
+        }).mouseout(function(){
+            $(this).text(name1);
+        }).click(function(){
+            $(bid1).removeClass('pt-page-scaleUpDown pt-page-delay300').addClass('pt-page-scaleDown');
+            $(bid2).addClass('pt-page-scaleUpDown pt-page-delay300');
+            if (visible) $(bid2).css('visibility', 'visible');
+            $(this).hide();
+            $(id2).show();
 
+            if (viz) VIZ.transform('flow');
+        });
+    };
+
+    changeMode('#normal-mode', '#map-mode', '#network', '#map', 'NORMAL MODE', 'MAP MODE', true, false);
+    changeMode('#map-mode', '#three-mode', '#map', '#three', 'MAP MODE', '3D MODE', true, true);
+    changeMode('#three-mode', '#normal-mode', '#three', '#network', '3D MODE', 'NORMAL MODE', false, false);
 
     var tip = d3.tip()
         .attr({'class': 'd3-tip'})
@@ -46,6 +37,9 @@ $(function() {
     var $mp = $("#main-panel");
     var width = $mp.width(),
         height = $mp.height();
+
+    $('#map').width(width).height(height);
+    $('#three').width(width).height(height);
 
     var xScale = d3.scale.linear()
         .domain([0,width]).range([0,width]);
@@ -139,9 +133,6 @@ $(function() {
         nodes = graph.nodes;
         links = graph.links;
 
-        //console.logs(nodes);
-        //console.logs(links);
-
         var nodeById = d3.map();
 
         nodes.forEach(function(node) {
@@ -158,13 +149,11 @@ $(function() {
             linkedIndex[d.source.id + "," + d.target.id] = true;
         });
 
-
-        //console.logs(graph.nodes);
         link = vis.selectAll(".link");
         node = vis.selectAll(".node");
         start();
 
-        $mp.first('.loader-inner:first').remove();
+        $mp.find('.loader-inner:first').remove();
         $('#normal-mode').show();
 
         var clipPath = defs.append('clipPath').attr('id', 'clip-circle')
@@ -229,7 +218,7 @@ $(function() {
     }
 
     function nodeMouseover(d, i) {
-        //console.logs(d);
+
         tip.attr('class', 'd3-tip animate').show(d);
         node.style("stroke", function(n) {
 
@@ -257,7 +246,6 @@ $(function() {
     }
 
     function dragstarted(d) {
-        //console.logs('drag start');
         d3.event.sourceEvent.stopPropagation();
     }
 
@@ -276,7 +264,6 @@ $(function() {
     disData = $.map(disData, function(value, key){
         return [[parseInt(key), value]]
     });
-
 
     var option = {
         title: {
@@ -309,12 +296,8 @@ $(function() {
     };
     myChart.setOption(option);
 
-    $('#map').width(width).height(height);
-
     $.get(gMapUrl, function(result){
 
-        //console.logs(result.nodes);
-        //console.logs(result.links);
         var option2 = {
             //backgroundColor: '#f7f7f7',
 
@@ -324,7 +307,6 @@ $(function() {
                 borderColor: '#777',
                 borderWidth: 1,
                 formatter : function(obj){
-                    //console.logs(obj);
                     if(obj.dataType == 'node' || obj.dataType == undefined)
                         return '<div style="border-bottom: 1px solid rgba(255,255,255,.3); font-size: 16px;padding-bottom: 7px;margin-bottom: 7px">'+obj.name+'</div>'+'Total : '+obj.value[2]+"</br>Friends : "+obj.value[3];
                 }
@@ -427,9 +409,19 @@ $(function() {
                 }
             ]
         };
+
         var myMap = echarts.init(document.getElementById('map'), 'roma');
         myMap.setOption(option2);
         $('#map').find('.loader-inner').remove();
+    });
+
+    d3.json(gThreeUrl, function (error, data) {
+        VIZ.drawElements(data);
+        //VIZ.transform('flow');
+        $('#three').find('.loader-inner').remove();
+        VIZ.render();
+        VIZ.animate();
+        window.addEventListener('resize', VIZ.onWindowResize, false);
     });
 
 });

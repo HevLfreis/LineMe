@@ -52,7 +52,7 @@ def validate_group_info(name, identifier, gtype):
 def check_groupid(user, groupid):
     if groupid is None:
         return -2
-    elif Group.objects.filter(id=groupid).exists() and \
+    elif Group.objects.filter(id=groupid, deprecated=False).exists() and \
             GroupMember.objects.filter(
                 group__id=groupid,
                 user=user

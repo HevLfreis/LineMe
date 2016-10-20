@@ -8,6 +8,10 @@ circle {
     stroke-width: 8px;
 }
 
+.small-circle {
+    stroke-width: 2px;
+}
+
 .link {
     fill: none;
     stroke-width: 3px;

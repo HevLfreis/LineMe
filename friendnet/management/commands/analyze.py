@@ -25,26 +25,23 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         # Positional arguments
-        parser.add_argument('--user', action='append')
-        parser.add_argument('--group', action='append')
+        parser.add_argument('-g', '--group', type=int)
 
     def handle(self, *args, **options):
-        self.analyzer()
+        self.analyzer(options['group'])
 
         return
 
-    def analyzer(self):
+    def analyzer(self, groupid):
+        self.members = GroupMember.objects.filter(group__id=groupid, is_joined=True)
 
-        self.members = GroupMember.objects.filter(group__id=10001, is_joined=True)
-
-        # for m in self.members:
-        #     if m.user is not None:
-        #         Link.check_redundancy(m.user, 10001)
+        for m in GroupMember.objects.filter(group__id=groupid, is_joined=False):
+            print m.member_name
 
         male_count = self.members.filter(user__extra__gender=False).count()
         female_count = self.members.filter(user__extra__gender=True).count()
 
-        links = Link.objects.filter(group__id=10001)
+        links = Link.objects.filter(group__id=groupid)
         friend_links = links.filter(Q(source_member__user=F('creator')) | Q(target_member__user=F('creator')))
         other_links = links.exclude(Q(source_member__user=F('creator')) | Q(target_member__user=F('creator')))
 
@@ -92,17 +89,20 @@ class Command(BaseCommand):
         # G_friend_unconfirmed = self.build_graph(friend_links_unconfirmed)
         # G_other_unconfirmed = self.build_graph(other_links_unconfirmed)
 
-        print self.print_info(G_all_confirmed, 'u')
-        #
-        # # single node
-        # n, u, z, o = 0, 0, 0, 0
+        self.print_info(G_all_confirmed, 'u')
+
+        # single node
+        # s, n, u, z, o = 0, 0, 0, 0, 0
         # for m in G_all_confirmed.nodes():
         #     if G_all_confirmed.degree(m) == 0:
+        #         s += 1
         #         if m.user is None:
         #             n += 1
+        #             print get_user_name(m.user), 'not in'
         #
         #         elif not links.filter(creator=m.user).exists():
         #             z += 1
+        #             print get_user_name(m.user), 'no link create'
         #
         #         elif not links.filter((Q(source_member=m) | Q(target_member=m))).exists():
         #             u += 1
@@ -114,7 +114,7 @@ class Command(BaseCommand):
         #                 print a.status, a.source_member.member_name, a.target_member.member_name
         #             o += 1
         #
-        # print n, u, z, o
+        # print s, n, u, z, o
 
 
         # user confirmed links count
@@ -272,41 +272,82 @@ class Command(BaseCommand):
         #     u / G_all_unconfirmed.number_of_edges(), \
         #     o / G_all_unconfirmed.number_of_edges(), c, u, o, y
 
-        G_active, G_passive = nx.Graph(), nx.Graph()
+        # G_active, G_passive = nx.Graph(), nx.Graph()
+        #
+        # for m in self.members:
+        #     if m.user is not None:
+        #         my_links = links_confirmed.filter((Q(source_member=m) | Q(target_member=m)))
+        #         active_links = my_links.filter(creator=m.user)
+        #         passive_links = my_links.exclude(creator=m.user)
+        #         c1 = active_links.count()
+        #         c2 = passive_links.count()
+        #         if c1 != 0 and c2 != 0:
+        #             print get_user_name(m.user), \
+        #                 active_links.count(), \
+        #                 passive_links.count(), (c1-c2)/float(c1+c2)
 
+
+    def build_graph(self, links):
+        G = nx.Graph()
         for m in self.members:
-            if m.user is not None:
-                my_links = links_confirmed.filter((Q(source_member=m) | Q(target_member=m)))
-                active_links = my_links.filter(creator=m.user)
-                passive_links = my_links.exclude(creator=m.user)
-                c1 = active_links.count()
-                c2 = passive_links.count()
-                if c1 != 0 and c2 != 0:
-                    print get_user_name(m.user), \
-                        active_links.count(), \
-                        passive_links.count(), (c1-c2)/float(c1+c2)
+            G.add_node(m)
 
+        for link in links:
+            if not G.has_edge(link.source_member, link.target_member):
+                G.add_edge(link.source_member, link.target_member, link=[link], weight=1)
+            else:
+                G[link.source_member][link.target_member]['weight'] += 1
+                G[link.source_member][link.target_member]['link'].append(link)
+        return G
 
+    def confirmed(self, links):
+        return links.filter(status=3)
 
+    def unconfirmed(self, links):
+        return links.exclude(status=3)
 
+    def single_rejected(self, links):
+        return links.filter(status__lt=0).exclude(status=-3)
 
+    def both_rejected(self, links):
+        return links.filter(status=-3)
 
+    def print_info(self, G, name):
+        print name
+        print 'nodes: ', G.number_of_nodes(), ' links: ', G.number_of_edges()
+        print 'average degree: ', self.average_degree(G), 'average_shortest_path: ', self.average_shortest_path_length(G)
 
+    def average_degree(self, G):
+        return 2.0 * G.number_of_edges() / G.number_of_nodes()
 
+    def average_shortest_path_length(self, G):
+        d = [nx.average_shortest_path_length(g) for g in nx.connected_component_subgraphs(G) if g.number_of_nodes() > 1]
+        print '(', len(d), 'component)',
+        return sum(d) / len(d)
 
+    def connected_component(self, G):
+        for g in nx.connected_component_subgraphs(G):
+            if g.number_of_nodes() != 1:
+                print g.number_of_nodes(), g.number_of_edges()
 
+    # def find_bilink(self, links, link):
+    #     creator = link.creator
+    #     s_u = link.source_member.user
+    #     t_u = link.target_member.user
+    #
+    #     if s_u == creator:
+    #         red = links.filter((Q(source_member=link.source_member, target_member=link.target_member) |
+    #                             Q(source_member=link.target_member, target_member=link.source_member)),
+    #                            creator=t_u).exclude(id=link.id)
+    #     elif t_u == creator:
+    #         red = links.filter((Q(source_member=link.source_member, target_member=link.target_member) |
+    #                             Q(source_member=link.target_member, target_member=link.source_member)),
+    #                            creator=s_u).exclude(id=link.id)
+    #
+    #     return red
 
-
-
-
-
-
-
-
-
-
-
-
+    # def link_created_count_interval(self, f, t):
+    #     return
 
 
 
@@ -671,65 +712,6 @@ class Command(BaseCommand):
         #
         # print a, b
 
-    def build_graph(self, links):
-        G = nx.Graph()
-        for m in self.members:
-            G.add_node(m)
-
-        for link in links:
-            if not G.has_edge(link.source_member, link.target_member):
-                G.add_edge(link.source_member, link.target_member, link=[link], weight=1)
-            else:
-                G[link.source_member][link.target_member]['weight'] += 1
-                G[link.source_member][link.target_member]['link'].append(link)
-        return G
-
-    def confirmed(self, links):
-        return links.filter(status=3)
-
-    def unconfirmed(self, links):
-        return links.exclude(status=3)
-
-    def single_rejected(self, links):
-        return links.filter(status__lt=0).exclude(status=-3)
-
-    def both_rejected(self, links):
-        return links.filter(status=-3)
-
-    def print_info(self, G, name):
-        print name
-        print 'nodes: ', G.number_of_nodes(), ' links: ', G.number_of_edges()
-        print 'average degree: ', self.average_degree(G), 'average_shortest_path: ', self.average_shortest_path_length(G)
-        print ''
-
-    def average_degree(self, G):
-        return 2.0 * G.number_of_edges() / G.number_of_nodes()
-
-    def average_shortest_path_length(self, G):
-        d = [nx.average_shortest_path_length(g) for g in nx.connected_component_subgraphs(G) if g.number_of_nodes() > 1]
-        print len(d), 'component',
-        return sum(d) / len(d)
-
-    def connected_component(self, G):
-        for g in nx.connected_component_subgraphs(G):
-            if g.number_of_nodes() != 1:
-                print g.number_of_nodes(), g.number_of_edges()
-
-    def find_bilink(self, links, link):
-        creator = link.creator
-        s_u = link.source_member.user
-        t_u = link.target_member.user
-
-        if s_u == creator:
-            red = links.filter((Q(source_member=link.source_member, target_member=link.target_member) |
-                                Q(source_member=link.target_member, target_member=link.source_member)),
-                               creator=t_u).exclude(id=link.id)
-        elif t_u == creator:
-            red = links.filter((Q(source_member=link.source_member, target_member=link.target_member) |
-                                Q(source_member=link.target_member, target_member=link.source_member)),
-                               creator=s_u).exclude(id=link.id)
-
-        return red
 
 
 
