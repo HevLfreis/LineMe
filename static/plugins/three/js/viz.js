@@ -4,34 +4,46 @@
     var $mp = $("#main-panel");
     var width = $mp.width(),
         height = $mp.height(),
-        zLookAt = -500;
+        xLookAt = 0,
+        yLookAt = 25,
+        zLookAt = -600,
+        lookAtPos = {x:xLookAt, y:yLookAt, z:zLookAt},
+        cameraPos = {x:1200, y:750, z:1000};
 
     camera = new THREE.PerspectiveCamera(20, width / height, 1, 10000);
-    camera.position.x = 1200;
-    camera.position.y = 750;
-    camera.position.z = 1000;
-    camera.lookAt(new THREE.Vector3(0, 25, zLookAt));
+    //camera.position.x = 1200;
+    //camera.position.y = 750;
+    //camera.position.z = 1000;
+    camera.position.x = 5000;
+    camera.position.y = 5000;
+    camera.position.z = 4000;
+    camera.lookAt({x:xLookAt, y:yLookAt, z:zLookAt});
+
+    camera.target = {x:xLookAt, y:yLookAt, z:zLookAt};
 
     VIZ.drawElements = function (datas) {
 
         VIZ.count = datas.length;
 
         var margin = {top: 17, right: 0, bottom: 16, left: 20},
-            width = 800 - margin.left - margin.right,
-            height = 600 - margin.top - margin.bottom,
+            visWidth = width * 0.618 - margin.left - margin.right,
+            visHeight = height * 0.618 - margin.top - margin.bottom,
             radius = 2;
 
         var color = d3.scale.ordinal()
             .range(['rgb(166,206,227)', 'rgb(31,120,180)', 'rgb(178,223,138)', 'rgb(51,160,44)', 'rgb(251,154,153)', 'rgb(227,26,28)', 'rgb(253,191,111)', 'rgb(255,127,0)']);
 
-        var vis = d3.selectAll(".element").data(datas).enter().append('svg');
+        var vis = d3.selectAll(".element").data(datas).enter()
+            .append('svg')
+            .attr("width", visWidth)
+            .attr("height", visHeight);
 
         vis.attr('fill', 'red')
             .attr('stroke', 'black')
             .attr('stroke-width', 1)
             .attr('class', 'element')
-            .attr("width", width)
-            .attr("height", height);
+            .attr("width", visWidth)
+            .attr("height", visHeight);
 
         var defs = vis.append("defs").attr("id", "imgdefs");
 
@@ -39,7 +51,7 @@
             var force = d3.layout.force()
                 .charge(-50)
                 .linkDistance(100)
-                .size([width, height]);
+                .size([visWidth, visHeight]);
 
             var $vis = d3.select(this);
 
@@ -100,6 +112,9 @@
                 .attr("clip-path", "url(#clip-circle2)");
 
             force.start();
+            setTimeout(function () {
+                force.stop();
+            }, 2500);
 
             force.on("tick", function () {
                 link.attr("x1", function (d) { return d.source.x; })
@@ -111,8 +126,8 @@
                     return "translate(" + d.x + "," + d.y + ")";
                 });
 
-                node.attr("cx", function(d) { return d.x = Math.max(radius, Math.min(width - radius, d.x)); })
-                    .attr("cy", function(d) { return d.y = Math.max(radius, Math.min(height - radius, d.y)); });
+                node.attr("cx", function(d) { return d.x = Math.max(radius, Math.min(visWidth - radius, d.x)); })
+                    .attr("cy", function(d) { return d.y = Math.max(radius, Math.min(visHeight - radius, d.y)); });
 
             });
 
@@ -138,16 +153,18 @@
     function setData(d, i) {
 
         var random = new THREE.Object3D();
-        random.position.x = Math.random() * 4000 - 2000;
-        random.position.y = Math.random() * 4000 - 2000;
-        random.position.z = Math.random() * 4000 - 2000;
+        //random.position.x = Math.random() * 4000 - 2000;
+        //random.position.y = Math.random() * 4000 - 2000;
+        //random.position.z = Math.random() * 4000 - 2000;
+        random.position.x = 0;
+        random.position.y = 0;
+        random.position.z = -600;
         d['random'] = random;
 
         var flow = new THREE.Object3D();
         flow.position.x = 0;
         flow.position.y = 0;
-        flow.position.z = -(Math.floor(i)) * 400;
-
+        flow.position.z = -(Math.floor(i)) * 600;
         d['flow'] = flow;
     }
 
@@ -161,9 +178,29 @@
         if (prevLayout == layout) return;
         else prevLayout = layout;
 
-        var duration = 1000;
+        var duration = 2000;
 
         TWEEN.removeAll();
+
+         new TWEEN.Tween(camera.position)
+            .to(cameraPos, duration)
+            .easing(TWEEN.Easing.Sinusoidal.InOut)
+            .onUpdate(function () {
+                camera.position.z = camera.target.z + 1600;
+                camera.lookAt(camera.target);
+            })
+            .onComplete(function () {
+                //camera.position.z -= delta * p * s;
+                camera.lookAt(lookAtPos);
+            })
+            .start();
+
+        new TWEEN.Tween(camera.target).to(lookAtPos, duration)
+            .easing(TWEEN.Easing.Sinusoidal.InOut)
+            .onUpdate(function () {})
+            .onComplete(function () {
+                camera.lookAt(lookAtPos);
+            }).start();
 
         scene.children.forEach(function (object) {
             var newPos = object.element.__data__[layout].position;
@@ -208,7 +245,7 @@
         event.preventDefault();
 		event.stopPropagation();
 
-        var delta = 0, p = 0.1, s = 400;
+        var delta = 0, p = 0.1, s = 600;
 
 		if (event.wheelDelta) { // WebKit / Opera / Explorer 9
 			delta = event.wheelDelta / 40;
@@ -216,12 +253,60 @@
 			delta = - event.detail / 3;
 		}
 
-        if (zLookAt - delta * p * s > 0 || zLookAt - delta * p * s < -400 * VIZ.count) return;
-        camera.position.z -= delta * p * s;
+        if (zLookAt - delta * p * s > 0 || zLookAt - delta * p * s < -s * (VIZ.count - 1)) return;
+        //camera.position.z -= delta * p * s;
         zLookAt -= delta * p * s;
-        camera.lookAt({x:0, y:25, z:zLookAt });
-        VIZ.render();
-        VIZ.animate();
+        //camera.lookAt({x:0, y:25, z:zLookAt });
+
+        lookAtPos.z = zLookAt;
+
+        TWEEN.removeAll();
+
+        var duration = 1000;
+
+        new TWEEN.Tween(camera.position)
+            .to({x: camera.position.x, y: camera.position.y, z: camera.position.z - delta * p * s}, duration)
+            .easing(TWEEN.Easing.Sinusoidal.InOut)
+            .onUpdate(function () {
+                camera.position.z = camera.target.z + 1600;
+                camera.lookAt(camera.target);
+            })
+            .onComplete(function () {
+                //camera.position.z -= delta * p * s;
+                camera.lookAt(lookAtPos);
+            })
+            .start();
+
+        new TWEEN.Tween(camera.target).to(lookAtPos, duration)
+            .easing(TWEEN.Easing.Sinusoidal.InOut)
+            .onUpdate(function () {})
+            .onComplete(function () {
+                camera.lookAt(lookAtPos);
+            }).start();
+
+
+        //scene.children.forEach(function (object) {
+        //    var newPos = object.element.__data__[prevLayout].position;
+        //    if (delta > 0 && newPos.z > camera.position.z - 1000) {
+        //        new TWEEN.Tween(object.position)
+        //            .to({x: newPos.x+1000, y: newPos.y-1000, z: newPos.z}, 1000)
+        //            .easing(TWEEN.Easing.Sinusoidal.InOut)
+        //            .start();
+        //    }
+        //    else if (delta < 0 && newPos.z < camera.position.z -1000) {
+        //        new TWEEN.Tween(object.position)
+        //            .to({x: newPos.x, y: newPos.y, z: newPos.z}, 1000)
+        //            .easing(TWEEN.Easing.Sinusoidal.InOut)
+        //            .start();
+        //    }
+        //});
+
+        new TWEEN.Tween(this)
+           .to({}, duration)
+           .onUpdate(VIZ.render)
+           .start();
+
+        //VIZ.animate();
     });
 
 }());

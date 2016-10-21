@@ -73,7 +73,7 @@ def get_user_groups(user):
         user=user,
         is_joined=True
     )
-    groups = [gm.group for gm in gms]
+    groups = [gm.group for gm in gms if not gm.group.deprecated]
     return groups
 
 

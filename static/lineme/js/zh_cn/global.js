@@ -6,6 +6,8 @@
 
 $(function() {
 
+    var mobile = window.mobileAndTabletcheck();
+
     var changeMode = function(id1, id2, bid1, bid2, name1, name2, visible, viz) {
         $(id1).mouseover(function(){
             $(this).text(name2);
@@ -18,13 +20,25 @@ $(function() {
             $(this).hide();
             $(id2).show();
 
-            if (viz) VIZ.transform('flow');
+            if (viz) {
+                VIZ.transform('flow');
+            }
+
+            if (id2 == '#normal-mode') force.start();
+            else force.stop();
         });
     };
 
-    changeMode('#normal-mode', '#map-mode', '#network', '#map', '普通模式', '地图模式', true, false);
-    changeMode('#map-mode', '#three-mode', '#map', '#three', '地图模式', '3D模式', true, true);
-    changeMode('#three-mode', '#normal-mode', '#three', '#network', '3D模式', '普通模式', false, false);
+    if (!mobile) {
+        changeMode('#normal-mode', '#map-mode', '#network', '#map', '普通模式', '地图模式', true, false);
+        changeMode('#map-mode', '#three-mode', '#map', '#three', '地图模式', '3D模式', true, true);
+        changeMode('#three-mode', '#normal-mode', '#three', '#network', '3D模式', '普通模式', false, false);
+    }
+    else {
+        changeMode('#normal-mode', '#map-mode', '#network', '#map', '普通模式', '地图模式', true, false);
+        changeMode('#map-mode', '#normal-mode', '#map', '#network', '地图模式', '普通模式', false, true);
+    }
+
 
     var tip = d3.tip()
         .attr({'class': 'd3-tip'})
@@ -40,6 +54,11 @@ $(function() {
 
     $('#map').width(width).height(height);
     $('#three').width(width).height(height);
+
+    if (mobile) {
+        $('#three').remove();
+        $('#three-mode').remove();
+    }
 
     var xScale = d3.scale.linear()
         .domain([0,width]).range([0,width]);
@@ -65,7 +84,8 @@ $(function() {
     var force = d3.layout.force()
         .charge(charge)
         .linkDistance(400)
-        .size([width, height]);
+        .size([width, height])
+        .friction(0.5);
 
 
     var drag = force.drag()
@@ -415,14 +435,16 @@ $(function() {
         $('#map').find('.loader-inner').remove();
     });
 
-    d3.json(gThreeUrl, function (error, data) {
-        VIZ.drawElements(data);
-        //VIZ.transform('flow');
-        $('#three').find('.loader-inner').remove();
-        VIZ.render();
-        VIZ.animate();
-        window.addEventListener('resize', VIZ.onWindowResize, false);
-    });
+    if (!mobile) {
+        d3.json(gThreeUrl, function (error, data) {
+            VIZ.drawElements(data);
+            //VIZ.transform('flow');
+            $('#three').find('.loader-inner').remove();
+            VIZ.render();
+            VIZ.animate();
+            window.addEventListener('resize', VIZ.onWindowResize, false);
+        });
+    }
 
 });
 

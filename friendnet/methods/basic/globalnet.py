@@ -11,7 +11,7 @@ import friendnet.methods.basic.exp as exp
 from friendnet.models import Group
 
 
-@cache.get_or_set('globalcore')
+@cache.get_or_set('globalcore', 60 * 30)
 def get_user_global_core(groupid):
     return Graph(Group.objects.get(id=groupid)).core_builder()
 

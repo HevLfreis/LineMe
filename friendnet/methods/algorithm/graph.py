@@ -211,7 +211,7 @@ class Graph:
 
         for k, layer in layers.items():
             nodes, links = set([]), []
-            
+
             for (s, t) in layer:
                 nodes.add(s)
                 nodes.add(t)
