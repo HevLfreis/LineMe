@@ -11,6 +11,7 @@ Location: http://lime.seeleit.com/
 * AdminLTE
 * d3.js
 * echart
+* three.js
 * iCheck
 * hint.css
 * input-mask

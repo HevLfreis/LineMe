@@ -24,8 +24,7 @@ $(function() {
                 VIZ.transform('flow');
             }
 
-            if (id2 == '#normal-mode') force.start();
-            else force.stop();
+            if (id2 != '#normal-mode') force.stop();
         });
     };
 

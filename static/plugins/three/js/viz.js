@@ -14,9 +14,9 @@
     //camera.position.x = 1200;
     //camera.position.y = 750;
     //camera.position.z = 1000;
-    camera.position.x = 5000;
-    camera.position.y = 5000;
-    camera.position.z = 4000;
+    camera.position.x = cameraPos.x * 6;
+    camera.position.y = cameraPos.y * 6;
+    camera.position.z = cameraPos.z * 8;
     camera.lookAt({x:xLookAt, y:yLookAt, z:zLookAt});
 
     camera.target = {x:xLookAt, y:yLookAt, z:zLookAt};
@@ -153,9 +153,9 @@
     function setData(d, i) {
 
         var random = new THREE.Object3D();
-        //random.position.x = Math.random() * 4000 - 2000;
-        //random.position.y = Math.random() * 4000 - 2000;
-        //random.position.z = Math.random() * 4000 - 2000;
+        //random.position.x = 0;
+        //random.position.y = Math.random() * 8000 - 4000;
+        //random.position.z = -(Math.floor(i)) * 600;
         random.position.x = 0;
         random.position.y = 0;
         random.position.z = -600;

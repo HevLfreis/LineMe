@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="//cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css">
     <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
     <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
+    <link rel="stylesheet" href="/static/plugins/three/css/style.css">
     <link rel="stylesheet" href="/static/lineme/css/graph.css">
     <link rel="stylesheet" href="/static/lineme/css/global.css">
     <link rel="stylesheet" href="/static/lineme/css/animations.css">
@@ -185,7 +186,7 @@
                         </tr>
                       </thead>
                       <tbody>
-                        {% for top, d in top3 %}
+                        {% for top in top3 %}
                           <tr>
                             <td>{{ forloop.counter }}</td>
                             <td><a href="#">{{ top.member_name }}</a></td>

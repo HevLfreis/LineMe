@@ -11,7 +11,7 @@ import friendnet.methods.basic.exp as exp
 from friendnet.models import Group
 
 
-@cache.get_or_set('globalcore', 60 * 30)
+@cache.get_or_set('globalcore', 60 * 20)
 def get_user_global_core(groupid):
     return Graph(Group.objects.get(id=groupid)).core_builder()
 
@@ -42,12 +42,12 @@ def get_user_global_graph(user, groupid):
 
 @cache.get_or_set('globalmap')
 def get_user_global_map(user, groupid):
-    return get_user_global_basic(user, groupid).map_dictify()
+    return get_user_global_basic(user, groupid).map2dict()
 
 
 @cache.get_or_set('globalthree')
 def get_user_global_three(groupid):
-    return get_user_global_core(groupid).three_dictify()
+    return get_user_global_core(groupid).three2dict()
 
 
 @cache.get_or_set('globalinfo')
@@ -64,21 +64,21 @@ def get_user_global_exp(user, groupid):
 # Todo: link status should be 3
 # Todo: most contributor ? get most credits
 def graph_analyzer(user, groupid):
-    # Global = Graph(user, Group.objects.get(id=groupid)).global_builder()
+
     Global = get_user_global_basic(user, groupid)
     G = Global.bingo()
-    my_member = Global.myself()
+    my_member = Global.myself().id
 
     # Todo: exception
     if my_member is None:
         raise Exception('Member is None')
 
-    analyzer = GraphAnalyzer(G, my_member)
+    analyzer = GraphAnalyzer(Global)
 
     distribution = analyzer.degree_distribution()
 
     top = analyzer.sorted_degree()
-    top3 = top[0:3]
+    top3 = [Global.get_member(t) for t, d in top[0:3]]
 
     rank = top.index((my_member, G.degree(my_member))) + 1
 
