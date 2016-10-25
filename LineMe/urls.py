@@ -76,9 +76,6 @@ urlpatterns = [
     url(r'^404/$', views.view_404, name='404'),
     #
     # url(r'^admin/', include(admin.site.urls)),
-
-    url(r'^three/$', views.three, name='three'),
-    url(r'^threegraph/$', views.threegraph, name='threeGraph'),
 ]
 
 if settings.DEBUG:

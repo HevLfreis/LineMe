@@ -6,17 +6,21 @@
     <title>{{ project_name }} | Settings</title>
 {#    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">#}
     <link rel="shortcut icon" href="/media/favicon.ico">
-    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="//cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css">
-    <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
-    <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
-    <link rel="stylesheet" href="/static/plugins/cropit/css/cropit.css">
-    <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
-    <link rel="stylesheet" href="/static/plugins/switchery/css/switchery.min.css">
-    <link rel="stylesheet" href="/static/plugins/hint/css/hint.css">
-    <link rel="stylesheet" href="/static/plugins/trip/css/trip.min.css">
-    <link rel="stylesheet" href="/static/lineme/css/settings.css">
+
+    {% load compress %}
+    {% compress css %}
+      <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+      <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
+      <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
+      <link rel="stylesheet" href="/static/plugins/cropit/css/cropit.css">
+      <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
+      <link rel="stylesheet" href="/static/plugins/switchery/css/switchery.min.css">
+      <link rel="stylesheet" href="/static/plugins/hint/css/hint.css">
+      <link rel="stylesheet" href="/static/plugins/trip/css/trip.min.css">
+      <link rel="stylesheet" href="/static/lineme/css/settings.css">
+    {% endcompress %}
   </head>
   <body class="hold-transition skin-black sidebar-mini">
     <div class="wrapper">
@@ -296,6 +300,17 @@
                     <h3 class="timeline-header">About LineMe</h3>
                     <div class="timeline-body">
                       <img src="/media/images/logo.jpg" class="img-responsive" alt="LineMe Logo">
+                      <br>
+                      <blockquote>
+                        <p>LineMe is based on d3.js, echart and django.</p>
+                        <p>Developed by
+                          <a href="http://seeleit.com" target="_blank">@HevLfreis</a>
+                          , code in
+                          <a href="https://github.com/HevLfreis/LineMe" target="_blank">Github</a>.
+                          Contact: hevlhayt@foxmail.com。
+                        </p>
+                        <p>&copy; 2016 SJTU CNC. </p>
+                      </blockquote>
                     </div>
                   </div>
                 </li>
@@ -315,42 +330,44 @@
       </footer>
     </div>
 
-    <script src="/static/plugins/jquery/jquery.min.js"></script>
-    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
-    <script src="/static/dist/js/app.min.js"></script>
-    <script src="/static/plugins/rollbar/js/jquery.rollbar.min.js"></script>
-    <script src="/static/lineme/js/rollbar.js"></script>
-    <script src="/static/plugins/switchery/js/switchery.min.js"></script>
-    <script src="/static/plugins/cropit/js/jquery.cropit.js"></script>
-    <script src="/static/lineme/js/autocomplete.js"></script>
-    <script src="/static/lineme/js/analytics.js"></script>
-    <script src="/static/plugins/trip/js/trip.js"></script>
-    <script src="/static/lineme/js/trip/trip-none.js"></script>
-    <script type="text/javascript">
+    {% compress js %}
+      <script src="/static/plugins/jquery/jquery.min.js"></script>
+      <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+      <script src="/static/dist/js/app.min.js"></script>
+      <script src="/static/plugins/rollbar/js/jquery.rollbar.min.js"></script>
+      <script src="/static/lineme/js/rollbar.js"></script>
+      <script src="/static/plugins/switchery/js/switchery.min.js"></script>
+      <script src="/static/plugins/cropit/js/jquery.cropit.js"></script>
+      <script src="/static/lineme/js/autocomplete.js"></script>
+      <script src="/static/lineme/js/analytics.js"></script>
+      <script src="/static/plugins/trip/js/trip.js"></script>
+      <script src="/static/lineme/js/trip/trip-none.js"></script>
+      <script type="text/javascript">
 
-      var emails = "{{ user.email }}".split("@");
-      var births = "{{ user.extra.birth }}".split(",");
-      var locations = "{{ user.extra.location|safe }}".split("-");
-      var institution = "{{ user.extra.institution }}";
+        var emails = "{{ user.email }}".split("@");
+        var births = "{{ user.extra.birth }}".split(",");
+        var locations = "{{ user.extra.location|safe }}".split("-");
+        var institution = "{{ user.extra.institution }}";
 
-      var userid = {{ user.id }};
-      var loginUrl = "{% url 'login' %}";
-      var imgHandleUrl = "{% url 'imgHandle' %}";
-      var pwResetUrl = "{% url 'password' %}";
-      var priSaveUrl = "{% url 'privacy' %}";
+        var userid = {{ user.id }};
+        var loginUrl = "{% url 'login' %}";
+        var imgHandleUrl = "{% url 'imgHandle' %}";
+        var pwResetUrl = "{% url 'password' %}";
+        var priSaveUrl = "{% url 'privacy' %}";
 
-      $('#profile-email1').text(emails[0]);
-      $('#profile-email2').text('@'+emails[1]);
-      $('#profile-birth').text(births[0]);
-      $('#profile-location1').text(locations[0]);
-      $('#profile-location2').text(locations[1]);
-      $('#profile-institution').text(function(){
-        return institution==""?"Blank":institution;
-      });
+        $('#profile-email1').text(emails[0]);
+        $('#profile-email2').text('@'+emails[1]);
+        $('#profile-birth').text(births[0]);
+        $('#profile-location1').text(locations[0]);
+        $('#profile-location2').text(locations[1]);
+        $('#profile-institution').text(function(){
+          return institution==""?"Blank":institution;
+        });
 
       $('#search').autocomplete();
 
-    </script>
-    <script src="/static/lineme/js/settings.js"></script>
+      </script>
+      <script src="/static/lineme/js/settings.js"></script>
+    {% endcompress %}
   </body>
 </html>

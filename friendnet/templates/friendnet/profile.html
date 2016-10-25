@@ -6,29 +6,33 @@
     <title>{{ project_name }} | Profile</title>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="shortcut icon" href="/media/favicon.ico">
-    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="//cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css">
-    <link rel="stylesheet" href="/static/plugins/icheck/all.css">
-    <link rel="stylesheet" href="/static/plugins/select2/select2.min.css">
-    <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
-    <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
-    <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
-    <link rel="stylesheet" href="/static/plugins/hint/css/hint.css">
-    <link rel="stylesheet" href="/static/plugins/trip/css/trip.min.css">
-    <style>
-      .pull-left {
-        margin-top: 3px;
-      }
 
-      .content-wrapper {
-        margin-left: 0;
-      }
+    {% load compress %}
+    {% compress css %}
+      <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+      <link rel="stylesheet" href="/static/plugins/icheck/flat/blue.css">
+      <link rel="stylesheet" href="/static/plugins/select2/select2.min.css">
+      <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
+      <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
+      <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
+      <link rel="stylesheet" href="/static/plugins/hint/css/hint.css">
+      <link rel="stylesheet" href="/static/plugins/trip/css/trip.min.css">
+      <style>
+        .pull-left {
+          margin-top: 3px;
+        }
 
-      .main-footer {
-        margin-left: 0;
-      }
-    </style>
+        .content-wrapper {
+          margin-left: 0;
+        }
+
+        .main-footer {
+          margin-left: 0;
+        }
+      </style>
+    {% endcompress %}
   </head>
   <body class="hold-transition skin-black sidebar-mini">
     <div class="wrapper">
@@ -188,59 +192,61 @@
       </footer>
     </div>
 
-    <script src="/static/plugins/jquery/jquery.min.js"></script>
-    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
-    <script src="/static/dist/js/app.min.js"></script>
-    <script src="/static/plugins/select2/select2.full.min.js"></script>
-    <script src="/static/plugins/inputmask/jquery.inputmask.bundle.min.js"></script>
-    <script src="/static/plugins/icheck/icheck.min.js"></script>
-    <script src="/static/plugins/rollbar/js/jquery.rollbar.min.js"></script>
-    <script src="/static/lineme/js/rollbar.js"></script>
-    <script src="/static/lineme/js/analytics.js"></script>
-    <script src="/static/plugins/trip/js/trip.js"></script>
-    <script src="/static/lineme/js/trip/trip-none.js"></script>
-    <script type="text/javascript">
+    {% compress js %}
+      <script src="/static/plugins/jquery/jquery.min.js"></script>
+      <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+      <script src="/static/dist/js/app.min.js"></script>
+      <script src="/static/plugins/select2/select2.full.min.js"></script>
+      <script src="/static/plugins/inputmask/jquery.inputmask.bundle.min.js"></script>
+      <script src="/static/plugins/icheck/icheck.min.js"></script>
+      <script src="/static/plugins/rollbar/js/jquery.rollbar.min.js"></script>
+      <script src="/static/lineme/js/rollbar.js"></script>
+      <script src="/static/lineme/js/analytics.js"></script>
+      <script src="/static/plugins/trip/js/trip.js"></script>
+      <script src="/static/lineme/js/trip/trip-none.js"></script>
+      <script type="text/javascript">
 
-      var country = "{{ country }}".replace(' ', '-'), city = "{{ city }}";
+        var country = "{{ country }}".replace(' ', '-'), city = "{{ city }}";
 
-      $("#birth").inputmask();
+        $("#birth").inputmask();
 
-      $('input[type="radio"].minimal').iCheck({
-        radioClass: 'iradio_flat-blue'
-      });
-
-      $('#submit').click(function() {
-        $.post('{% url 'profile' %}', $("form").serialize(), function(data) {
-           if(data == -1) alert("There're some mistakes / missings in your submission");
-           else window.location.href="{% url 'home' %}";
+        $('input[type="radio"].minimal').iCheck({
+          radioClass: 'iradio_flat-blue'
         });
-      });
 
-      var $cityFrom = $("#city-form");
+        $('#submit').click(function() {
+          $.post('{% url 'profile' %}', $("form").serialize(), function(data) {
+             if(data == -1) alert("There're some mistakes / missings in your submission");
+             else window.location.href="{% url 'home' %}";
+          });
+        });
 
-      $("#country-form").children("select").select2({
-        minimumResultsForSearch: 5
-      }).on("change", function(e) {
-         $cityFrom.children("span").hide();
-         $("#" + country).attr("disabled", true);
-         country = $(this).select2("val");
-         $("#" + country).attr("disabled",false).next("span").show();
-      });
+        var $cityFrom = $("#city-form");
 
-      $cityFrom.children(".select2").select2({
-        minimumResultsForSearch: 5
-      });
+        $("#country-form").children("select").select2({
+          minimumResultsForSearch: 5
+        }).on("change", function(e) {
+           $cityFrom.children("span").hide();
+           $("#" + country).attr("disabled", true);
+           country = $(this).select2("val");
+           $("#" + country).attr("disabled",false).next("span").show();
+        });
 
-      $cityFrom.children("span").hide();
-      if(country == "") {
-        $("#China").attr("disabled",false).next("span").show();
-      }
-      else {
-        $("#"+ country).attr("disabled",false).next("span").show();
-      }
+        $cityFrom.children(".select2").select2({
+          minimumResultsForSearch: 5
+        });
 
-      $('.form-dummy').hide();
+        $cityFrom.children("span").hide();
+        if(country == "") {
+          $("#China").attr("disabled",false).next("span").show();
+        }
+        else {
+          $("#"+ country).attr("disabled",false).next("span").show();
+        }
 
-    </script>
+        $('.form-dummy').hide();
+
+      </script>
+    {% endcompress %}
   </body>
 </html>

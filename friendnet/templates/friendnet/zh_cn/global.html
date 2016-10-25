@@ -6,19 +6,23 @@
     <title>{{ project_name }} | 全局网络</title>
 {#    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">#}
     <link rel="shortcut icon" href="/media/favicon.ico">
-    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="//cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css">
-    <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
-    <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
-    <link rel="stylesheet" href="/static/plugins/three/css/style.css">
-    <link rel="stylesheet" href="/static/lineme/css/graph.css">
-    <link rel="stylesheet" href="/static/lineme/css/global.css">
-    <link rel="stylesheet" href="/static/lineme/css/animations.css">
-    <link rel="stylesheet" href="/static/plugins/d3/css/d3-tip.css">
-    <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
-    <link rel="stylesheet" href="/static/plugins/hint/css/hint.css">
-    <link rel="stylesheet" href="/static/plugins/trip/css/trip.min.css">
+
+    {% load compress %}
+    {% compress css %}
+      <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+      <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
+      <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
+      <link rel="stylesheet" href="/static/plugins/three/css/style.css">
+      <link rel="stylesheet" href="/static/lineme/css/graph.css">
+      <link rel="stylesheet" href="/static/lineme/css/global.css">
+      <link rel="stylesheet" href="/static/lineme/css/animations.css">
+      <link rel="stylesheet" href="/static/plugins/d3/css/d3-tip.css">
+      <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
+      <link rel="stylesheet" href="/static/plugins/hint/css/hint.css">
+      <link rel="stylesheet" href="/static/plugins/trip/css/trip.min.css">
+    {% endcompress %}
   </head>
   <body class="hold-transition skin-black sidebar-mini">
     <div class="wrapper">
@@ -247,41 +251,43 @@
       </footer>
     </div>
 
-    <script src="/static/plugins/jquery/jquery.min.js"></script>
-    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
-    <script src="/static/dist/js/app.min.js"></script>
-    <script src="/static/plugins/rollbar/js/jquery.rollbar.min.js"></script>
-    <script src="/static/lineme/js/rollbar.js"></script>
-    <script src="/static/lineme/js/autocomplete.js"></script>
-    <script src="/static/lineme/js/analytics.js"></script>
-    <script src="/static/plugins/trip/js/trip.js"></script>
-    <script type="text/javascript">
-      $('#search').autocomplete({
-        type: 'global'
-      });
-    </script>
-    {% if group %}
-      <script src="/static/plugins/d3/js/d3.js"></script>
-      <script src="/static/plugins/d3/js/d3-tip.js"></script>
-      <script src="/static/plugins/echart/js/echarts.min.js"></script>
-      <script src="/static/plugins/echart/js/roma.js"></script>
-      <script src="/static/plugins/echart/js/china.js"></script>
-      <script src="/static/plugins/three/js/three.min.js"></script>
-      <script src="/static/plugins/three/js/tween.js"></script>
-      <script src="/static/plugins/three/js/css3drenderer.js"></script>
-      <script src="/static/plugins/three/js/viz.js"></script>
-      <script src="/static/lineme/js/zh_cn/trip/trip-global.js"></script>
+    {% compress js %}
+      <script src="/static/plugins/jquery/jquery.min.js"></script>
+      <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+      <script src="/static/dist/js/app.min.js"></script>
+      <script src="/static/plugins/rollbar/js/jquery.rollbar.min.js"></script>
+      <script src="/static/lineme/js/rollbar.js"></script>
+      <script src="/static/lineme/js/autocomplete.js"></script>
+      <script src="/static/lineme/js/analytics.js"></script>
+      <script src="/static/plugins/trip/js/trip.js"></script>
       <script type="text/javascript">
-        var groupid = {{ group.id }};
-        var disData = {{ distribution|safe }};
-
-        var gGraphUrl = "{% url 'gGraph' group.id %}";
-        var gMapUrl = "{% url 'gMap' group.id %}";
-        var gThreeUrl = "{% url 'gThree' group.id %}";
+        $('#search').autocomplete({
+          type: 'global'
+        });
       </script>
-      <script src="/static/lineme/js/zh_cn/global.js"></script>
-    {% else %}
-      <script src="/static/lineme/js/zh_cn/trip/trip-none.js"></script>
-    {% endif %}
+      {% if group %}
+        <script src="/static/plugins/d3/js/d3.js"></script>
+        <script src="/static/plugins/d3/js/d3-tip.js"></script>
+        <script src="/static/plugins/echart/js/echarts.min.js"></script>
+        <script src="/static/plugins/echart/js/roma.js"></script>
+        <script src="/static/plugins/echart/js/china.js"></script>
+        <script src="/static/plugins/three/js/three.min.js"></script>
+        <script src="/static/plugins/three/js/tween.js"></script>
+        <script src="/static/plugins/three/js/css3drenderer.js"></script>
+        <script src="/static/plugins/three/js/viz.js"></script>
+        <script src="/static/lineme/js/zh_cn/trip/trip-global.js"></script>
+        <script type="text/javascript">
+          var groupid = {{ group.id }};
+          var disData = {{ distribution|safe }};
+
+          var gGraphUrl = "{% url 'gGraph' group.id %}";
+          var gMapUrl = "{% url 'gMap' group.id %}";
+          var gThreeUrl = "{% url 'gThree' group.id %}";
+        </script>
+        <script src="/static/lineme/js/zh_cn/global.js"></script>
+      {% else %}
+        <script src="/static/lineme/js/zh_cn/trip/trip-none.js"></script>
+      {% endif %}
+    {% endcompress %}
   </body>
 </html>

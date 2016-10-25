@@ -6,23 +6,27 @@
     <title>{{ project_name }} | 群</title>
 {#    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">#}
     <link rel="shortcut icon" href="/media/favicon.ico">
-    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/static/plugins/icheck/all.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="//cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
-    <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
-    <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
-    <link rel="stylesheet" href="/static/plugins/hint/css/hint.css">
-    <link rel="stylesheet" href="/static/plugins/trip/css/trip.min.css">
-    <style>
-      .box-body .form-group {
-        width: 250px;
-      }
-      .btn-group > button{
-        width: 125px;
-      }
-    </style>
+
+    {% load compress %}
+    {% compress css %}
+      <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+      <link rel="stylesheet" href="/static/plugins/icheck/flat/green.css">
+      <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
+      <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
+      <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
+      <link rel="stylesheet" href="/static/plugins/hint/css/hint.css">
+      <link rel="stylesheet" href="/static/plugins/trip/css/trip.min.css">
+      <style>
+        .box-body .form-group {
+          width: 250px;
+        }
+        .btn-group > button{
+          width: 125px;
+        }
+      </style>
+    {% endcompress %}
   </head>
   <body class="hold-transition skin-black sidebar-mini">
     <div class="wrapper">
@@ -302,54 +306,44 @@
       </footer>
     </div>
 
-    <script src="/static/plugins/jquery/jquery.min.js"></script>
-    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
-    <script src="/static/dist/js/app.min.js"></script>
-    <script src="/static/plugins/icheck/icheck.min.js"></script>
-    <script src="/static/plugins/rollbar/js/jquery.rollbar.min.js"></script>
-    <script src="/static/lineme/js/rollbar.js"></script>
-    <script src="/static/lineme/js/autocomplete.js"></script>
-    <script src="/static/lineme/js/analytics.js"></script>
-    <script src="/static/plugins/trip/js/trip.js"></script>
-    <script src="/static/lineme/js/zh_cn/trip/trip-none.js"></script>
-    <script type="text/javascript">
+    {% compress js %}
+      <script src="/static/plugins/jquery/jquery.min.js"></script>
+      <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+      <script src="/static/dist/js/app.min.js"></script>
+      <script src="/static/plugins/icheck/icheck.min.js"></script>
+      <script src="/static/plugins/rollbar/js/jquery.rollbar.min.js"></script>
+      <script src="/static/lineme/js/rollbar.js"></script>
+      <script src="/static/lineme/js/autocomplete.js"></script>
+      <script src="/static/lineme/js/analytics.js"></script>
+      <script src="/static/plugins/trip/js/trip.js"></script>
+      <script src="/static/lineme/js/zh_cn/trip/trip-none.js"></script>
+      <script type="text/javascript">
 
-      var emails = "{{ user.email }}".split("@");
-      var births = "{{ user.extra.birth }}".split(",");
-      var locations = "{{ user.extra.location }}".split(" ");
-      var institutions = "{{ user.extra.institution }}".split(" ");
-      $('#profile-email1').text(emails[0]);
-      $('#profile-email2').text('@'+emails[1]);
-      $('#profile-birth').text(births[0]);
-      $('#profile-location1').text(locations[0]);
-      $('#profile-location2').text(locations[1]);
-      $('#profile-institution1').text(institutions[0]);
-      $('#profile-institution2').text(institutions[1]);
-
-      $('.modal').on('show.bs.modal', function (e) {
-        var $dialog = $(this).find('.modal-dialog');
-        $dialog.css({
-            'margin-top': function () {
-                var modalHeight = $dialog.height();
-                return ($(window).height() / 6 - (modalHeight / 2));
-            }
+        $('.modal').on('show.bs.modal', function (e) {
+          var $dialog = $(this).find('.modal-dialog');
+          $dialog.css({
+              'margin-top': function () {
+                  var modalHeight = $dialog.height();
+                  return ($(window).height() / 6 - (modalHeight / 2));
+              }
+          });
         });
-      });
 
-      $('input[type="radio"].minimal').iCheck({
-        radioClass: 'iradio_flat-green'
-      });
+        $('input[type="radio"].minimal').iCheck({
+          radioClass: 'iradio_flat-green'
+        });
 
-      function chooseFile() {
-        $('#from-file-input').click()
-      }
+        function chooseFile() {
+          $('#from-file-input').click()
+        }
 
-      $('#from-file-input').change(function() {
-        $('#from-file').submit();
-      });
+        $('#from-file-input').change(function() {
+          $('#from-file').submit();
+        });
 
-      $('#search').autocomplete();
+        $('#search').autocomplete();
 
-    </script>
+      </script>
+    {% endcompress %}
   </body>
 </html>

@@ -6,18 +6,22 @@
     <title>{{ project_name }} | My Network</title>
 {#    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">#}
     <link rel="shortcut icon" href="/media/favicon.ico">
-    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="//cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css">
-    <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
-    <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
-    <link rel="stylesheet" href="/static/lineme/css/graph.css">
-    <link rel="stylesheet" href="/static/lineme/css/ego.css">
-    <link rel="stylesheet" href="/static/lineme/css/borderMenu.css">
-    <link rel="stylesheet" href="/static/plugins/d3/css/d3-tip.css">
-    <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
-    <link rel="stylesheet" href="/static/plugins/hint/css/hint.css">
-    <link rel="stylesheet" href="/static/plugins/trip/css/trip.min.css">
+
+    {% load compress %}
+    {% compress css %}
+      <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+      <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
+      <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
+      <link rel="stylesheet" href="/static/lineme/css/graph.css">
+      <link rel="stylesheet" href="/static/lineme/css/ego.css">
+      <link rel="stylesheet" href="/static/lineme/css/borderMenu.css">
+      <link rel="stylesheet" href="/static/plugins/d3/css/d3-tip.css">
+      <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
+      <link rel="stylesheet" href="/static/plugins/hint/css/hint.css">
+      <link rel="stylesheet" href="/static/plugins/trip/css/trip.min.css">
+    {% endcompress %}
   </head>
   <body class="hold-transition skin-black sidebar-mini">
     <div class="wrapper">
@@ -187,34 +191,36 @@
       </footer>
     </div>
 
-    <script src="/static/plugins/jquery/jquery.min.js"></script>
-    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
-    <script src="/static/dist/js/app.min.js"></script>
-    <script src="/static/plugins/d3/js/d3.js"></script>
-    <script src="/static/plugins/d3/js/d3-tip.js"></script>
-    <script src="/static/plugins/rollbar/js/jquery.rollbar.min.js"></script>
-    <script src="/static/lineme/js/rollbar.js"></script>
-    <script src="/static/lineme/js/autocomplete.js"></script>
-    <script src="/static/lineme/js/analytics.js"></script>
-    <script src="/static/plugins/trip/js/trip.js"></script>
-    {% if group %}
-      <script src="/static/lineme/js/classie.js"></script>
-      <script src="/static/lineme/js/borderMenu.js"></script>
-      <script src="/static/lineme/js/trip/trip-ego.js"></script>
-      <script type="text/javascript">
-        var groupid = {{ group.id }};
-        var rcmdUrl = "{% url 'rcmd' group.id %}";
-        var eGraphUrl = "{% url 'eGraph' group.id %}";
-        var updateGraphUrl = "{% url 'updateGraph' group.id %}";
-      </script>
-      <script src="/static/lineme/js/ego.js"></script>
-    {% else %}
-      <script src="/static/lineme/js/trip/trip-none.js"></script>
-      <script type="text/javascript">
-        $('#search').autocomplete({
-          type: 'ego'
-        });
-      </script>
-    {% endif %}
+    {% compress js %}
+      <script src="/static/plugins/jquery/jquery.min.js"></script>
+      <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+      <script src="/static/dist/js/app.min.js"></script>
+      <script src="/static/plugins/d3/js/d3.js"></script>
+      <script src="/static/plugins/d3/js/d3-tip.js"></script>
+      <script src="/static/plugins/rollbar/js/jquery.rollbar.min.js"></script>
+      <script src="/static/lineme/js/rollbar.js"></script>
+      <script src="/static/lineme/js/autocomplete.js"></script>
+      <script src="/static/lineme/js/analytics.js"></script>
+      <script src="/static/plugins/trip/js/trip.js"></script>
+      {% if group %}
+        <script src="/static/lineme/js/classie.js"></script>
+        <script src="/static/lineme/js/borderMenu.js"></script>
+        <script src="/static/lineme/js/trip/trip-ego.js"></script>
+        <script type="text/javascript">
+          var groupid = {{ group.id }};
+          var rcmdUrl = "{% url 'rcmd' group.id %}";
+          var eGraphUrl = "{% url 'eGraph' group.id %}";
+          var updateGraphUrl = "{% url 'updateGraph' group.id %}";
+        </script>
+        <script src="/static/lineme/js/ego.js"></script>
+      {% else %}
+        <script src="/static/lineme/js/trip/trip-none.js"></script>
+        <script type="text/javascript">
+          $('#search').autocomplete({
+            type: 'ego'
+          });
+        </script>
+      {% endif %}
+    {% endcompress %}
   </body>
 </html>

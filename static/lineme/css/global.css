@@ -11,7 +11,7 @@
     z-index: 1;
 }
 
-#map, #three{
+#map, #three {
     position: absolute;
     z-index: 1;
     visibility: hidden;

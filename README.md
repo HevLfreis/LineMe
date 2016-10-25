@@ -19,9 +19,12 @@ Location: http://lime.seeleit.com/
 * select2
 * cropit
 * django
+* django-compressor
+* django-htmlmin
 * networkx
 * PostgreSQL
 * Redis
+* locust
 
 ## License
 MIT

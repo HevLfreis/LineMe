@@ -15,14 +15,15 @@ def home(l):
 
 
 def ego(l):
-    l.client.get("/ego/10000")
-    l.client.get("/egraph/10000")
+    l.client.get("/ego/10001")
+    l.client.get("/egraph/10001")
 
 
 def glo(l):
-    l.client.get("/global/10000")
-    l.client.get("/ggraph/10000")
-    l.client.get("/gmap/10000")
+    l.client.get("/global/10001")
+    l.client.get("/ggraph/10001")
+    l.client.get("/gmap/10001")
+    l.client.get("/gthree/10001")
 
 
 def profile(l):
@@ -46,7 +47,7 @@ def logout(l):
 
 
 class UserBehavior(TaskSet):
-    tasks = {home: 2, static: 10, ego: 2, glo: 2, profile: 1}
+    tasks = {home: 2, ego: 2, glo: 2, profile: 1}
 
     def on_start(self):
         login(self)

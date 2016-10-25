@@ -6,11 +6,15 @@
     <title>{{ project_name }} | Register</title>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="shortcut icon" href="/media/favicon.ico">
-    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="//cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css">
-    <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
-    <link rel="stylesheet" href="/static/plugins/icheck/square/blue.css">
+
+    {% load compress %}
+    {% compress css %}
+      <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+      <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
+      <link rel="stylesheet" href="/static/plugins/icheck/square/blue.css">
+    {% endcompress %}
   </head>
   <body class="hold-transition register-page">
     <div class="register-box">
@@ -68,17 +72,19 @@
       </div>
     </div>
 
-    <script src="/static/plugins/jquery/jquery.min.js"></script>
-    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
-    <script src="/static/plugins/icheck/icheck.min.js"></script>
-    <script src="/static/lineme/js/analytics.js"></script>
-    <script type="text/javascript">
-      $(function () {
-        $('input[type="checkbox"]').iCheck({
-          checkboxClass: 'icheckbox_square-blue',
-          increaseArea: '20%'
+    {% compress js %}
+      <script src="/static/plugins/jquery/jquery.min.js"></script>
+      <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+      <script src="/static/plugins/icheck/icheck.min.js"></script>
+      <script src="/static/lineme/js/analytics.js"></script>
+      <script type="text/javascript">
+        $(function () {
+          $('input[type="checkbox"]').iCheck({
+            checkboxClass: 'icheckbox_square-blue',
+            increaseArea: '20%'
+          });
         });
-      });
-    </script>
+      </script>
+    {% endcompress %}
   </body>
 </html>

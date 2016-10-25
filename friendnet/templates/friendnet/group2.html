@@ -6,20 +6,24 @@
     <title>{{ project_name }} | Group</title>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="shortcut icon" href="/media/favicon.ico">
-    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/static/plugins/icheck/all.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="//cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
-    <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
-    <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
-    <link rel="stylesheet" href="/static/plugins/hint/css/hint.css">
-    <link rel="stylesheet" href="/static/plugins/trip/css/trip.min.css">
-    <style>
-      blockquote {
-        margin: 0 0 10px;
-      }
-    </style>
+
+    {% load compress %}
+    {% compress css %}
+      <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+      <link rel="stylesheet" href="/static/plugins/icheck/flat/green.css">
+      <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
+      <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
+      <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
+      <link rel="stylesheet" href="/static/plugins/hint/css/hint.css">
+      <link rel="stylesheet" href="/static/plugins/trip/css/trip.min.css">
+      <style>
+        blockquote {
+          margin: 0 0 10px;
+        }
+      </style>
+    {% endcompress %}
   </head>
   <body class="hold-transition skin-black sidebar-mini">
     <div class="wrapper">
@@ -275,40 +279,28 @@
       </footer>
     </div>
 
-    <script src="/static/plugins/jquery/jquery.min.js"></script>
-    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
-    <script src="/static/dist/js/app.min.js"></script>
-    <script src="/static/plugins/icheck/icheck.min.js"></script>
-    <script src="/static/plugins/rollbar/js/jquery.rollbar.min.js"></script>
-    <script src="/static/lineme/js/rollbar.js"></script>
-    <script src="/static/lineme/js/autocomplete.js"></script>
-    <script src="/static/lineme/js/analytics.js"></script>
-    <script src="/static/plugins/trip/js/trip.js"></script>
-    <script src="/static/lineme/js/trip/trip-none.js"></script>
-    <script type="text/javascript">
+    {% compress js %}
+      <script src="/static/plugins/jquery/jquery.min.js"></script>
+      <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+      <script src="/static/dist/js/app.min.js"></script>
+      <script src="/static/plugins/icheck/icheck.min.js"></script>
+      <script src="/static/plugins/rollbar/js/jquery.rollbar.min.js"></script>
+      <script src="/static/lineme/js/rollbar.js"></script>
+      <script src="/static/lineme/js/autocomplete.js"></script>
+      <script src="/static/lineme/js/analytics.js"></script>
+      <script src="/static/plugins/trip/js/trip.js"></script>
+      <script src="/static/lineme/js/trip/trip-none.js"></script>
+      <script type="text/javascript">
 
-      var groupid = {{ group.id }};
-      var identifier = {{ group.identifier }};
+        var groupid = {{ group.id }};
+        var identifier = {{ group.identifier }};
+        var joinUrl = "{% url 'join' group.id %}";
+        var egoUrl = "{% url 'egoId' group.id %}";
 
-      var emails = "{{ user.email }}".split("@");
-      var births = "{{ user.extra.birth }}".split(",");
-      var locations = "{{ user.extra.location }}".split(" ");
-      var institutions = "{{ user.extra.institution }}".split(" ");
+        $('#search').autocomplete();
 
-      var joinUrl = "{% url 'join' group.id %}";
-      var egoUrl = "{% url 'egoId' group.id %}";
-
-      $('#profile-email1').text(emails[0]);
-      $('#profile-email2').text('@'+emails[1]);
-      $('#profile-birth').text(births[0]);
-      $('#profile-location1').text(locations[0]);
-      $('#profile-location2').text(locations[1]);
-      $('#profile-institution1').text(institutions[0]);
-      $('#profile-institution2').text(institutions[1]);
-
-      $('#search').autocomplete();
-
-    </script>
-    <script src="/static/lineme/js/group2.js"></script>
+      </script>
+      <script src="/static/lineme/js/group2.js"></script>
+    {% endcompress %}
   </body>
 </html>

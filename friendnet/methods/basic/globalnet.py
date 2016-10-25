@@ -46,8 +46,8 @@ def get_user_global_map(user, groupid):
 
 
 @cache.get_or_set('globalthree')
-def get_user_global_three(groupid):
-    return get_user_global_core(groupid).three2dict()
+def get_user_global_three(user, groupid):
+    return get_user_global_basic(user, groupid).three2dict()
 
 
 @cache.get_or_set('globalinfo')

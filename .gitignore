@@ -109,6 +109,7 @@ $RECYCLE.BIN/
 *.lnk
 
 .idea/
+static/compressed/
 media/images/avatars/*.png
 media/images/avatars/hdpi/*.png
 *.ids

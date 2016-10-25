@@ -50,23 +50,6 @@ def redirect2main(request):
     return redirect('home')
 
 
-def three(request):
-    # threegraph(request, 10000)
-    return render(request, 'friendnet/three.html')
-
-
-def threegraph(request, groupid=10000):
-    gms = GroupMember.objects.filter(group__id=groupid)
-    group = Group.objects.get(id=groupid)
-
-    users = [gm.user for gm in gms if gm.user is not None]
-
-    data = [Graph(group).ego_builder(user).dictify() for user in users]
-
-    # print data
-    return JsonResponse(data, safe=False)
-
-
 def view_404(request):
     context = {"project_name": PROJECT_NAME,
                "lang": lang}
@@ -252,7 +235,7 @@ def msg_handle(request, mtype='0', handleid=0):
         else:
             return HttpResponse(status=403)
 
-        return HttpResponse(status)
+        return HttpResponse(status, content_type='text/plain')
 
     elif request.is_ajax():
         links = request.POST.get('linkids')
@@ -265,7 +248,7 @@ def msg_handle(request, mtype='0', handleid=0):
             if status == 0:
                 count += 1
 
-        return HttpResponse(count)
+        return HttpResponse(count, content_type='text/plain')
 
     else:
         return HttpResponse(status=403)
@@ -374,6 +357,7 @@ def rcmd_panel(request, groupid):
             p = paginator.page(paginator.num_pages)
 
         return render(request, template_dir+'ego_rcmd.html', {'members': p})
+
     else:
         return HttpResponse(status=403)
 
@@ -385,7 +369,7 @@ def update_graph(request, groupid):
     if request.is_ajax():
         new_links = request.POST.get('links')
         status = update_links(request, new_links, user, groupid)
-        return HttpResponse(status)
+        return HttpResponse(status, content_type='text/plain')
 
     else:
         return HttpResponse(status=403)
@@ -431,7 +415,6 @@ def global_graph(request, groupid=0):
     data = get_user_global_graph(user, groupid)
     # get_user_global_basic(user, groupid)
     # data = cache.get_or_set('globalnet', get_user_global_graph, user, groupid)
-
     return JsonResponse(data, safe=False)
 
 
@@ -456,7 +439,7 @@ def global_three(request, groupid=0):
     if groupid == 0:
         return JsonResponse({"nodes": None, "links": None}, safe=False)
 
-    data = get_user_global_three(groupid)
+    data = get_user_global_three(user, groupid)
     return JsonResponse(data, safe=False)
 
 
@@ -498,9 +481,9 @@ def profile(request):
             if pf.update() == 0:
                 if first_login:
                     create_avatar(request, user.id, username=get_user_name(user))
-                return HttpResponse(0)
+                return HttpResponse(0, content_type='text/plain')
 
-        return HttpResponse(-1)
+        return HttpResponse(-1, content_type='text/plain')
 
     else:
         return HttpResponse(status=403)
@@ -556,9 +539,9 @@ def passwd_reset(request):
                 logger.info(logger_join('Logout', get_session_id(request)))
                 logout(request)
 
-                return HttpResponse(0)
+                return HttpResponse(0, content_type='text/plain')
 
-        return HttpResponse(-1)
+        return HttpResponse(-1, content_type='text/plain')
 
     else:
         return HttpResponse(status=403)
@@ -579,10 +562,10 @@ def privacy_save(request):
                 pri.save()
         except Exception, e:
             logger.error(logger_join('Privacy', get_session_id(request), 'failed', e=e))
-            return HttpResponse(-1)
+            return HttpResponse(-1, content_type='text/plain')
 
         logger.info(logger_join('Update', get_session_id(request)))
-        return HttpResponse(0)
+        return HttpResponse(0, content_type='text/plain')
 
     else:
         return HttpResponse(status=403)
@@ -609,7 +592,7 @@ def img_handle(request):
     if request.is_ajax():
 
         status = handle_uploaded_avatar(request)
-        return HttpResponse(status)
+        return HttpResponse(status, content_type='text/plain')
 
     else:
         return HttpResponse(status=403)
@@ -769,31 +752,31 @@ def join(request, groupid):
                                              user=user,
                                              is_joined=True)
 
-                return HttpResponse(status)
+                return HttpResponse(status, content_type='text/plain')
 
             else:
                 logger.warning(logger_join('Join', get_session_id(request), 'failed', gid=group.id))
-                return HttpResponse(-4)
+                return HttpResponse(-4, content_type='text/plain')
 
         elif group.identifier == 1:
             gm = get_member_in_group(user, group)
 
             if not gm:
-                return HttpResponse(-2)
+                return HttpResponse(-2, content_type='text/plain')
 
             status = follow(request, user, group, user.email)
             if status != 0:
                 logger.warning(logger_join('Join', get_session_id(request), 'failed', gid=group.id))
 
-            return HttpResponse(status)
+            return HttpResponse(status, content_type='text/plain')
 
         elif group.identifier == 0:
             gm = get_member_in_group(user, group)
 
             if not gm:
-                return HttpResponse(-2)
+                return HttpResponse(-2, content_type='text/plain')
             else:
-                return HttpResponse(-1)
+                return HttpResponse(-1, content_type='text/plain')
 
     elif request.method == 'POST':
         jf = JoinForm(request.POST)

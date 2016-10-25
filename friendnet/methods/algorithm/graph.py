@@ -109,7 +109,7 @@ class Graph:
 
         for link in self.raw_links.filter(status=3):
 
-            s, t = self.__get_source_target(link.source_member_id, link.target_member_id)
+            s, t = link.source_member_id, link.target_member_id
 
             if not self.G.has_edge(s, t):
                 if link.creator == self.user:
@@ -197,6 +197,15 @@ class Graph:
         return {"nodes": nodes, "links": links}
 
     def three2dict(self):
+
+        # no layer, return myself
+        if self.G.number_of_edges() == 0:
+            return [{"nodes": [{'id': self.me.id,
+                                'userid': self.user.id,
+                                'name': self.me.member_name,
+                                'self': True,
+                                'group': 0}],
+                    "links": []}]
 
         layers, data = {}, []
 

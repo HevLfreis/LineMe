@@ -6,16 +6,20 @@
     <title>{{ project_name }} | 我的主页</title>
 {#    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">#}
     <link rel="shortcut icon" href="/media/favicon.ico">
-    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="//cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css">
-    <link rel="stylesheet" href="/static/plugins/select2/select2.min.css">
-    <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
-    <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
-    <link rel="stylesheet" href="/static/plugins/icheck/all.css">
-    <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
-    <link rel="stylesheet" href="/static/plugins/hint/css/hint.css">
-    <link rel="stylesheet" href="/static/plugins/trip/css/trip.min.css">
+
+    {% load compress %}
+    {% compress css %}
+      <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+      <link rel="stylesheet" href="/static/plugins/select2/select2.min.css">
+      <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
+      <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
+      <link rel="stylesheet" href="/static/plugins/icheck/flat/green.css">
+      <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
+      <link rel="stylesheet" href="/static/plugins/hint/css/hint.css">
+      <link rel="stylesheet" href="/static/plugins/trip/css/trip.min.css">
+    {% endcompress %}
   </head>
   <body class="hold-transition skin-black sidebar-mini">
     <div class="wrapper">
@@ -463,42 +467,44 @@
       </footer>
     </div>
 
-    <script src="/static/plugins/jquery/jquery.min.js"></script>
-    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
-    <script src="/static/dist/js/app.min.js"></script>
-    <script src="/static/plugins/select2/select2.full.min.js"></script>
-    <script src="/static/plugins/icheck/icheck.min.js"></script>
-    <script src="/static/plugins/rollbar/js/jquery.rollbar.min.js"></script>
-    <script src="/static/lineme/js/rollbar.js"></script>
-    <script src="/static/lineme/js/autocomplete.js"></script>
-    <script src="/static/lineme/js/analytics.js"></script>
-    <script type="text/javascript">
+    {% compress js %}
+      <script src="/static/plugins/jquery/jquery.min.js"></script>
+      <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+      <script src="/static/dist/js/app.min.js"></script>
+      <script src="/static/plugins/select2/select2.full.min.js"></script>
+      <script src="/static/plugins/icheck/icheck.min.js"></script>
+      <script src="/static/plugins/rollbar/js/jquery.rollbar.min.js"></script>
+      <script src="/static/lineme/js/rollbar.js"></script>
+      <script src="/static/lineme/js/autocomplete.js"></script>
+      <script src="/static/lineme/js/analytics.js"></script>
+      <script type="text/javascript">
 
-      var emails = "{{ user.email }}".split("@");
-      var births = "{{ user.extra.birth }}".split(",");
-      var locations = "{{ user.extra.location|safe }}".split("-");
-      var institution = "{{ user.extra.institution }}";
+        var emails = "{{ user.email }}".split("@");
+        var births = "{{ user.extra.birth }}".split(",");
+        var locations = "{{ user.extra.location|safe }}".split("-");
+        var institution = "{{ user.extra.institution }}";
 
-      var msgPanelUrl = "{% url 'homeMsg' %}";
-      var msgPostUrl = "{% url 'msgPost' %}";
-      var invPanelUrl = "{% url 'homeInv' %}";
+        var msgPanelUrl = "{% url 'homeMsg' %}";
+        var msgPostUrl = "{% url 'msgPost' %}";
+        var invPanelUrl = "{% url 'homeInv' %}";
 
-      $('#profile-email1').text(emails[0]);
-      $('#profile-email2').text('@'+emails[1]);
-      $('#profile-birth').text(births[0]);
-      $('#profile-location1').text(locations[0]);
-      $('#profile-location2').text(locations[1]);
-      $('#profile-institution').text(function(){
-        return institution==""?"无":institution;
-      });
+        $('#profile-email1').text(emails[0]);
+        $('#profile-email2').text('@'+emails[1]);
+        $('#profile-birth').text(births[0]);
+        $('#profile-location1').text(locations[0]);
+        $('#profile-location2').text(locations[1]);
+        $('#profile-institution').text(function(){
+          return institution==""?"无":institution;
+        });
 
-      $('#search').autocomplete();
+        $('#search').autocomplete();
 
-      var first = "{{ first_login }}";
+        var first = "{{ first_login }}";
 
-    </script>
-    <script src="/static/lineme/js/zh_cn/home.js"></script>
-    <script src="/static/plugins/trip/js/trip.js"></script>
-    <script src="/static/lineme/js/zh_cn/trip/trip-home.js"></script>
+      </script>
+      <script src="/static/lineme/js/zh_cn/home.js"></script>
+      <script src="/static/plugins/trip/js/trip.js"></script>
+      <script src="/static/lineme/js/zh_cn/trip/trip-home.js"></script>
+    {% endcompress %}
   </body>
 </html>

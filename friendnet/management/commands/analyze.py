@@ -91,6 +91,8 @@ class Command(BaseCommand):
 
         self.print_info(G_all_confirmed, 'u')
 
+        self.connected_component(G_all_confirmed)
+
         # single node
         # s, n, u, z, o = 0, 0, 0, 0, 0
         # for m in G_all_confirmed.nodes():
