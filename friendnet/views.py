@@ -13,14 +13,12 @@ from LineMe.constants import PROJECT_NAME, IDENTIFIER, CITIES_TABLE, GROUP_CREAT
 from LineMe.settings import logger, DEPLOYED_LANGUAGE
 from friendnet.forms import LoginForm, RegisterForm, GroupCreateForm, GroupMemberCreateForm, JoinForm, \
     FileUploadForm
-from friendnet.methods.algorithm.graph import Graph
 from friendnet.methods.algorithm.recommender import Recommender
 from friendnet.methods.algorithm.search import SearchEngine
-from friendnet.methods.basic import cache
 from friendnet.methods.basic.avatar import create_avatar, handle_uploaded_avatar
 from friendnet.methods.basic.egonet import get_user_ego_graph
 from friendnet.methods.basic.globalnet import get_user_global_info, get_user_global_graph, get_user_global_map, \
-    get_user_global_basic, get_user_global_exp, get_user_global_three
+    get_user_global_exp, get_user_global_three
 from friendnet.methods.basic.group import create_group, get_user_join_status, \
     get_member_in_group, group_privacy_check, get_user_groups_split, get_user_groups
 from friendnet.methods.basic.groupmember import create_group_member, create_group_member_from_file, follow, \
@@ -584,7 +582,7 @@ def avatar(request):
                "user": user,
                "msgs_count": msgs_count}
 
-    return render(request, 'friendnet/avatar.html', context)
+    return render(request, 'friendnet/tests/avatar.html', context)
 
 
 @login_required
@@ -849,13 +847,13 @@ def join_decline(request, groupid, requestid):
     return redirect('group', groupid)
 
 
-def show(request, groupid):
+def exp(request, groupid):
     context = {'groupid': groupid}
     if request.method == 'GET':
-        return render(request, 'friendnet/show.html', context)
+        return render(request, 'friendnet/exp.html', context)
 
 
-def show_data(request, groupid):
+def exp_data(request, groupid):
     data = get_user_global_exp(request.user, groupid)
     # print data
     return JsonResponse(data, safe=False)

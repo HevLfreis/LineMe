@@ -268,7 +268,6 @@
           </div>
           <div class="row" style="margin-top: 10px">
             <div class="col-md-7 col-xs-12">
-{#            Todo: fix box only header #}
               <div id="box-msg" class="box box-primary">
                 <div class="box-header">
                   <i class="ion ion-paper-airplane"></i>
@@ -468,6 +467,19 @@
       </footer>
     </div>
 
+    <script type="text/javascript">
+      var emails = "{{ user.email }}".split("@");
+      var births = "{{ user.extra.birth }}".split(",");
+      var locations = "{{ user.extra.location|safe }}".split("-");
+      var institution = "{{ user.extra.institution }}";
+
+      var msgPanelUrl = "{% url 'homeMsg' %}";
+      var msgPostUrl = "{% url 'msgPost' %}";
+      var invPanelUrl = "{% url 'homeInv' %}";
+
+      var first = "{{ first_login }}";
+    </script>
+
     {% compress js %}
       <script src="/static/plugins/jquery/jquery.min.js"></script>
       <script src="/static/bootstrap/js/bootstrap.min.js"></script>
@@ -479,16 +491,6 @@
       <script src="/static/lineme/js/autocomplete.js"></script>
       <script src="/static/lineme/js/analytics.js"></script>
       <script type="text/javascript">
-
-        var emails = "{{ user.email }}".split("@");
-        var births = "{{ user.extra.birth }}".split(",");
-        var locations = "{{ user.extra.location|safe }}".split("-");
-        var institution = "{{ user.extra.institution }}";
-
-        var msgPanelUrl = "{% url 'homeMsg' %}";
-        var msgPostUrl = "{% url 'msgPost' %}";
-        var invPanelUrl = "{% url 'homeInv' %}";
-
         $('#profile-email1').text(emails[0]);
         $('#profile-email2').text('@'+emails[1]);
         $('#profile-birth').text(births[0]);
@@ -499,9 +501,6 @@
         });
 
         $('#search').autocomplete();
-
-        var first = "{{ first_login }}";
-
       </script>
       <script src="/static/lineme/js/home.js"></script>
       <script src="/static/plugins/trip/js/trip.js"></script>

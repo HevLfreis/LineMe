@@ -279,6 +279,13 @@
       </footer>
     </div>
 
+    <script type="text/javascript">
+      var groupid = {{ group.id }};
+      var identifier = {{ group.identifier }};
+      var joinUrl = "{% url 'join' group.id %}";
+      var egoUrl = "{% url 'egoId' group.id %}";
+    </script>
+
     {% compress js %}
       <script src="/static/plugins/jquery/jquery.min.js"></script>
       <script src="/static/bootstrap/js/bootstrap.min.js"></script>
@@ -291,14 +298,7 @@
       <script src="/static/plugins/trip/js/trip.js"></script>
       <script src="/static/lineme/js/trip/trip-none.js"></script>
       <script type="text/javascript">
-
-        var groupid = {{ group.id }};
-        var identifier = {{ group.identifier }};
-        var joinUrl = "{% url 'join' group.id %}";
-        var egoUrl = "{% url 'egoId' group.id %}";
-
         $('#search').autocomplete();
-
       </script>
       <script src="/static/lineme/js/group2.js"></script>
     {% endcompress %}

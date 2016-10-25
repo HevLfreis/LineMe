@@ -191,6 +191,15 @@
       </footer>
     </div>
 
+    {% if group %}
+      <script type="text/javascript">
+        var groupid = {{ group.id }};
+        var rcmdUrl = "{% url 'rcmd' group.id %}";
+        var eGraphUrl = "{% url 'eGraph' group.id %}";
+        var updateGraphUrl = "{% url 'updateGraph' group.id %}";
+      </script>
+    {% endif %}
+
     {% compress js %}
       <script src="/static/plugins/jquery/jquery.min.js"></script>
       <script src="/static/bootstrap/js/bootstrap.min.js"></script>
@@ -206,12 +215,6 @@
         <script src="/static/lineme/js/classie.js"></script>
         <script src="/static/lineme/js/borderMenu.js"></script>
         <script src="/static/lineme/js/trip/trip-ego.js"></script>
-        <script type="text/javascript">
-          var groupid = {{ group.id }};
-          var rcmdUrl = "{% url 'rcmd' group.id %}";
-          var eGraphUrl = "{% url 'eGraph' group.id %}";
-          var updateGraphUrl = "{% url 'updateGraph' group.id %}";
-        </script>
         <script src="/static/lineme/js/ego.js"></script>
       {% else %}
         <script src="/static/lineme/js/trip/trip-none.js"></script>

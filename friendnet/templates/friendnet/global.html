@@ -251,6 +251,17 @@
       </footer>
     </div>
 
+    {% if group %}
+      <script type="text/javascript">
+        var groupid = {{ group.id }};
+        var disData = {{ distribution|safe }};
+
+        var gGraphUrl = "{% url 'gGraph' group.id %}";
+        var gMapUrl = "{% url 'gMap' group.id %}";
+        var gThreeUrl = "{% url 'gThree' group.id %}";
+      </script>
+    {% endif %}
+
     {% compress js %}
       <script src="/static/plugins/jquery/jquery.min.js"></script>
       <script src="/static/bootstrap/js/bootstrap.min.js"></script>
@@ -276,14 +287,6 @@
         <script src="/static/plugins/three/js/css3drenderer.js"></script>
         <script src="/static/plugins/three/js/viz.js"></script>
         <script src="/static/lineme/js/trip/trip-global.js"></script>
-        <script type="text/javascript">
-          var groupid = {{ group.id }};
-          var disData = {{ distribution|safe }};
-
-          var gGraphUrl = "{% url 'gGraph' group.id %}";
-          var gMapUrl = "{% url 'gMap' group.id %}";
-          var gThreeUrl = "{% url 'gThree' group.id %}";
-        </script>
         <script src="/static/lineme/js/global.js"></script>
       {% else %}
         <script src="/static/lineme/js//trip/trip-none.js"></script>

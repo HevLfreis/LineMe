@@ -70,8 +70,8 @@ urlpatterns = [
     url(r'^privacy/$', views.privacy_save, name='privacy'),
 
 
-    url(r'^show/(?P<groupid>[0-9]+)/$', views.show, name='show'),
-    url(r'^show/data/(?P<groupid>[0-9]+)/$', views.show_data, name='showData'),
+    url(r'^exp/(?P<groupid>[0-9]+)/$', views.exp, name='exp'),
+    url(r'^exp/data/(?P<groupid>[0-9]+)/$', views.exp_data, name='expData'),
 
     url(r'^404/$', views.view_404, name='404'),
     #
