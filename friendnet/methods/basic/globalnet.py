@@ -18,20 +18,7 @@ def get_user_global_core(groupid):
 
 @cache.get_or_set('global')
 def get_user_global_basic(user, groupid):
-    # return Graph(Group.objects.get(id=groupid)).global_builder(user)
     return get_user_global_core(groupid).core(user)
-
-
-# def get_user_global_graph(user, groupid):
-#     return Graph(user, Group.objects.get(id=groupid)).global_builder().color().dictify()
-#
-#
-# def get_user_global_map(user, groupid):
-#     return Graph(user, Group.objects.get(id=groupid)).global_builder().map_dictify()
-#
-#
-# def get_user_global_info(user, groupid):
-#     return graph_analyzer(user, groupid)
 
 
 @cache.get_or_set('globalnet')
@@ -92,7 +79,7 @@ def graph_analyzer(user, groupid):
     # Todo: warning, when the net is big, very slow !!!!
     average_distance = analyzer.average_shortest_path_length()
 
-    best_friend, bf_ratio = analyzer.best_friend()
+    best_friend, bf_count = analyzer.best_friend()
 
     # Todo: ratio not correct fixed...
     heart = Global.heart()
@@ -104,5 +91,5 @@ def graph_analyzer(user, groupid):
             'average_distance': average_distance,
             'cover': round(cover * 100, 2),
             'bestfriend': best_friend,
-            'bf_ratio': round(bf_ratio * 100, 2),
+            'bf_count': bf_count,
             'heart': heart}

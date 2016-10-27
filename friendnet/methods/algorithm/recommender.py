@@ -4,9 +4,8 @@
 # Date: 2016/8/12
 # Time: 10:52
 from django.db.models import Q
-from django.shortcuts import get_object_or_404
 
-from friendnet.methods.basic.group import get_member_in_group, get_group_joined_num
+from friendnet.methods.basic.group import get_group_joined_num
 from friendnet.methods.basic.groupmember import myself_member
 from friendnet.methods.basic.user import get_user_name
 from friendnet.models import GroupMember, Group

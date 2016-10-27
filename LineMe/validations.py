@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 # coding: utf-8
 # created by hevlhayt@foxmail.com 
-# Date: 2016/7/11
-# Time: 13:45
+# Date: 2016/10/26
+# Time: 19:05
 import re
 
 from django.contrib.auth.models import User
+from friendnet.models import Group
 
-from friendnet.models import Group, GroupMember
-from LineMe.constants import CITIES_TABLE, IDENTIFIER, LINK_BONUS
+from LineMe.constants import IDENTIFIER
 
 
 def validate_username(name):
@@ -33,10 +33,20 @@ def validate_email(email):
     return False
 
 
-def validate_passwd(password, password2):
-    if re.match("^[a-zA-Z0-9]{6,20}$", password):
-        if password == password2:
+def validate_email_for_reset(email):
+    if User.objects.filter(email=email).exists():
+        if re.match("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9]"
+                    "(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9]"
+                    "(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", email):
             return True
+    return False
+
+
+def validate_passwd(password, password2):
+    if password and password2:
+        if re.match("^[a-zA-Z0-9]{6,20}$", password):
+            if password == password2:
+                return True
     return False
 
 
@@ -47,28 +57,3 @@ def validate_group_info(name, identifier, gtype):
                 if gtype == 0 or gtype == 1:
                     return True
     return False
-
-
-def check_groupid(user, groupid):
-    if groupid is None:
-        return -2
-    elif Group.objects.filter(id=groupid, deprecated=False).exists() and \
-            GroupMember.objects.filter(
-                group__id=groupid,
-                user=user
-            ).exists():
-
-        return groupid
-    else:
-        return 0
-
-
-def check_credits(user, bonus=''):
-    if bonus == 'bonus':
-        if user.extra.credits > 9999:
-            return
-    elif bonus == 'punish':
-        if user.extra.credits < LINK_BONUS:
-            return
-    else:
-        return

@@ -7,17 +7,17 @@ import base64
 import cStringIO
 import os
 import random
-
 import re
+
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 
-from friendnet.methods.session import get_session_id
-from friendnet.methods.utils import logger_join
 from LineMe import settings
-from LineMe.constants import STATIC_FOLDER, MEDIA_FOLDER
+from LineMe.constants import MEDIA_FOLDER
 from LineMe.settings import logger
+from LineMe.utils import logger_join
+from iauth.methods.session import get_session_id
 
 
 def create_avatar(request, userid, username='Unknown'):

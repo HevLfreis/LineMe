@@ -5,7 +5,7 @@
 # Time: 15:39
 from django.utils import timezone
 
-from friendnet.methods.validation import check_credits
+from friendnet.methods.checking import check_credits
 from friendnet.models import Credit
 from LineMe.constants import LINK_BONUS
 

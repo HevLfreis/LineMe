@@ -4,20 +4,19 @@
 # Date: 2016/7/9
 # Time: 13:50
 import networkx as nx
-from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
-from friendnet.methods.basic.groupmember import create_group_member
-from friendnet.methods.basic.user import get_user_name
-from friendnet.methods.session import get_session_id
-from friendnet.methods.utils import logger_join
-from friendnet.methods.validation import validate_group_info
-from friendnet.models import Group, Credit, MemberRequest, Link
-from friendnet.models import GroupMember
 from LineMe.constants import GROUP_CREATED_CREDITS_COST
 from LineMe.settings import logger
+from LineMe.utils import logger_join
+from LineMe.validations import validate_group_info
+from friendnet.methods.basic.groupmember import create_group_member
+from friendnet.methods.basic.user import get_user_name
+from friendnet.models import Group, Credit, MemberRequest, Link
+from friendnet.models import GroupMember
+from iauth.methods.session import get_session_id
 
 
 def create_group(request, user, name, identifier, gtype):

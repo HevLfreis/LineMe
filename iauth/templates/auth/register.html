@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>{{ project_name }} | 注册</title>
+    <title>{{ project_name }} | Register</title>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="shortcut icon" href="/media/favicon.ico">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
@@ -22,50 +22,50 @@
         <a href="{% url 'login' %}"><b>{{ project_name }}</b></a>
       </div>
       <div class="register-box-body">
-        <p class="login-box-msg">注册新账号</p>
+        <p class="login-box-msg">Register a new membership</p>
         <form method="post">
           {% if status == -4 %}
-            <p class="text-center bg-red">注册失败</p>
+            <p class="text-center bg-red">Register Failed </p>
           {% endif %}
           {% if status == -1 %}
             <div class="form-group has-error has-feedback">
-            <label class="control-label"><i class="fa fa-times"></i> 无效用户名</label>
-            <input name="username" type="text" class="form-control" placeholder="字母和数字，不少于6个字符">
+            <label class="control-label"><i class="fa fa-times"></i> Invalid Username</label>
+            <input name="username" type="text" class="form-control" placeholder="Longer than 6, letters and nums">
           {% else %}
             <div class="form-group has-feedback">
-            <input name="username" type="text" class="form-control" placeholder="用户名">
+            <input name="username" type="text" class="form-control" placeholder="Username">
           {% endif %}
             <span class="glyphicon glyphicon-user form-control-feedback"></span>
           </div>
           {% if status == -2 %}
             <div class="form-group has-error has-feedback">
-            <label class="control-label"><i class="fa fa-times"></i> 无效邮箱</label>
+            <label class="control-label"><i class="fa fa-times"></i> Invalid Email Address</label>
           {% else %}
             <div class="form-group has-feedback">
           {% endif %}
-            <input name="email" type="email" class="form-control" placeholder="邮箱">
+            <input name="email" type="email" class="form-control" placeholder="Email">
             <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
           </div>
           {% if status == -3 %}
             <div class="form-group has-error has-feedback">
-            <label class="control-label"><i class="fa fa-times"></i> 无效密码</label>
-            <input name="password" type="password" class="form-control" placeholder="字母和数字，不少于6个字符">
+            <label class="control-label"><i class="fa fa-times"></i> Invalid Password</label>
+            <input name="password" type="password" class="form-control" placeholder="Longer than 6, letters and nums">
           {% else %}
             <div class="form-group has-feedback">
-            <input name="password" type="password" class="form-control" placeholder="密码">
+            <input name="password" type="password" class="form-control" placeholder="Password">
           {% endif %}
             <span class="glyphicon glyphicon-lock form-control-feedback"></span>
           </div>
           <div class="form-group has-feedback">
-            <input name="password2" type="password" class="form-control" placeholder="重复密码">
+            <input name="password2" type="password" class="form-control" placeholder="Re-enter password">
             <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
           </div>
           <div class="row">
             <div class="col-xs-8">
-               <a href="{% url 'login' %}" class="text-center">我有账号</a>
+               <a href="{% url 'login' %}" class="text-center">I already have an account</a>
             </div>
             <div class="col-xs-4">
-              <button type="submit" class="btn btn-primary btn-block btn-flat">注册</button>
+              <button type="submit" class="btn btn-primary btn-block btn-flat" onclick="this.form.submit(); this.disabled=true;">Register</button>
             </div>
           </div>
         </form>

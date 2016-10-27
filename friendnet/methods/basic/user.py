@@ -4,19 +4,20 @@
 # Date: 2016/7/9
 # Time: 13:51
 import datetime
-
 import re
+
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.db.models import Q
+from iauth.utils import login_user
 
+from LineMe.settings import logger
+from LineMe.utils import logger_join
+from LineMe.validations import validate_email
+from LineMe.validations import validate_username_exist, validate_passwd
 from friendnet.methods.basic.avatar import create_avatar
-from friendnet.methods.session import get_session_id
-from friendnet.methods.utils import login_user, logger_join
-from friendnet.methods.validation import validate_email, validate_username_exist
-from friendnet.methods.validation import validate_passwd
 from friendnet.models import Privacy, Extra, GroupMember, Link
-from LineMe.settings import logger, DEBUG
+from iauth.methods.session import get_session_id
 
 
 def create_user(request, (name, email, password, password2)):

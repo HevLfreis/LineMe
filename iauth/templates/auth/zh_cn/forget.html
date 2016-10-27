@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{{ project_name }} | 忘记密码</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="shortcut icon" href="/media/favicon.ico">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css">
+
+    {% load compress %}
+    {% compress css %}
+      <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+      <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
+      <link rel="stylesheet" href="/static/plugins/icheck/square/blue.css">
+    {% endcompress %}
+  </head>
+  <body class="hold-transition login-page">
+    <div class="login-box">
+      <div class="login-logo">
+        <a href="{% url 'home' %}"><b>{{ project_name }}</b></a>
+      </div>
+      <div class="login-box-body">
+        {% if status == 1 %}
+          <h2 class="login-box-msg">邮件已发送</h2>
+        {% elif status == 2 %}
+          <h2 class="login-box-msg">密码已重置</h2>
+        {% elif status == -3 %}
+          <h2 class="login-box-msg">链接无效或已过期</h2>
+        {% else %}
+          <p class="login-box-msg">忘记密码</p>
+          <form method="post">
+            {% if status == -1 %}
+              <div class="form-group has-error has-feedback">
+              <label class="control-label"><i class="fa fa-times"></i> 无效邮箱</label>
+            {% else %}
+              <div class="form-group has-feedback">
+            {% endif %}
+              <input name="email" type="email" class="form-control" placeholder="邮箱">
+              <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+            </div>
+            <div class="row">
+              <div class="col-xs-offset-8 col-xs-4">
+                <button type="submit" class="btn btn-primary btn-block btn-flat" onclick="this.form.submit(); this.disabled=true;">发送邮件</button>
+              </div>
+            </div>
+          </form>
+        {% endif %}
+        <a href="{% url 'login' %}">返回登录</a><br>
+        <a href="{% url 'register' %}" class="text-center">注册新账号</a>
+      </div>
+    </div>
+
+    {% compress js %}
+      <script src="/static/plugins/jquery/jquery.min.js"></script>
+      <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+      <script src="/static/lineme/js/analytics.js"></script>
+    {% endcompress %}
+  </body>
+</html>

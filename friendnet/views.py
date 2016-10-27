@@ -1,37 +1,29 @@
 #!/usr/bin/env python
 # coding: utf-8
-import json
 
-from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import PageNotAnInteger
 from django.core.paginator import Paginator, EmptyPage
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import redirect, render, get_object_or_404
+from django.shortcuts import redirect, render
 
-from LineMe.constants import PROJECT_NAME, IDENTIFIER, CITIES_TABLE, GROUP_CREATED_CREDITS_COST, PRIVACIES
-from LineMe.settings import logger, DEPLOYED_LANGUAGE
-from friendnet.forms import LoginForm, RegisterForm, GroupCreateForm, GroupMemberCreateForm, JoinForm, \
-    FileUploadForm
+from LineMe.constants import PROJECT_NAME, CITIES_TABLE, PRIVACIES
+from LineMe.settings import DEPLOYED_LANGUAGE
+from friendnet.forms import *
 from friendnet.methods.algorithm.recommender import Recommender
 from friendnet.methods.algorithm.search import SearchEngine
-from friendnet.methods.basic.avatar import create_avatar, handle_uploaded_avatar
+from friendnet.methods.basic.avatar import handle_uploaded_avatar
 from friendnet.methods.basic.egonet import get_user_ego_graph
-from friendnet.methods.basic.globalnet import get_user_global_info, get_user_global_graph, get_user_global_map, \
-    get_user_global_exp, get_user_global_three
-from friendnet.methods.basic.group import create_group, get_user_join_status, \
-    get_member_in_group, group_privacy_check, get_user_groups_split, get_user_groups
-from friendnet.methods.basic.groupmember import create_group_member, create_group_member_from_file, follow, \
-    create_request
-from friendnet.methods.basic.link import link_confirm, get_link, link_reject, link_confirm_aggregate, link_reject_aggregate, \
-    update_links
+from friendnet.methods.basic.globalnet import *
+from friendnet.methods.basic.group import *
+from friendnet.methods.basic.groupmember import *
+from friendnet.methods.basic.link import *
 from friendnet.methods.basic.profile import Profile
-from friendnet.methods.basic.user import get_user_msgs, get_user_invs, get_user_name, create_user
-from friendnet.methods.basic.user import get_user_msgs_count
-from friendnet.methods.session import get_session_id, get_session_consume
-from friendnet.methods.utils import login_user, logger_join, input_filter
-from friendnet.methods.validation import check_groupid, validate_passwd
+from friendnet.methods.basic.user import *
+from friendnet.methods.checking import check_groupid
+from friendnet.methods.utils import input_filter
 from friendnet.models import Group, GroupMember, MemberRequest, Privacy
+from iauth.methods.session import get_session_consume
 
 # Todo: ///check all place with user input///, deal with utf-8 chinese, check all filter to get
 # Todo: member in group multiple?
@@ -64,73 +56,6 @@ def search(request):
 
 ########################################################################
 
-def lm_login(request):
-
-    if request.user.is_authenticated():
-        return redirect('home')
-
-    context = {"project_name": PROJECT_NAME,
-               "lang": lang,
-               "status": ''}
-
-    if request.method == 'GET':
-        return render(request, template_dir+'login.html', context)
-
-    elif request.method == 'POST':
-        lf = LoginForm(request.POST)
-
-        if lf.is_valid():
-            if login_user(request, lf.cleaned_data['username'], lf.cleaned_data['password']):
-                logger.info(logger_join('Login', get_session_id(request)))
-
-                return redirect('home')
-
-        context["status"] = -1
-        return render(request, template_dir+'login.html', context)
-
-    else:
-        return HttpResponse(status=403)
-
-
-def lm_logout(request):
-    logger.info(logger_join('Logout', get_session_id(request)))
-    logout(request)
-    return redirect('login')
-
-
-def lm_register(request):
-
-    context = {"project_name": PROJECT_NAME,
-               "lang": lang,
-               "status": 0}
-
-    if request.method == 'GET':
-        return render(request, template_dir+'register.html', context)
-
-    elif request.method == 'POST':
-        rf = RegisterForm(request.POST)
-
-        if rf.is_valid():
-
-            status = create_user(request, rf.cleaned_register())
-            context["status"] = status
-
-            if status == 0:
-                request.session['new_login'] = True
-                return redirect('profile')
-
-            else:
-                return render(request, template_dir+'register.html', context)
-
-        else:
-            context["status"] = -4
-            return render(request, template_dir+'register.html', context)
-
-    else:
-        return HttpResponse(status=403)
-
-
-########################################################################
 
 @login_required
 def home(request):
@@ -517,34 +442,6 @@ def settings(request):
         return HttpResponse(status=403)
 
 
-def passwd_reset(request):
-    logger.info(logger_join('Access', get_session_id(request)))
-
-    user = request.user
-
-    if request.is_ajax():
-
-        passwd = request.POST.get('old')
-        new_passwd = request.POST.get('new')
-        new_passwd2 = request.POST.get('new2')
-
-        if user.check_password(passwd):
-            if validate_passwd(new_passwd, new_passwd2):
-                user.set_password(new_passwd)
-                user.save()
-
-                logger.info(logger_join('Reset', get_session_id(request)))
-                logger.info(logger_join('Logout', get_session_id(request)))
-                logout(request)
-
-                return HttpResponse(0, content_type='text/plain')
-
-        return HttpResponse(-1, content_type='text/plain')
-
-    else:
-        return HttpResponse(status=403)
-
-
 def privacy_save(request):
     logger.info(logger_join('Access', get_session_id(request)))
 
@@ -842,17 +739,22 @@ def join_confirm(request, groupid, requestid):
         return HttpResponse(status=403)
 
 
+# Todo: impl decline
 @login_required
 def join_decline(request, groupid, requestid):
     return redirect('group', groupid)
 
 
+########################################################################
+
+@login_required
 def exp(request, groupid):
     context = {'groupid': groupid}
     if request.method == 'GET':
         return render(request, 'friendnet/exp.html', context)
 
 
+@login_required
 def exp_data(request, groupid):
     data = get_user_global_exp(request.user, groupid)
     # print data

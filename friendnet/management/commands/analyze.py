@@ -33,10 +33,7 @@ class Command(BaseCommand):
         return
 
     def analyzer(self, groupid):
-        self.members = GroupMember.objects.filter(group__id=groupid, is_joined=True)
-
-        for m in GroupMember.objects.filter(group__id=groupid, is_joined=False):
-            print m.member_name
+        self.members = GroupMember.objects.filter(group__id=groupid)
 
         male_count = self.members.filter(user__extra__gender=False).count()
         female_count = self.members.filter(user__extra__gender=True).count()
@@ -94,29 +91,29 @@ class Command(BaseCommand):
         self.connected_component(G_all_confirmed)
 
         # single node
-        # s, n, u, z, o = 0, 0, 0, 0, 0
-        # for m in G_all_confirmed.nodes():
-        #     if G_all_confirmed.degree(m) == 0:
-        #         s += 1
-        #         if m.user is None:
-        #             n += 1
-        #             print get_user_name(m.user), 'not in'
-        #
-        #         elif not links.filter(creator=m.user).exists():
-        #             z += 1
-        #             print get_user_name(m.user), 'no link create'
-        #
-        #         elif not links.filter((Q(source_member=m) | Q(target_member=m))).exists():
-        #             u += 1
-        #
-        #         else:
-        #             print get_user_name(m.user)
-        #             t = links.filter(creator=m.user)
-        #             for a in t:
-        #                 print a.status, a.source_member.member_name, a.target_member.member_name
-        #             o += 1
-        #
-        # print s, n, u, z, o
+        s, n, u, z, o = 0, 0, 0, 0, 0
+        for m in G_all_confirmed.nodes():
+            if G_all_confirmed.degree(m) == 0:
+                s += 1
+                if m.user is None:
+                    n += 1
+                    print m.member_name, 'not in'
+
+                elif not links.filter(creator=m.user).exists():
+                    z += 1
+                    print get_user_name(m.user), 'no link create'
+
+                elif not links.filter((Q(source_member=m) | Q(target_member=m))).exists():
+                    u += 1
+
+                else:
+                    print get_user_name(m.user)
+                    t = links.filter(creator=m.user)
+                    for a in t:
+                        print a.status, a.source_member.member_name, a.target_member.member_name
+                    o += 1
+
+        print 'single: ', s, 'not in: ', n, 'no link: ', z, 'no invite: ', u, 'other: ', o
 
 
         # user confirmed links count

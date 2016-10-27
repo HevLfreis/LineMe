@@ -10,16 +10,14 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
-from friendnet.methods.basic.credit import credit_processor
+from LineMe.constants import SOURCE_LINK_CONFIRM_STATUS_TRANSITION_TABLE, SOURCE_LINK_REJECT_STATUS_TRANSITION_TABLE, \
+    TARGET_LINK_REJECT_STATUS_TRANSITION_TABLE, TARGET_LINK_CONFIRM_STATUS_TRANSITION_TABLE
+from LineMe.settings import logger
+from LineMe.utils import logger_join
 from friendnet.methods.basic.groupmember import myself_member
-from friendnet.methods.session import get_session_id
-from friendnet.methods.utils import logger_join
 from friendnet.models import GroupMember
 from friendnet.models import Link
-from LineMe.constants import SOURCE_LINK_CONFIRM_STATUS_TRANSITION_TABLE, SOURCE_LINK_REJECT_STATUS_TRANSITION_TABLE, \
-    TARGET_LINK_REJECT_STATUS_TRANSITION_TABLE
-from LineMe.constants import TARGET_LINK_CONFIRM_STATUS_TRANSITION_TABLE
-from LineMe.settings import logger
+from iauth.methods.session import get_session_id
 
 
 def get_link(linkid):

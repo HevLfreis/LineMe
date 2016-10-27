@@ -330,7 +330,7 @@ class GraphAnalyzer:
         sorted_friends = sorted(friends, key=lambda x: x[1], reverse=True)
 
         if len(sorted_friends) > 0:
-            return self.Graph.get_member(sorted_friends[0][0]), sorted_friends[0][1] / float(self.number_of_nodes)
+            return self.Graph.get_member(sorted_friends[0][0]), sorted_friends[0][1]
         else:
             return None, 0
 

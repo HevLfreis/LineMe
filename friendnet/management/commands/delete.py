@@ -14,6 +14,7 @@ class Command(BaseCommand):
     help = 'Clean Links Credits'
 
     def handle(self, *args, **options):
-        # GroupMember.objects.get(id=10157).delete()
-        link = Link.objects.get(id=15587)
-        print link.source_member.member_name, link.target_member.member_name, get_user_name(link.creator)
+        # GroupMember.objects.get(id=10108).delete()
+        # link = Link.objects.get(id=15587)
+        # print link.source_member.member_name, link.target_member.member_name, get_user_name(link.creator)
+        return

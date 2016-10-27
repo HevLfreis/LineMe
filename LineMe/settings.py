@@ -50,7 +50,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "compressor",
+    'compressor',
+    'iauth',
     'friendnet',
 )
 
@@ -208,8 +209,23 @@ COMPRESS_OUTPUT_DIR = 'compressed'
 COMPRESS_CSS_FILTERS = ['compressor.filters.css_default.CssAbsoluteFilter',
                         'compressor.filters.cssmin.CSSCompressorFilter']
 
+
 LOGIN_URL = '/login/'
 
+
+# Email
+if DEPLOYMENT:
+    EMAIL_BACKEND = 'django_smtp_ssl.SSLEmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = 'smtp.126.com'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'cnclineme@126.com'
+EMAIL_HOST_PASSWORD = 'SJTUcnc2310'
+EMAIL_USE_TLS = True
+
+
+# Log
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

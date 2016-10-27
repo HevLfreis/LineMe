@@ -5,13 +5,13 @@
 # Time: 23:06
 from django.db.models import Q
 from django.http import Http404
-from django.shortcuts import get_object_or_404
 
-from friendnet.methods.basic.group import has_member
-from friendnet.methods.session import get_session_id
-from friendnet.methods.utils import logger_join, input_filter
-from friendnet.models import GroupMember, Group
 from LineMe.settings import logger
+from LineMe.utils import logger_join
+from friendnet.methods.basic.group import has_member
+from friendnet.methods.utils import input_filter
+from friendnet.models import GroupMember, Group
+from iauth.methods.session import get_session_id
 
 
 # Todo: private group no result but i am in the list

@@ -3,16 +3,15 @@
 # created by hevlhayt@foxmail.com 
 # Date: 2016/7/9
 # Time: 13:50
-from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
-from friendnet.methods.basic.user import get_user_name
-from friendnet.methods.session import get_session_id
-from friendnet.methods.utils import logger_join
-from friendnet.models import GroupMember, MemberRequest
 from LineMe.constants import GROUP_MAXSIZE
 from LineMe.settings import logger
+from LineMe.utils import logger_join
+from friendnet.methods.basic.user import get_user_name
+from friendnet.models import GroupMember, MemberRequest
+from iauth.methods.session import get_session_id
 
 
 # Todo: check member duplicate

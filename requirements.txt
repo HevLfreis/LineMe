@@ -5,4 +5,5 @@ csscompressor==0.9.4
 django-htmlmin==0.10.0
 django-compressor==2.1
 django-redis==4.5.0
+django-smtp-ssl==1.0
 psycopg2==2.6.2

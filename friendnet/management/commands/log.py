@@ -22,8 +22,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        start = datetime.strptime(options['begin'], '%Y-%m-%d')
-        stop = datetime.strptime(options['end'], '%Y-%m-%d')
+        start = datetime.strptime(options['begin'], '%Y-%m-%d %H:%M:%S')
+        stop = datetime.strptime(options['end'], '%Y-%m-%d %H:%M:%S')
 
         print start, stop
 
@@ -37,10 +37,11 @@ class Command(BaseCommand):
                 # print b
 
                 if start < t < stop:
-                    index[int(b[0])] = False
+                    if int(b[0]) not in index:
+                        index[int(b[0])] = 0
 
-                    if 'update_links' in line or 'link_confirm':
-                        index[int(b[0])] = True
+                    elif 'update_links' in line or 'link_confirm' in line:
+                        index[int(b[0])] += 1
 
         print len(index)
 
@@ -60,5 +61,7 @@ class Command(BaseCommand):
 
         print 'No opration: '
         for k, v in index.items():
-            if not v:
-                print members.get(user__id=k).member_name. d
+            if v == 0 and members.filter(user__id=k).exists():
+                print members.get(user__id=k).member_name, k
+
+        print 'Operation count: ', sum(index.values())

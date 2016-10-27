@@ -17,15 +17,12 @@ def get_session_id(request):
     ip = get_client_ip(request)
     if sessionid:
         return sessionid
-    elif request.user:
-
-        # Todo：cookie danger
+    elif request.user and request.COOKIES.get('sessionid'):
         return '(' + ip + ')' \
                     + request.COOKIES.get('sessionid') + '[' + str(request.user.id) \
                     + ',' + request.user.username + ']'
     else:
-        return '(' + ip + ')' \
-                    + request.COOKIES.get('sessionid')
+        return '(' + ip + ')'
 
 
 def get_session_consume(request, kw):
