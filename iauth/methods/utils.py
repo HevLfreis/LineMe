@@ -41,7 +41,7 @@ def send_reset_passwd_email(email, href):
                      '<p>You are resetting your password in LineMe via this email</p>'
                      '<p>Click the following link to process</p>'
                      '<p>The link will expired in 30 mins</p>'
-                     '<a href="'+href+'">CLICK ME</a>('+href+')'
+                     '<a href="'+href+'">CLICK ME</a> ('+href+')'
                      '<p>Any problem you can contact hevlhayt@foxmail.com</p>',
         fail_silently=False,
     )

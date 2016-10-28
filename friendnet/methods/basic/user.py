@@ -9,7 +9,6 @@ import re
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.db.models import Q
-from iauth.utils import login_user
 
 from LineMe.settings import logger
 from LineMe.utils import logger_join
@@ -18,6 +17,7 @@ from LineMe.validations import validate_username_exist, validate_passwd
 from friendnet.methods.basic.avatar import create_avatar
 from friendnet.models import Privacy, Extra, GroupMember, Link
 from iauth.methods.session import get_session_id
+from iauth.methods.utils import login_user
 
 
 def create_user(request, (name, email, password, password2)):

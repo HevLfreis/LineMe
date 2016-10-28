@@ -199,7 +199,7 @@ def reset_by_email(request, token):
             rt.completed = True
             rt.save()
 
-            logger.info(logger_join('Reset', get_session_id(request)))
+            logger.info(logger_join('Reset', get_session_id(request), u=user.username))
 
             context["status"] = 2
             return render(request, template_dir+'forget.html', context)

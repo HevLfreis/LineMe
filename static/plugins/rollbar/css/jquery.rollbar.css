@@ -32,7 +32,7 @@
 	right: 5px; 
 	top: 0; 
 	height: 100%; 
-	width: 5px;
+	width: 8px;
 }
 
 
@@ -58,7 +58,8 @@
 	position: relative;
 	top: 0;
 	left: 0;
-	background-color: #49bf9d;
+	/*background-color: #49bf9d;*/
+	background-color: #66ccff;
 }
 
 

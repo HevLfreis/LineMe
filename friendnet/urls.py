@@ -9,6 +9,8 @@ from django.conf.urls import url
 from friendnet import views
 
 urlpatterns = [
+
+    #
     url(r'^home/$', views.home, name='home'),
     url(r'^msgpanel/$', views.msg_panel, name='homeMsg'),
     url(r'^msghandle/$', views.msg_handle, name='msgPost'),
@@ -25,8 +27,8 @@ urlpatterns = [
     url(r'^rcmdpanel/(?P<groupid>[0-9]+)/$', views.rcmd_panel, name='rcmd'),
     url(r'^upgraph/(?P<groupid>[0-9]+)/$', views.update_graph, name='updateGraph'),
 
-    url(r'^global/$', views.ego_network, name='global'),
-    url(r'^global/(?P<groupid>[0-9]+)/$', views.ego_network, name='globalId'),
+    url(r'^global/$', views.global_network, name='global'),
+    url(r'^global/(?P<groupid>[0-9]+)/$', views.global_network, name='globalId'),
 
     url(r'^ggraph/(?P<groupid>[0-9]+)/$', views.global_graph, name='gGraph'),
     url(r'^gmap/(?P<groupid>[0-9]+)/$', views.global_map, name='gMap'),
@@ -42,7 +44,7 @@ urlpatterns = [
     url(r'^jcof/(?P<groupid>[0-9]+)/(?P<requestid>[0-9]+)/$', views.join_confirm, name='joinConfirm'),
     url(r'^jdec/(?P<groupid>[0-9]+)/(?P<requestid>[0-9]+)/$', views.join_decline, name='joinDecline'),
     url(r'^upload/(?P<groupid>[0-9]+)/$', views.upload_members, name='uploadMembers'),
-    #
+
     #
     url(r'^settings/$', views.settings, name='settings'),
     url(r'^settings/$', views.settings, name='avatar'),

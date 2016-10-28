@@ -15,7 +15,7 @@ $(function() {
     if (!mobileAndTabletcheck())
         $('body, .box-global-info-body').rollbar({
             scroll: 'vertical',
-            sliderOpacity: 0,
+            sliderOpacity: 0.3,
             zIndex: 2000,
             blockGlobalScroll: true,
             wheelSpeed: 50,

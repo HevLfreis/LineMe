@@ -29,8 +29,8 @@ class GroupMember(models.Model):
     created_time = models.DateTimeField()
     joined_time = models.DateTimeField(null=True)
 
-    def __repr__(self):
-        return str(self.id)
+    def __str__(self):
+        return self.member_name.encode('utf-8')
 
 
 class MemberRequest(models.Model):

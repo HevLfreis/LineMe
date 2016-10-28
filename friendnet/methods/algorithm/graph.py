@@ -27,6 +27,7 @@ class Graph:
         self.members = GroupMember.objects.filter(group=group)
         self.me = None
         self.raw_links = Link.objects.filter(group=group)
+        self.confirmed_raw_links = self.raw_links.filter(status=3)
         self.member_index = {m.id: m for m in self.members}
 
     def __user_init(self, user):
@@ -78,7 +79,7 @@ class Graph:
         for member in self.members:
             self.G.add_node(member.id, creator=False, group=random.randint(1, 4))
 
-        for link in self.raw_links.filter(status=3):
+        for link in self.confirmed_raw_links:
             s, t = link.source_member_id, link.target_member_id
             if not self.G.has_edge(s, t):
                 self.G.add_edge(s, t, id=link.id, weight=1, status=False)
@@ -93,7 +94,7 @@ class Graph:
 
         self.G.node[self.me.id]['creator'] = True
 
-        for link in self.raw_links.filter(status=3, creator=user):
+        for link in self.confirmed_raw_links.filter(creator=user):
             s, t = link.source_member_id, link.target_member_id
             self.G[s][t]['status'] = True
 
@@ -107,7 +108,7 @@ class Graph:
         for member in self.members:
             self.G.add_node(member.id, creator=False, group=random.randint(1, 4))
 
-        for link in self.raw_links.filter(status=3):
+        for link in self.confirmed_raw_links:
 
             s, t = link.source_member_id, link.target_member_id
 
@@ -164,7 +165,7 @@ class Graph:
 
         # print GMap.nodes(data=True)
 
-        for link in self.raw_links:
+        for link in self.confirmed_raw_links:
             s_l = location_index[link.source_member_id]
             t_l = location_index[link.target_member_id]
             if s_l is not None and t_l is not None and s_l != t_l:
@@ -243,7 +244,7 @@ class Graph:
 
     def cover(self):
         if self.raw_links and self.G.number_of_edges() != 0:
-            return self.raw_links.filter(creator=self.user).count() / float(self.G.number_of_edges())
+            return self.confirmed_raw_links.filter(creator=self.user).count() / float(self.G.number_of_edges())
         else:
             return 0
 

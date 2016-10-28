@@ -21,6 +21,7 @@ Location: http://lime.seeleit.com/
 * django
 * django-htmlmin
 * django-compressor
+* django-smtp-ssl
 * networkx
 * PostgreSQL
 * Redis
