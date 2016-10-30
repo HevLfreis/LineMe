@@ -111,14 +111,6 @@
           </div>
           <ul class="sidebar-menu">
             <li class="header">我的群</li>
-            {% for group in rcmd_groups %}
-              <li>
-                <a href="{% url 'group' group.id %}">
-                  <i class="fa fa-circle-o text-yellow"></i>
-                  <span>{{ group.group_name }}</span>
-                </a>
-              </li>
-            {% endfor %}
             {% for group in groups %}
               <li>
                 <a href="{% url 'egoId' group.id %}">
@@ -131,6 +123,14 @@
                 </a>
               </li>
             {% endfor %}
+{#            {% for group in rcmd_groups %}#}
+{#              <li>#}
+{#                <a href="{% url 'group' group.id %}">#}
+{#                  <i class="fa fa-circle-o text-yellow"></i>#}
+{#                  <span>{{ group.group_name }}</span>#}
+{#                </a>#}
+{#              </li>#}
+{#            {% endfor %}#}
           </ul>
         </section>
       </aside>

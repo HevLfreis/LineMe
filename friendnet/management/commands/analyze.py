@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 import copy
+import csv
 import datetime
 import json
+from collections import Counter
 
 import networkx as nx
 import operator
@@ -13,6 +15,7 @@ from django.db.models import Q, F
 
 from LineMe.constants import PROJECT_NAME
 # from friendnet.methods.algorithm.graph import Graph
+from LineMe.settings import BASE_DIR
 from friendnet.methods.algorithm.graph import Graph
 from friendnet.methods.basic.user import get_user_name
 from friendnet.models import Link, Group, GroupMember
@@ -71,7 +74,7 @@ class Command(BaseCommand):
         print 'both reject: ', links_b_rejected.count(), '\n'
 
         print 'average added friends male: ', links_male.count() / float(male_count)
-        print 'average added friends fenmale: ', links_female.count() / float(female_count)
+        print 'average added friends female: ', links_female.count() / float(female_count)
         print 'average added friends: ', friend_links.count() / float(self.members.count()), '\n'
 
         # G_all = self.build_graph(links)
@@ -88,32 +91,98 @@ class Command(BaseCommand):
 
         self.print_info(G_all_confirmed, 'u')
 
-        self.connected_component(G_all_confirmed)
+        # groups
+        cf = csv.reader(file('D:\master\LineMe\student list/grouping.csv', 'rb'))
+
+        groups, members = {}, []
+        i = 0
+        for line in cf:
+            if line[0] == '1':
+                groups[i] = members
+                i += 1
+                members = [line[2].strip().decode('utf-8')]
+
+            else:
+                members.append(line[2].strip().decode('utf-8'))
+        groups[i] = members
+
+        for k, v in groups.items():
+            # print k, ': ', ' '.join(v)
+
+            new_list = []
+
+            for name in v:
+                try:
+                    new_list.append(self.members.get(member_name=name))
+                except Exception, e:
+                    new_list.append(self.members.filter(member_name=name, is_joined=True)[0])
+
+            groups[k] = new_list
+
+        group_average_degree_index = {}
+        for k, v in groups.items():
+            group_average_degree_index[k] = sum([G_all_confirmed.degree(m) for m in v])
+
+        # print group_average_degree_index
+
+        for top in sorted(group_average_degree_index, key=group_average_degree_index.get, reverse=True)[:3]:
+            print ' '.join([m.member_name for m in groups[top]])
+            print [G_all_confirmed.degree(m) for m in groups[top]]
+
+        group_index = {m: k for k, v in groups.items() for m in v}
+
+        G_group = nx.Graph()
+
+        for k, v in groups.items():
+            G_group.add_node(k)
+
+        for s, t in G_all_confirmed.edges():
+            # print s.member_name, t.member_name
+            s, t = group_index[s], group_index[t]
+            if not G_group.has_edge(s, t):
+                G_group.add_edge(s, t, weight=1)
+            else:
+                G_group[s][t]['weight'] += 1
+
+        cnt = Counter()
+        for s, t, d in G_group.edges(data=True):
+            # print s, t, d['weight']
+            cnt[d['weight']] += 1
+            # if d['weight'] < len(groups[s]) * len(groups[t]) / 2.0:
+            #     G_group.remove_edge(s, t)
+        print cnt
+
+        cnt = Counter(G_group.degree().values())
+        print sum(G_group.degree().values()) / float(G_group.number_of_edges())
+        print len(self.members) / float(len(groups))
+
+        print cnt
+        self.print_info(G_group, 'group')
 
         # single node
-        s, n, u, z, o = 0, 0, 0, 0, 0
-        for m in G_all_confirmed.nodes():
-            if G_all_confirmed.degree(m) == 0:
-                s += 1
-                if m.user is None:
-                    n += 1
-                    print m.member_name, 'not in'
-
-                elif not links.filter(creator=m.user).exists():
-                    z += 1
-                    print get_user_name(m.user), 'no link create'
-
-                elif not links.filter((Q(source_member=m) | Q(target_member=m))).exists():
-                    u += 1
-
-                else:
-                    print get_user_name(m.user)
-                    t = links.filter(creator=m.user)
-                    for a in t:
-                        print a.status, a.source_member.member_name, a.target_member.member_name
-                    o += 1
-
-        print 'single: ', s, 'not in: ', n, 'no link: ', z, 'no invite: ', u, 'other: ', o
+        # s, n, u, z, o = 0, 0, 0, 0, 0
+        # for m in G_all_confirmed.nodes():
+        #     if G_all_confirmed.degree(m) == 0:
+        #         s += 1
+        #         if m.user is None:
+        #             n += 1
+        #             print m.member_name, 'not in'
+        #
+        #         elif not links.filter(creator=m.user).exists():
+        #             z += 1
+        #             print get_user_name(m.user), 'no link create'
+        #
+        #         elif not links.filter((Q(source_member=m) | Q(target_member=m))).exists():
+        #             u += 1
+        #
+        #         else:
+        #             print get_user_name(m.user)
+        #             t = links.filter(creator=m.user)
+        #             for a in t:
+        #                 print a.status, a.source_member.member_name, a.target_member.member_name
+        #             o += 1
+        #
+        # print 'single: ', s, 'not in: ', n, 'no link: ', z, 'no invite: ', u, 'other: ', o
 
 
         # user confirmed links count
@@ -160,41 +229,39 @@ class Command(BaseCommand):
         #
         # self.print_info(G_all_confirmed, 'all confirmed')
         #
-        # G_core = nx.Graph()
-        #
-        # wc = {}
-        # bi, nb = 0.0, 0.0
-        # for (s, t, d) in G_all_confirmed.edges(data=True):
-        #     w = d['weight']
-        #     if w in wc:
-        #         wc[w] += 1
-        #     else:
-        #         wc[w] = 1
-        #
-        #     if w > 1:
-        #         # print s.member_name, t.member_name
-        #
-        #         links = d['link']
-        #         couple = {s.user: False, t.user: False}
-        #
-        #         for link in links:
-        #             if link.creator in couple:
-        #                 couple[link.creator] = True
-        #
-        #         if couple.values() == [True, True]:
-        #             G_core.add_edge(s, t)
-        #             bi += 1
-        #         else:
-        #             nb += 1
-        #             # for link in links:
-        #             #     print link.source_member.member_name, link.target_member.member_name, get_user_name(link.creator), link.status, d['weight']
-        #             #
-        #             # print '======'
-        #
-        # print 'weight distribution: ', wc, bi, nb
-        #
-        # self.print_info(G_core, 'global core')
-        # self.connected_component(G_core)
+        G_core = nx.Graph()
+
+        wc = Counter()
+        bi, nb = 0.0, 0.0
+        for (s, t, d) in G_all_confirmed.edges(data=True):
+            w = d['weight']
+
+            wc[w] += 1
+
+            if w > 1:
+                # print s.member_name, t.member_name
+
+                links = d['link']
+                couple = {s.user: False, t.user: False}
+
+                for link in links:
+                    if link.creator in couple:
+                        couple[link.creator] = True
+
+                if couple.values() == [True, True]:
+                    G_core.add_edge(s, t)
+                    bi += 1
+                else:
+                    nb += 1
+                    # for link in links:
+                    #     print link.source_member.member_name, link.target_member.member_name, get_user_name(link.creator), link.status, d['weight']
+                    #
+                    # print '======'
+
+        print 'weight distribution: ', wc, bi, nb
+
+        self.print_info(G_core, 'global core')
+        self.connected_component(G_core)
         #
         # G_no_hub = copy.deepcopy(G_all_confirmed)
         #
@@ -285,18 +352,18 @@ class Command(BaseCommand):
         #                 active_links.count(), \
         #                 passive_links.count(), (c1-c2)/float(c1+c2)
 
-
     def build_graph(self, links):
         G = nx.Graph()
         for m in self.members:
             G.add_node(m)
 
         for link in links:
-            if not G.has_edge(link.source_member, link.target_member):
-                G.add_edge(link.source_member, link.target_member, link=[link], weight=1)
+            s, t = self.members.get(id=link.source_member_id), self.members.get(id=link.target_member_id)
+            if not G.has_edge(s, t):
+                G.add_edge(s, t, link=[link], weight=1)
             else:
-                G[link.source_member][link.target_member]['weight'] += 1
-                G[link.source_member][link.target_member]['link'].append(link)
+                G[s][t]['weight'] += 1
+                G[s][t]['link'].append(link)
         return G
 
     def confirmed(self, links):

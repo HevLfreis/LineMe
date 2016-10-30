@@ -209,7 +209,6 @@ COMPRESS_OUTPUT_DIR = 'compressed'
 COMPRESS_CSS_FILTERS = ['compressor.filters.css_default.CssAbsoluteFilter',
                         'compressor.filters.cssmin.CSSCompressorFilter']
 
-
 LOGIN_URL = '/login/'
 
 

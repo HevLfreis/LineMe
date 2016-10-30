@@ -10,6 +10,7 @@ import os
 from friendnet.models import Privacy
 from settings import STATIC_ROOT, MEDIA_ROOT
 
+
 PROJECT_NAME = 'LineMe'
 STATIC_FOLDER = STATIC_ROOT
 MEDIA_FOLDER = MEDIA_ROOT
@@ -46,4 +47,3 @@ CITIES_TABLE = json.load(file(os.path.join(STATIC_FOLDER, 'data/cities2.json')))
 PRIVACIES = {'pri-'+str(i): (field, field.verbose_name.title())
              for i, field in enumerate(Privacy._meta.fields)
              if field.verbose_name.title() != 'User'}
-

@@ -21,8 +21,8 @@ class Link(models.Model):
     confirmed_time = models.DateTimeField(null=True)
     created_time = models.DateTimeField()
 
-    def __repr__(self):
-        return 'Link: from ', str(self.source_member)+' to '+str(self.target_member)+' by '+str(self.creator)
+    # def __repr__(self):
+    #     return 'Link: from ', str(self.source_member)+' to '+str(self.target_member)+' by '+str(self.creator)
 
     @staticmethod
     def check_redundancy(creator, groupid):

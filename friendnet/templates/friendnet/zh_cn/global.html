@@ -95,14 +95,6 @@
           </div>
           <ul class="sidebar-menu">
             <li class="header">我的群</li>
-            {% for group in rcmd_groups %}
-              <li>
-                <a href="{% url 'group' group.id %}">
-                  <i class="fa fa-circle-o text-yellow"></i>
-                  <span>{{ group.group_name }}</span>
-                </a>
-              </li>
-            {% endfor %}
             {% for group in groups %}
               <li>
                 <a href="{% url 'globalId' group.id %}">
@@ -115,6 +107,14 @@
                 </a>
               </li>
             {% endfor %}
+{#            {% for group in rcmd_groups %}#}
+{#              <li>#}
+{#                <a href="{% url 'group' group.id %}">#}
+{#                  <i class="fa fa-circle-o text-yellow"></i>#}
+{#                  <span>{{ group.group_name }}</span>#}
+{#                </a>#}
+{#              </li>#}
+{#            {% endfor %}#}
           </ul>
         </section>
       </aside>
@@ -227,12 +227,15 @@
                       <ul>
                         <li>你构造的连边覆盖了全局网络的 {{ cover }}%</li>
                         </br>
-                        {% if bestfriend.member_name != None %}
-                          <li>你最好的朋友是 <a href="#">{{ bestfriend.member_name }}</a>, 有{{ bf_count }}个人将你们两人连接到了一起.</li>
+                        {% if bestfriend %}
+                          <li>你最好的朋友是 <a href="#">{{ bestfriend.member_name }}</a>, 有{{ bf_count }}个人将你们两人连接到了一起</li>
                           </br>
                         {% endif %}
-                        {% if heart.member_name != None %}
-                          <li><a href="#">{{ heart.member_name }}</a> 最懂你.</li>
+                        {% if heart %}
+                          <li><a href="#">{{ heart.member_name }}</a> 最懂你</li>
+                        {% endif %}
+                        {% if similar %}
+                          <li><a href="#">{{ similar.member_name }}</a> 跟你很相似</li>
                         {% endif %}
                       </ul>
                     </blockquote>

@@ -7,6 +7,7 @@
         xLookAt = 0,
         yLookAt = 25,
         zLookAt = -600,
+        zLookAtOne = 0,
         lookAtPos = {x:xLookAt, y:yLookAt, z:zLookAt},
         cameraPos = {x:1200, y:750, z:1000};
 
@@ -25,6 +26,8 @@
 
         VIZ.count = datas.length;
 
+        if (VIZ.count == 1) lookAtPos.z = zLookAtOne;
+
         var margin = {top: 17, right: 0, bottom: 16, left: 20},
             visWidth = width * 0.618 - margin.left - margin.right,
             visHeight = height * 0.618 - margin.top - margin.bottom,
@@ -38,7 +41,7 @@
             .attr("width", visWidth)
             .attr("height", visHeight);
 
-        vis.attr('fill', 'red')
+        vis.attr('fill', '#66ccff')
             .attr('stroke', 'black')
             .attr('stroke-width', 1)
             .attr('class', 'element')
@@ -47,13 +50,21 @@
 
         var defs = vis.append("defs").attr("id", "imgdefs");
 
-        vis.each(function () {
+        vis.each(function (d, i) {
+
             var force = d3.layout.force()
                 .charge(-50)
                 .linkDistance(100)
                 .size([visWidth, visHeight]);
 
             var $vis = d3.select(this);
+
+            $vis.append("text")
+                .attr("class", "legend")
+                .attr("vector-effect", "non-scaling-stroke")
+                .html('Link weight: '+(i+1))
+                .attr("x", visWidth - 20)
+                .attr("y", visHeight - 20);
 
             var node = $vis.selectAll(".node");
             var link = $vis.selectAll(".link");
@@ -153,12 +164,17 @@
     function setData(d, i) {
 
         var random = new THREE.Object3D();
-        //random.position.x = 0;
-        //random.position.y = Math.random() * 8000 - 4000;
+        //random.position.x = (i % 2 == 0?1:0) * 8000 - 4000;
+        //random.position.y = 0;
         //random.position.z = -(Math.floor(i)) * 600;
         random.position.x = 0;
-        random.position.y = 0;
-        random.position.z = -600;
+        if (i == 0) random.position.y = 4000;
+        else if (i == 1 || VIZ.count == 1) random.position.y = 0;
+        else if (i > 1) random.position.y = (i % 2 == 0?0:1) * 8000 - 4000;
+        random.position.z = -(Math.floor(i)) * 600;
+        //random.position.x = 0;
+        //random.position.y = 0;
+        //random.position.z = -600;
         d['random'] = random;
 
         var flow = new THREE.Object3D();
@@ -241,6 +257,8 @@
     window.VIZ = VIZ;
 
     document.getElementById('three').addEventListener('mousewheel', function(event) {
+
+        if (VIZ.count == 0) return;
 
         event.preventDefault();
 		event.stopPropagation();

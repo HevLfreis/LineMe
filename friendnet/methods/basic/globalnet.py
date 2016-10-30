@@ -11,7 +11,9 @@ import friendnet.methods.basic.exp as exp
 from friendnet.models import Group
 
 
-@cache.get_or_set('globalcore', 60 * 20)
+# Cache the core may cause:
+# when adding a new member, he will encounter a member not in exception
+# @cache.get_or_set('globalcore', 60 * 20)
 def get_user_global_core(groupid):
     return Graph(Group.objects.get(id=groupid)).core_builder()
 
@@ -84,6 +86,8 @@ def graph_analyzer(user, groupid):
     # Todo: ratio not correct fixed...
     heart = Global.heart()
 
+    similar = analyzer.embeddedness_max()
+
     return {'distribution': json.dumps(distribution),
             'top3': top3,
             'my_rank': rank,
@@ -92,4 +96,5 @@ def graph_analyzer(user, groupid):
             'cover': round(cover * 100, 2),
             'bestfriend': best_friend,
             'bf_count': bf_count,
-            'heart': heart}
+            'heart': heart,
+            'similar': similar}

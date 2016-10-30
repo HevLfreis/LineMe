@@ -13,9 +13,8 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 
-from LineMe import settings
 from LineMe.constants import MEDIA_FOLDER
-from LineMe.settings import logger
+from LineMe.settings import logger, DEPLOYMENT
 from LineMe.utils import logger_join
 from iauth.methods.session import get_session_id
 
@@ -48,7 +47,7 @@ def create_avatar(request, userid, username='Unknown'):
                               '#af7ac5',
                               '#f39c12',
                               '#95a5a6'])
-    if settings.DEPLOYMENT:
+    if DEPLOYMENT:
         font = ImageFont.truetype('/usr/share/fonts/truetype/simhei.ttf', 125)
     else:
         font = ImageFont.truetype('simhei.ttf', 125)

@@ -212,9 +212,11 @@ class Graph:
 
         for (s, t, d) in self.G.edges(data=True):
             if d['weight'] in layers:
-                layers[d['weight']].append((s, t))
+                for i in xrange(d['weight']):
+                    layers[i].append((s, t))
             else:
-                layers[d['weight']] = [(s, t)]
+                for i in xrange(d['weight']):
+                    layers[i] = [(s, t)]
 
         for k, layer in layers.items():
             nodes, links = set([]), []
@@ -253,11 +255,11 @@ class Graph:
         # Todo: without status=3 is more interesting
         links_of_me = self.raw_links \
             .filter(Q(source_member=self.me) | Q(target_member=self.me))\
-            .exclude(creator=self.user) \
-            .values('creator').annotate(count=Count('pk')).order_by('-count')
+            .exclude(creator=self.user)
 
-        if len(links_of_me) != 0:
-            return self.members.get(user__id=links_of_me[0]['creator'])
+        if links_of_me.exists():
+            sorted_links = links_of_me.values('creator').annotate(count=Count('pk')).order_by('-count')
+            return self.members.get(user__id=sorted_links[0]['creator'])
         else:
             return None
 
@@ -325,15 +327,17 @@ class GraphAnalyzer:
              if g.number_of_nodes() > 1]
         return sum(d) / len(d)
 
+    # Todo: move to a more complex algo
     def best_friend(self):
         friends = self.G.neighbors(self.me.id)
+
+        if len(friends) == 0:
+            return None, 0
+
         friends = [(friend, self.G[friend][self.me.id]['weight']) for friend in friends]
         sorted_friends = sorted(friends, key=lambda x: x[1], reverse=True)
 
-        if len(sorted_friends) > 0:
-            return self.Graph.get_member(sorted_friends[0][0]), sorted_friends[0][1]
-        else:
-            return None, 0
+        return self.Graph.get_member(sorted_friends[0][0]), sorted_friends[0][1]
 
     def graph_communities(self):
         communities = nx.k_clique_communities(self.G, 3)
@@ -343,3 +347,32 @@ class GraphAnalyzer:
                 communities_index[member] = i + 1
 
         return communities_index
+
+    def embeddedness(self, memberid):
+        if not self.G.has_node(memberid):
+            return -1
+
+        my_friends = set(self.G.neighbors(self.me.id))
+        your_friends = set(self.G.neighbors(memberid))
+
+        embeddedness = len(my_friends & your_friends)
+
+        return embeddedness
+
+    def embeddedness_max(self):
+
+        neighbors = self.G.neighbors(self.me.id)
+
+        if len(neighbors) == 0:
+            return None
+
+        embeddedness_list = {}
+
+        for member in neighbors:
+            embeddedness_list[member] = self.embeddedness(member)
+
+        m = sorted(embeddedness_list, key=embeddedness_list.get, reverse=True)[0]
+        return self.Graph.get_member(m)
+
+
+

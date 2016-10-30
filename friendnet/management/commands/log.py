@@ -30,6 +30,8 @@ class Command(BaseCommand):
         index = {}
         with open('logs/lineme.log') as f:
             for line in f:
+                if 'Reset' in line:
+                    continue
                 a = re.findall('\[.*?\]', line)
                 t = datetime.strptime(a[0], '[%Y-%m-%d %H:%M:%S]')
                 # print t
