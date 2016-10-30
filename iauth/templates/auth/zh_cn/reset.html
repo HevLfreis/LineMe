@@ -1,56 +1,30 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>{{ project_name }} | 重置密码</title>
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <link rel="shortcut icon" href="/media/favicon.ico">
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="//cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css">
+{% extends "zh_cn/basic_gate.html" %}
 
-    {% load compress %}
-    {% compress css %}
-      <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
-      <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
-      <link rel="stylesheet" href="/static/plugins/icheck/square/blue.css">
-    {% endcompress %}
-  </head>
-  <body class="hold-transition login-page">
-    <div class="login-box">
-      <div class="login-logo">
-        <a href="{% url 'home' %}"><b>{{ project_name }}</b></a>
-      </div>
-      <div class="login-box-body">
-        <p class="login-box-msg">重置密码</p>
-        <form method="post">
-          {% if status == -1 %}
-            <div class="form-group has-error has-feedback">
-            <label class="control-label"><i class="fa fa-times"></i> 无效密码</label>
-            <input name="new" type="password" class="form-control" placeholder="字母和数字，不少于6个字符">
-          {% else %}
-            <div class="form-group has-feedback">
-            <input name="new" type="password" class="form-control" placeholder="新密码">
-          {% endif %}
-            <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-          </div>
-          <div class="form-group has-feedback">
-            <input name="new2" type="password" class="form-control" placeholder="重复密码">
-            <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
-          </div>
-          <div class="row">
-            <div class="col-xs-offset-8 col-xs-4">
-              <button type="submit" class="btn btn-primary btn-block btn-flat" onclick="this.form.submit(); this.disabled=true;">确定</button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
+{% block title %}重置密码{% endblock %}
 
-    {% compress js %}
-      <script src="/static/plugins/jquery/jquery.min.js"></script>
-      <script src="/static/bootstrap/js/bootstrap.min.js"></script>
-      <script src="/static/lineme/js/analytics.js"></script>
-    {% endcompress %}
-  </body>
-</html>
+{% block content %}
+  <div class="login-box-body">
+    <p class="login-box-msg">重置密码</p>
+    <form method="post">
+      {% if status == -1 %}
+        <div class="form-group has-error has-feedback">
+        <label class="control-label"><i class="fa fa-times"></i> 无效密码</label>
+        <input name="new" type="password" class="form-control" placeholder="字母和数字，不少于6个字符">
+      {% else %}
+        <div class="form-group has-feedback">
+        <input name="new" type="password" class="form-control" placeholder="新密码">
+      {% endif %}
+        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+      </div>
+      <div class="form-group has-feedback">
+        <input name="new2" type="password" class="form-control" placeholder="重复密码">
+        <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
+      </div>
+      <div class="row">
+        <div class="col-xs-offset-8 col-xs-4">
+          <button type="submit" class="btn btn-primary btn-block btn-flat" onclick="this.form.submit(); this.disabled=true;">确定</button>
+        </div>
+      </div>
+    </form>
+  </div>
+{% endblock %}

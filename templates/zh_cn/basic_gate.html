@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{{ project_name }} | {% block title %}{% endblock %}</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="shortcut icon" href="/media/favicon.ico">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css">
+
+    {% load compress %}
+    {% compress css %}
+      <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+      <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
+      <link rel="stylesheet" href="/static/plugins/icheck/square/blue.css">
+    {% endcompress %}
+  </head>
+  <body class="hold-transition login-page">
+    <div class="login-box">
+      <div class="login-logo">
+        <a href="{% url 'home' %}"><b>{{ project_name }}</b></a>
+      </div>
+      {% block content %}
+      {% endblock %}
+    </div>
+
+    {% compress js %}
+      <script src="/static/plugins/jquery/jquery.min.js"></script>
+      <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+      <script src="/static/lineme/js/analytics.js"></script>
+    {% endcompress %}
+  </body>
+</html>

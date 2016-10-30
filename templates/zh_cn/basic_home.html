@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{{ project_name }} | {% block title %}{% endblock %}</title>
+{#    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">#}
+    <link rel="shortcut icon" href="/media/favicon.ico">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css">
+
+    {% load compress %}
+    {% compress css %}
+      <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+      <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
+      <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
+      <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
+      <link rel="stylesheet" href="/static/plugins/hint/css/hint.css">
+      <link rel="stylesheet" href="/static/plugins/trip/css/trip.min.css">
+      {% block extra_css %}{% endblock %}
+    {% endcompress %}
+  </head>
+  <body class="hold-transition skin-black sidebar-mini">
+    <div class="wrapper">
+      {% block modal %}{% endblock %}
+      <header class="main-header">
+        <a href="{% url 'home' %}" class="logo">
+          <span class="logo-lg"><b>{{ project_name }}</b></span>
+        </a>
+        <nav class="navbar navbar-static-top" role="navigation">
+          <div class="navbar-custom-menu">
+            <ul class="nav navbar-nav">
+              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="{% if msgs_count > 0  %}你有 {{ msgs_count }} 条连边请求{% else %}无新消息{% endif %}">
+                <a href="{% url 'home' %}">
+                  <i class="fa fa-envelope-o"></i>
+                  {% if msgs_count >= 99  %}
+                    <span class="label label-danger">99</span>
+                  {% elif msgs_count > 0 %}
+                    <span class="label label-success">{{ msgs_count }}</span>
+                  {% endif %}
+                </a>
+              </li>
+              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="帮助">
+                <a id="help" href="#">
+                  <i class="fa fa-question"></i>
+                </a>
+              </li>
+              <li class="dropdown user user-menu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                  <img src="/media/images/avatars/{{ user.id }}.png" class="user-image" alt="User Image">
+                  <span class="hidden-xs">{{ user.username }}</span>
+                  <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu" role="menu">
+                  <li><a href={% url 'ego' %}>我的网络</a></li>
+                  <li><a href={% url 'global' %}>全局网络</a></li>
+                  <li><a href={% url 'profile' %}>个人信息</a></li>
+                  <li><a href={% url 'settings' %}>系统设置</a></li>
+                  <li class="divider"></li>
+                  <li><a href={% url 'logout' %}>登出</a></li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </header>
+
+      {% block sidebar %}{% endblock %}
+
+      <div class="content-wrapper">
+        <section class="content-header">
+          <h1>
+            {% block header_name %}{% endblock %}
+{#            <small>Optional description</small>#}
+          </h1>
+          <ol class="breadcrumb">
+            <li><a href="{% url 'home' %}"><i class="fa fa-home"></i>{{ project_name }}</a></li>
+            <li class="active">{% block header_name2 %}{% endblock %}</li>
+          </ol>
+        </section>
+        <section class="content">
+          {% block content %}{% endblock %}
+        </section>
+      </div>
+      <footer class="main-footer">
+        <div class="pull-right hidden-xs">
+          <a href="http://seeleit.com" target="_black">POWERED BY HT</a>
+        </div>
+        <strong>Copyright &copy; 2016 <a href="http://cnc.sjtu.edu.cn" target="_black">CNC</a>.</strong> All rights reserved.
+      </footer>
+    </div>
+
+    {% block infile_js %}{% endblock %}
+
+    {% compress js %}
+      <script src="/static/plugins/jquery/jquery.min.js"></script>
+      <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+      <script src="/static/dist/js/app.min.js"></script>
+      <script src="/static/plugins/rollbar/js/jquery.rollbar.min.js"></script>
+      <script src="/static/lineme/js/rollbar.js"></script>
+      <script src="/static/plugins/trip/js/trip.js"></script>
+      <script src="/static/lineme/js/autocomplete.js"></script>
+      <script src="/static/lineme/js/analytics.js"></script>
+      {% block extra_js %}{% endblock %}
+    {% endcompress %}
+  </body>
+</html>

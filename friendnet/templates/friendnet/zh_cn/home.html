@@ -1,510 +1,435 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>{{ project_name }} | 我的主页</title>
-{#    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">#}
-    <link rel="shortcut icon" href="/media/favicon.ico">
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="//cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css">
+{% extends "zh_cn/basic_home.html" %}
 
-    {% load compress %}
-    {% compress css %}
-      <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
-      <link rel="stylesheet" href="/static/plugins/select2/select2.min.css">
-      <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
-      <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
-      <link rel="stylesheet" href="/static/plugins/icheck/flat/green.css">
-      <link rel="stylesheet" href="/static/plugins/rollbar/css/jquery.rollbar.css">
-      <link rel="stylesheet" href="/static/plugins/hint/css/hint.css">
-      <link rel="stylesheet" href="/static/plugins/trip/css/trip.min.css">
-    {% endcompress %}
-  </head>
-  <body class="hold-transition skin-black sidebar-mini">
-    <div class="wrapper">
-      <div class="modal fade" id="modal-msg">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-              <h4 class="modal-title">注意</h4>
-            </div>
-            <div class="modal-body">
-              <h4></h4>
-            </div>
-            <div class="modal-footer">
-              <div class="checkbox icheck pull-left">
-                <label>
-                  <input type="checkbox" value="" name="">
-                  不再显示
-                </label>
-              </div>
-              <button id="btn-msg-all" class="btn btn-primary btn-flat" data-dismiss="modal">所有</button>
-              <button id="btn-msg-this" class="btn btn-warning btn-flat" data-dismiss="modal">仅这条</button>
-            </div>
+{% block title %}我的主页{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="/static/plugins/select2/select2.min.css">
+  <link rel="stylesheet" href="/static/plugins/icheck/flat/green.css">
+  <link rel="stylesheet" href="/static/plugins/icheck/square/blue.css">
+{% endblock %}
+
+{% block modal %}
+  <div class="modal fade" id="modal-msg">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <h4 class="modal-title">注意</h4>
+        </div>
+        <div class="modal-body">
+          <h4></h4>
+        </div>
+        <div class="modal-footer">
+          <div class="checkbox icheck pull-left">
+            <label>
+              <input type="checkbox" value="" name="">
+              不再显示
+            </label>
+          </div>
+          <button id="btn-msg-all" class="btn btn-primary btn-flat" data-dismiss="modal">所有</button>
+          <button id="btn-msg-this" class="btn btn-warning btn-flat" data-dismiss="modal">仅这条</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modal-create-group">
+    <div class="modal-dialog">
+      <form method="post" class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <h4 class="modal-title">新建群</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group has-feedback">
+            <label>群名字</label>
+            <input type="text" class="form-control" name="name" placeholder="请输入群名字">
+            <span class="glyphicon glyphicon-tags form-control-feedback"></span>
+          </div>
+          <div class="form-group">
+            <label>群验证方式</label>
+            <select class="form-control select2" name="identifier" style="width: 100%">
+              {% for k, v in identifier.items %}
+                {% if k == 0 %}
+                  <option value="{{ k }}" selected="selected">{{ v }}</option>
+                {% else %}
+                  <option value="{{ k }}">{{ v }}</option>
+                {% endif %}
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom: 0">
+            <label>群类型</label></br>
+            <label style="padding-right: 15px">
+              <input type="radio" name="gtype" class="minimal" value="0" checked>
+              公开
+            </label>
+            <label>
+              <input type="radio" name="gtype" class="minimal" value="1">
+              私有
+            </label>
           </div>
         </div>
-      </div>
+        <div class="modal-footer">
+          <h4 class="pull-left text-red">创建群会花费 {{ group_cost }} 积分</h4>
+          <button type="submit" class="btn btn-primary btn-flat">创建</button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
 
-      <div class="modal fade" id="modal-create-group">
-        <div class="modal-dialog">
-          <form method="post" class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-              <h4 class="modal-title">新建群</h4>
-            </div>
-            <div class="modal-body">
-              <div class="form-group has-feedback">
-                <label>群名字</label>
-                <input type="text" class="form-control" name="name" placeholder="请输入群名字">
-                <span class="glyphicon glyphicon-tags form-control-feedback"></span>
-              </div>
-              <div class="form-group">
-                <label>群验证方式</label>
-                <select class="form-control select2" name="identifier" style="width: 100%">
-                  {% for k, v in identifier.items %}
-                    {% if k == 0 %}
-                      <option value="{{ k }}" selected="selected">{{ v }}</option>
-                    {% else %}
-                      <option value="{{ k }}">{{ v }}</option>
-                    {% endif %}
-                  {% endfor %}
-                </select>
-              </div>
-              <div class="form-group" style="margin-bottom: 0">
-                <label>群类型</label></br>
-                <label style="padding-right: 15px">
-                  <input type="radio" name="gtype" class="minimal" value="0" checked>
-                  公开
-                </label>
-                <label>
-                  <input type="radio" name="gtype" class="minimal" value="1">
-                  私有
-                </label>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <h4 class="pull-left text-red">创建群会花费 {{ group_cost }} 积分</h4>
-              <button type="submit" class="btn btn-primary btn-flat">创建</button>
-            </div>
-          </form>
+{% block sidebar %}
+  <aside class="main-sidebar">
+    <section class="sidebar">
+      <div class="user-panel">
+        <div class="pull-left image">
+          <img onclick="window.location.href='{% url 'avatar' %}'" src="/media/images/avatars/{{ user.id }}.png" class="img-circle" alt="User Image" style="cursor:pointer">
+        </div>
+        <div class="pull-left info">
+          <p>{{ user.username }}</p>
+          <a><i class="fa fa-circle text-success"></i> 在线</a>
         </div>
       </div>
+      <div id="search" class="input-group sidebar-form">
+        <input type="text" name="q" class="form-control" placeholder="搜索群...">
+        <span class="input-group-btn">
+          <button class="btn btn-flat"><i class="fa fa-search"></i></button>
+        </span>
+      </div>
+      <ul class="sidebar-menu">
+        <li class="header">个人信息</li>
+      </ul>
+      <ul class="control-sidebar-menu">
+        <li>
+          <a>
+            {% if user.extra.gender  %}
+              <i class="menu-icon fa fa-venus bg-yellow" title="性别"></i>
+              <div class="menu-info">
+                <h4 class="control-sidebar-subheading">女</h4>
+              </div>
+            {% else %}
+              <i class="menu-icon fa fa-mars bg-yellow" title="性别"></i>
+              <div class="menu-info">
+                <h4 class="control-sidebar-subheading">男</h4>
+              </div>
+            {% endif %}
+          </a>
+        </li>
+        <li>
+          <a>
+            <i class="menu-icon fa fa-birthday-cake bg-red" title="生日"></i>
+            <div class="menu-info">
+              <h4 id="profile-birth" class="control-sidebar-subheading">{{ user.extra.birth }}</h4>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a>
+            <i class="menu-icon fa fa-envelope-o bg-light-blue" title="邮箱"></i>
+            <div class="menu-info">
+              <h4 id="profile-email1" class="control-sidebar-subheading"></h4>
+              <p id="profile-email2"></p>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a>
+            <i class="menu-icon fa fa-location-arrow bg-green" title="位置"></i>
+            <div class="menu-info">
+              <h4 id="profile-location1" class="control-sidebar-subheading"></h4>
+              <p id="profile-location2"></p>
+            </div>
+          </a>
+        </li>
+        <li>
+        <li>
+          <a>
+            <i class="menu-icon fa fa-institution bg-maroon" title="所属"></i>
+            <div class="menu-info">
+              <h4 id="profile-institution" class="control-sidebar-subheading"></h4>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a id="credits">
+            <i class="menu-icon fa fa-star bg-teal" title="积分"></i>
+            <div class="menu-info">
+              <h4 class="control-sidebar-subheading">{{ user.extra.credits }}</h4>
+            </div>
+          </a>
+        </li>
+      </ul>
+    </section>
+  </aside>
+{% endblock %}
 
-      <header class="main-header">
-        <a href="{% url 'home' %}" class="logo">
-          <span class="logo-lg"><b>{{ project_name }}</b></span>
-        </a>
-        <nav class="navbar navbar-static-top" role="navigation">
-          <div class="navbar-custom-menu">
-            <ul class="nav navbar-nav">
-              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="{% if msgs_count > 0  %}你有 {{ msgs_count }} 条连边请求{% else %}无新消息{% endif %}">
-                <a href="{% url 'home' %}">
-                  <i class="fa fa-envelope-o"></i>
-                  {% if msgs_count >= 99  %}
-                    <span class="label label-danger">99</span>
-                  {% elif msgs_count > 0 %}
-                    <span class="label label-success">{{ msgs_count }}</span>
-                  {% endif %}
-                </a>
-              </li>
-              <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="帮助">
-                <a id="help" href="#">
-                  <i class="fa fa-question"></i>
-                </a>
-              </li>
-              <li class="dropdown user user-menu">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                  <img src="/media/images/avatars/{{ user.id }}.png" class="user-image" alt="User Image">
-                  <span class="hidden-xs">{{ user.username }}</span>
-                  <span class="caret"></span>
-                </a>
-                <ul class="dropdown-menu" role="menu">
-                  <li><a href={% url 'ego' %}>我的网络</a></li>
-                  <li><a href={% url 'global' %}>全局网络</a></li>
-                  <li><a href={% url 'profile' %}>个人信息</a></li>
-                  <li><a href={% url 'settings' %}>系统设置</a></li>
-                  <li class="divider"></li>
-                  <li><a href={% url 'logout' %}>登出</a></li>
-                </ul>
-              </li>
+{% block header_name %}我的主页{% endblock %}
+{% block header_name2 %}我的主页{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-md-3 col-sm-6 col-xs-12">
+      <div class="info-box">
+        <a href="{% url 'ego' %}" class="info-box-icon bg-blue"><i class="ion ion-ios-color-filter-outline"></i></a>
+        <div class="info-box-content">
+          <span class="info-box-text">我的网络</span>
+          <span class="info-box-number">在群内创建你的朋友网络</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+      <div class="info-box">
+        <a href="{% url 'global' %}" class="info-box-icon bg-green"><i class="ion ion-ios-world-outline"></i></a>
+        <div class="info-box-content">
+          <span class="info-box-text">全局网络</span>
+          <span class="info-box-number">查看你的全局网络</span>
+        </div>
+      </div>
+    </div>
+    <div class="clearfix visible-sm-block"></div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+      <div class="info-box">
+        <a href="{% url 'profile' %}" class="info-box-icon bg-yellow"><i class="ion ion-ios-albums-outline"></i></a>
+        <div class="info-box-content">
+          <span class="info-box-text">个人信息</span>
+          <span class="info-box-number">编辑你的个人档案</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+      <div class="info-box">
+        <a href="{% url 'settings' %}" class="info-box-icon bg-red"><i class="ion ion-ios-gear-outline"></i></a>
+        <div class="info-box-content">
+          <span class="info-box-text">系统设置</span>
+          <span class="info-box-number">更改 {{ project_name }} 的设置</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row" style="margin-top: 10px">
+    <div class="col-md-7 col-xs-12">
+      <div id="box-msg" class="box box-primary">
+        <div class="box-header">
+          <i class="ion ion-paper-airplane"></i>
+          <h3 class="box-title">连边请求</h3>
+        </div>
+        <div class="box-body"></div>
+        <div class="box-footer clearfix no-border">
+          <div class="box-tools pull-left">
+            <ul class="pagination pagination-sm inline">
+              <li class="disabled"><a href="#">«</a></li>
+              <li><a>1/1</a></li>
+              <li class="disabled"><a href="#">»</a></li>
             </ul>
           </div>
-        </nav>
-      </header>
-      <aside class="main-sidebar">
-        <section class="sidebar">
-          <div class="user-panel">
-            <div class="pull-left image">
-              <img onclick="window.location.href='{% url 'avatar' %}'" src="/media/images/avatars/{{ user.id }}.png" class="img-circle" alt="User Image" style="cursor:pointer">
-            </div>
-            <div class="pull-left info">
-              <p>{{ user.username }}</p>
-              <a><i class="fa fa-circle text-success"></i> 在线</a>
-            </div>
-          </div>
-          <div id="search" class="input-group sidebar-form">
-            <input type="text" name="q" class="form-control" placeholder="搜索群...">
-            <span class="input-group-btn">
-              <button class="btn btn-flat"><i class="fa fa-search"></i></button>
-            </span>
-          </div>
-          <ul class="sidebar-menu">
-            <li class="header">个人信息</li>
-          </ul>
-          <ul class="control-sidebar-menu">
-            <li>
-              <a>
-                {% if user.extra.gender  %}
-                  <i class="menu-icon fa fa-venus bg-yellow" title="性别"></i>
-                  <div class="menu-info">
-                    <h4 class="control-sidebar-subheading">女</h4>
-                  </div>
-                {% else %}
-                  <i class="menu-icon fa fa-mars bg-yellow" title="性别"></i>
-                  <div class="menu-info">
-                    <h4 class="control-sidebar-subheading">男</h4>
-                  </div>
-                {% endif %}
-              </a>
-            </li>
-            <li>
-              <a>
-                <i class="menu-icon fa fa-birthday-cake bg-red" title="生日"></i>
-                <div class="menu-info">
-                  <h4 id="profile-birth" class="control-sidebar-subheading">{{ user.extra.birth }}</h4>
-                </div>
-              </a>
-            </li>
-            <li>
-              <a>
-                <i class="menu-icon fa fa-envelope-o bg-light-blue" title="邮箱"></i>
-                <div class="menu-info">
-                  <h4 id="profile-email1" class="control-sidebar-subheading"></h4>
-                  <p id="profile-email2"></p>
-                </div>
-              </a>
-            </li>
-            <li>
-              <a>
-                <i class="menu-icon fa fa-location-arrow bg-green" title="位置"></i>
-                <div class="menu-info">
-                  <h4 id="profile-location1" class="control-sidebar-subheading"></h4>
-                  <p id="profile-location2"></p>
-                </div>
-              </a>
-            </li>
-            <li>
-            <li>
-              <a>
-                <i class="menu-icon fa fa-institution bg-maroon" title="所属"></i>
-                <div class="menu-info">
-                  <h4 id="profile-institution" class="control-sidebar-subheading"></h4>
-                </div>
-              </a>
-            </li>
-            <li>
-              <a id="credits">
-                <i class="menu-icon fa fa-star bg-teal" title="积分"></i>
-                <div class="menu-info">
-                  <h4 class="control-sidebar-subheading">{{ user.extra.credits }}</h4>
-                </div>
-              </a>
-            </li>
-          </ul>
-        </section>
-      </aside>
-      <div class="content-wrapper">
-        <section class="content-header">
-          <h1>
-            我的主页
-{#            <small>Optional description</small>#}
-          </h1>
-          <ol class="breadcrumb">
-            <li><a href="{% url 'home' %}"><i class="fa fa-home"></i>{{ project_name }}</a></li>
-            <li class="active">我的主页</li>
-          </ol>
-        </section>
-        <section class="content">
-          <div class="row">
-            <div class="col-md-3 col-sm-6 col-xs-12">
-              <div class="info-box">
-                <a href="{% url 'ego' %}" class="info-box-icon bg-blue"><i class="ion ion-ios-color-filter-outline"></i></a>
-                <div class="info-box-content">
-                  <span class="info-box-text">我的网络</span>
-                  <span class="info-box-number">在群内创建你的朋友网络</span>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-3 col-sm-6 col-xs-12">
-              <div class="info-box">
-                <a href="{% url 'global' %}" class="info-box-icon bg-green"><i class="ion ion-ios-world-outline"></i></a>
-                <div class="info-box-content">
-                  <span class="info-box-text">全局网络</span>
-                  <span class="info-box-number">查看你的全局网络</span>
-                </div>
-              </div>
-            </div>
-            <div class="clearfix visible-sm-block"></div>
-            <div class="col-md-3 col-sm-6 col-xs-12">
-              <div class="info-box">
-                <a href="{% url 'profile' %}" class="info-box-icon bg-yellow"><i class="ion ion-ios-albums-outline"></i></a>
-                <div class="info-box-content">
-                  <span class="info-box-text">个人信息</span>
-                  <span class="info-box-number">编辑你的个人档案</span>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-3 col-sm-6 col-xs-12">
-              <div class="info-box">
-                <a href="{% url 'settings' %}" class="info-box-icon bg-red"><i class="ion ion-ios-gear-outline"></i></a>
-                <div class="info-box-content">
-                  <span class="info-box-text">系统设置</span>
-                  <span class="info-box-number">更改 {{ project_name }} 的设置</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="row" style="margin-top: 10px">
-            <div class="col-md-7 col-xs-12">
-              <div id="box-msg" class="box box-primary">
-                <div class="box-header">
-                  <i class="ion ion-paper-airplane"></i>
-                  <h3 class="box-title">连边请求</h3>
-                </div>
-                <div class="box-body"></div>
-                <div class="box-footer clearfix no-border">
-                  <div class="box-tools pull-left">
-                    <ul class="pagination pagination-sm inline">
-                      <li class="disabled"><a href="#">«</a></li>
-                      <li><a>1/1</a></li>
-                      <li class="disabled"><a href="#">»</a></li>
-                    </ul>
-                  </div>
-                  <a id="confirm" href="#" class="btn btn-sm btn-default btn-flat pull-right">确认已选择</a>
-                </div>
-              </div>
-              <div id="box-group" class="box box-warning">
-                <div class="box-header">
-                  <i class="ion ion-crop"></i>
-                  <h3 class="box-title">我的群推荐</h3>
-                  <div class="box-tools pull-right" title="">
-                    <div class="btn-group" data-toggle="btn-toggle">
-                      <button id="btn-rd-group" type="button" class="btn btn-default btn-sm active"><i class="fa fa-square text-yellow"></i></button>
-                      <button id="btn-my-group" type="button" class="btn btn-default btn-sm"><i class="fa fa-square text-aqua"></i></button>
-                      <button id="btn-in-group" type="button" class="btn btn-default btn-sm"><i class="fa fa-square text-green"></i></button>
-                    </div>
-                  </div>
-                </div>
-                <div class="box-body">
-                  <div class="table-responsive" id="table-my-group" hidden>
-                    <table class="table no-margin">
-                      <thead>
-                      <tr>
-                        <th>群</th>
-                        <th>创建时间</th>
-                        <th>类型</th>
-                        <th>验证方式</th>
-                        <th>成员</th>
-                      </tr>
-                      </thead>
-                      <tbody>
-                      {% for group, v in my_groups.items %}
-                        <tr>
-                          <td><a href="{% url 'group' group.id %}">{{ group.group_name }}</a></td>
-                          <td>{{ group.created_time|date:'M d, Y' }}</td>
-                          <td>
-                            {% if group.type == 0 %}
-                              公开
-                            {% else %}
-                              私有
-                            {% endif %}
-                          </td>
-                          <td>
-                            {% if group.identifier == 0 %}
-                              秘钥
-                            {% elif group.identifier == 1 %}
-                              邮箱
-                            {% elif group.identifier == 2 %}
-                              无验证
-                            {% endif %}
-                          </td>
-                          <td><span class="label label-info">{{ v }}</span></td>
-                        </tr>
-                      {% endfor %}
-                      </tbody>
-                    </table>
-                  </div>
-                  <div class="table-responsive" id="table-in-group" hidden>
-                    <table class="table no-margin">
-                      <thead>
-                      <tr>
-                        <th>群</th>
-                        <th>创建者</th>
-                        <th>类型</th>
-                        <th>验证方式</th>
-                        <th>成员</th>
-                      </tr>
-                      </thead>
-                      <tbody>
-                      {% for group, v in in_groups.items %}
-                        <tr>
-                          <td><a href="{% url 'group' group.id %}">{{ group.group_name }}</a></td>
-                          <td>{{ group.creator.username }}</td>
-                          <td>
-                            {% if group.type == 0 %}
-                              公开
-                            {% else %}
-                              私有
-                            {% endif %}
-                          </td>
-                          <td>
-                            {% if group.identifier == 0 %}
-                              秘钥
-                            {% elif group.identifier == 1 %}
-                              邮箱
-                            {% elif group.identifier == 2 %}
-                              无验证
-                            {% endif %}
-                          </td>
-                          <td><span class="label label-success">{{ v }}</span></td>
-                        </tr>
-                      {% endfor %}
-                      </tbody>
-                    </table>
-                  </div>
-                  <div class="table-responsive" id="table-rd-group">
-                    <table class="table no-margin">
-                      <thead>
-                      <tr>
-                        <th>群</th>
-                        <th>创建者</th>
-                        <th>类型</th>
-                        <th>验证方式</th>
-                        <th>成员</th>
-                      </tr>
-                      </thead>
-                      <tbody>
-                      {% for group, v in rcmd_groups.items %}
-                        <tr>
-                          <td><a href="{% url 'group' group.id %}">{{ group.group_name }}</a></td>
-                          <td>{{ group.creator.username }}</td>
-                          <td>
-                            {% if group.type == 0 %}
-                              公开
-                            {% else %}
-                              私有
-                            {% endif %}
-                          </td>
-                          <td>
-                            {% if group.identifier == 0 %}
-                              秘钥
-                            {% elif group.identifier == 1 %}
-                              邮箱
-                            {% elif group.identifier == 2 %}
-                              无验证
-                            {% endif %}
-                          </td>
-                          <td><span class="label label-info">{{ v }}</span></td>
-                        </tr>
-                      {% endfor %}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-                <div class="box-footer clearfix no-border">
-                  <div class="box-tools pull-right">
-                    {% if group_created_status == 0 %}
-                      <a class="btn bg-aqua btn-flat" data-toggle="modal" data-target="#modal-create-group" style=""><i class="fa fa-plus pull-left"></i>创建群</a>
-                    {% elif group_created_status == -1 %}
-                      <a class="btn bg-yellow btn-flat" data-toggle="modal" data-target="#modal-create-group" style=""><i class="fa fa-info pull-left"></i>无效群名</a>
-                    {% elif group_created_status == -2 %}
-                      <a class="btn bg-yellow btn-flat" data-toggle="modal" data-target="#modal-create-group" style=""><i class="fa fa-info pull-left"></i>积分不足</a>
-                    {% else %}
-                      <a class="btn bg-red btn-flat" data-toggle="modal" data-target="#modal-create-group" style=""><i class="fa fa-info pull-left"></i>请重试</a>
-                    {% endif %}
-                  </div>
-                  <div class="box-tools pull-left">
-                    <ul class="pagination pagination-sm inline">
-                      {% if members.has_previous %}
-                        <li><a onclick="updateRcmdPanel({{ members.previous_page_number }})">«</a></li>
-                      {% else %}
-                        <li class="disabled"><a href="#">«</a></li>
-                      {% endif %}
-                      <li><a>{{ members.number }}/{{ members.paginator.num_pages }}</a></li>
-                      {% if members.has_next %}
-                        <li><a onclick="updateRcmdPanel({{ members.next_page_number }})">»</a></li>
-                      {% else %}
-                        <li class="disabled"><a href="#">»</a></li>
-                      {% endif %}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-5 col-xs-12">
-              <div id="box-inv" class="box box-purple">
-                <div class="box-header with-border">
-                  <h3 class="box-title">我的连边邀请</h3>
-                  <div class="box-tools pull-right">
-                    <div class="has-feedback">
-                      <input id="search-group" type="text" class="form-control input-sm" placeholder="搜索群">
-                      <span class="glyphicon glyphicon-search form-control-feedback"></span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      </div>
-      <footer class="main-footer">
-        <div class="pull-right hidden-xs">
-          <a href="http://seeleit.com" target="_black">POWERED BY HT</a>
+          <a id="confirm" href="#" class="btn btn-sm btn-default btn-flat pull-right">确认已选择</a>
         </div>
-        <strong>Copyright &copy; 2016 <a href="http://cnc.sjtu.edu.cn" target="_black">CNC</a>.</strong> All rights reserved.
-      </footer>
+      </div>
+      <div id="box-group" class="box box-warning">
+        <div class="box-header">
+          <i class="ion ion-crop"></i>
+          <h3 class="box-title">我的群推荐</h3>
+          <div class="box-tools pull-right" title="">
+            <div class="btn-group" data-toggle="btn-toggle">
+              <button id="btn-rd-group" type="button" class="btn btn-default btn-sm active"><i class="fa fa-square text-yellow"></i></button>
+              <button id="btn-my-group" type="button" class="btn btn-default btn-sm"><i class="fa fa-square text-aqua"></i></button>
+              <button id="btn-in-group" type="button" class="btn btn-default btn-sm"><i class="fa fa-square text-green"></i></button>
+            </div>
+          </div>
+        </div>
+        <div class="box-body">
+          <div class="table-responsive" id="table-my-group" hidden>
+            <table class="table no-margin">
+              <thead>
+              <tr>
+                <th>群</th>
+                <th>创建时间</th>
+                <th>类型</th>
+                <th>验证方式</th>
+                <th>成员</th>
+              </tr>
+              </thead>
+              <tbody>
+              {% for group, v in my_groups.items %}
+                <tr>
+                  <td><a href="{% url 'group' group.id %}">{{ group.group_name }}</a></td>
+                  <td>{{ group.created_time|date:'M d, Y' }}</td>
+                  <td>
+                    {% if group.type == 0 %}
+                      公开
+                    {% else %}
+                      私有
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if group.identifier == 0 %}
+                      秘钥
+                    {% elif group.identifier == 1 %}
+                      邮箱
+                    {% elif group.identifier == 2 %}
+                      无验证
+                    {% endif %}
+                  </td>
+                  <td><span class="label label-info">{{ v }}</span></td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <div class="table-responsive" id="table-in-group" hidden>
+            <table class="table no-margin">
+              <thead>
+              <tr>
+                <th>群</th>
+                <th>创建者</th>
+                <th>类型</th>
+                <th>验证方式</th>
+                <th>成员</th>
+              </tr>
+              </thead>
+              <tbody>
+              {% for group, v in in_groups.items %}
+                <tr>
+                  <td><a href="{% url 'group' group.id %}">{{ group.group_name }}</a></td>
+                  <td>{{ group.creator.username }}</td>
+                  <td>
+                    {% if group.type == 0 %}
+                      公开
+                    {% else %}
+                      私有
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if group.identifier == 0 %}
+                      秘钥
+                    {% elif group.identifier == 1 %}
+                      邮箱
+                    {% elif group.identifier == 2 %}
+                      无验证
+                    {% endif %}
+                  </td>
+                  <td><span class="label label-success">{{ v }}</span></td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <div class="table-responsive" id="table-rd-group">
+            <table class="table no-margin">
+              <thead>
+              <tr>
+                <th>群</th>
+                <th>创建者</th>
+                <th>类型</th>
+                <th>验证方式</th>
+                <th>成员</th>
+              </tr>
+              </thead>
+              <tbody>
+              {% for group, v in rcmd_groups.items %}
+                <tr>
+                  <td><a href="{% url 'group' group.id %}">{{ group.group_name }}</a></td>
+                  <td>{{ group.creator.username }}</td>
+                  <td>
+                    {% if group.type == 0 %}
+                      公开
+                    {% else %}
+                      私有
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if group.identifier == 0 %}
+                      秘钥
+                    {% elif group.identifier == 1 %}
+                      邮箱
+                    {% elif group.identifier == 2 %}
+                      无验证
+                    {% endif %}
+                  </td>
+                  <td><span class="label label-info">{{ v }}</span></td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="box-footer clearfix no-border">
+          <div class="box-tools pull-right">
+            {% if group_created_status == 0 %}
+              <a class="btn bg-aqua btn-flat" data-toggle="modal" data-target="#modal-create-group" style=""><i class="fa fa-plus pull-left"></i>创建群</a>
+            {% elif group_created_status == -1 %}
+              <a class="btn bg-yellow btn-flat" data-toggle="modal" data-target="#modal-create-group" style=""><i class="fa fa-info pull-left"></i>无效群名</a>
+            {% elif group_created_status == -2 %}
+              <a class="btn bg-yellow btn-flat" data-toggle="modal" data-target="#modal-create-group" style=""><i class="fa fa-info pull-left"></i>积分不足</a>
+            {% else %}
+              <a class="btn bg-red btn-flat" data-toggle="modal" data-target="#modal-create-group" style=""><i class="fa fa-info pull-left"></i>请重试</a>
+            {% endif %}
+          </div>
+          <div class="box-tools pull-left">
+            <ul class="pagination pagination-sm inline">
+              {% if members.has_previous %}
+                <li><a onclick="updateRcmdPanel({{ members.previous_page_number }})">«</a></li>
+              {% else %}
+                <li class="disabled"><a href="#">«</a></li>
+              {% endif %}
+              <li><a>{{ members.number }}/{{ members.paginator.num_pages }}</a></li>
+              {% if members.has_next %}
+                <li><a onclick="updateRcmdPanel({{ members.next_page_number }})">»</a></li>
+              {% else %}
+                <li class="disabled"><a href="#">»</a></li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
+    <div class="col-md-5 col-xs-12">
+      <div id="box-inv" class="box box-purple">
+        <div class="box-header with-border">
+          <h3 class="box-title">我的连边邀请</h3>
+          <div class="box-tools pull-right">
+            <div class="has-feedback">
+              <input id="search-group" type="text" class="form-control input-sm" placeholder="搜索群">
+              <span class="glyphicon glyphicon-search form-control-feedback"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
 
-    <script type="text/javascript">
-      var emails = "{{ user.email }}".split("@");
-      var births = "{{ user.extra.birth }}".split(",");
-      var locations = "{{ user.extra.location|safe }}".split("-");
-      var institution = "{{ user.extra.institution }}";
+{% block infile_js %}
+  <script type="text/javascript">
+    var emails = "{{ user.email }}".split("@");
+    var births = "{{ user.extra.birth }}".split(",");
+    var locations = "{{ user.extra.location|safe }}".split("-");
+    var institution = "{{ user.extra.institution }}";
 
-      var msgPanelUrl = "{% url 'homeMsg' %}";
-      var msgPostUrl = "{% url 'msgPost' %}";
-      var invPanelUrl = "{% url 'homeInv' %}";
+    var msgPanelUrl = "{% url 'homeMsg' %}";
+    var msgPostUrl = "{% url 'msgPost' %}";
+    var invPanelUrl = "{% url 'homeInv' %}";
 
-      var first = "{{ first_login }}";
-    </script>
+    var first = "{{ first_login }}";
+  </script>
+{% endblock %}
 
-    {% compress js %}
-      <script src="/static/plugins/jquery/jquery.min.js"></script>
-      <script src="/static/bootstrap/js/bootstrap.min.js"></script>
-      <script src="/static/dist/js/app.min.js"></script>
-      <script src="/static/plugins/select2/select2.full.min.js"></script>
-      <script src="/static/plugins/icheck/icheck.min.js"></script>
-      <script src="/static/plugins/rollbar/js/jquery.rollbar.min.js"></script>
-      <script src="/static/lineme/js/rollbar.js"></script>
-      <script src="/static/lineme/js/autocomplete.js"></script>
-      <script src="/static/lineme/js/analytics.js"></script>
-      <script type="text/javascript">
-        $('#profile-email1').text(emails[0]);
-        $('#profile-email2').text('@'+emails[1]);
-        $('#profile-birth').text(births[0]);
-        $('#profile-location1').text(locations[0]);
-        $('#profile-location2').text(locations[1]);
-        $('#profile-institution').text(function(){
-          return institution==""?"无":institution;
-        });
+{% block extra_js %}
+  <script src="/static/plugins/select2/select2.full.min.js"></script>
+  <script src="/static/plugins/icheck/icheck.min.js"></script>
+  <script type="text/javascript">
+    $('#profile-email1').text(emails[0]);
+    $('#profile-email2').text('@'+emails[1]);
+    $('#profile-birth').text(births[0]);
+    $('#profile-location1').text(locations[0]);
+    $('#profile-location2').text(locations[1]);
+    $('#profile-institution').text(function(){
+      return institution==""?"无":institution;
+    });
 
-        $('#search').autocomplete();
-      </script>
-      <script src="/static/lineme/js/zh_cn/home.js"></script>
-      <script src="/static/plugins/trip/js/trip.js"></script>
-      <script src="/static/lineme/js/zh_cn/trip/trip-home.js"></script>
-    {% endcompress %}
-  </body>
-</html>
+    $('#search').autocomplete();
+  </script>
+  <script src="/static/lineme/js/zh_cn/home.js"></script>
+  <script src="/static/lineme/js/zh_cn/trip/trip-home.js"></script>
+{% endblock %}
