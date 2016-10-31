@@ -1,6 +1,6 @@
-{% extends "zh_cn/basic_main.html" %}
+{% extends "us_en/basic_main.html" %}
 
-{% block title %}设置{% endblock %}
+{% block title %}Settings{% endblock %}
 
 {% block extra_css %}
   <link rel="stylesheet" href="/static/plugins/cropit/css/cropit.css">
@@ -14,14 +14,14 @@
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-          <h4 class="modal-title">警告</h4>
+          <h4 class="modal-title">Warning</h4>
         </div>
         <div class="modal-body">
-          <h4>你将要更改密码, 继续吗 ?</h4>
+          <h4>You are going to reset your password, continue ?</h4>
         </div>
         <div class="modal-footer">
-          <button id="reset-passwd" class="btn btn-primary btn-flat">确定</button>
-          <button class="btn btn-warning btn-flat" data-dismiss="modal">取消</button>
+          <button id="reset-passwd" class="btn btn-primary btn-flat">OK</button>
+          <button class="btn btn-warning btn-flat" data-dismiss="modal">Cancel</button>
         </div>
       </div>
     </div>
@@ -37,37 +37,37 @@
         </div>
         <div class="pull-left info">
           <p>{{ user.username }}</p>
-          <a href="#"><i class="fa fa-circle text-success"></i> 在线</a>
+          <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
         </div>
       </div>
       <div id="search" class="input-group sidebar-form">
-        <input type="text" name="q" class="form-control" placeholder="搜索群...">
+        <input type="text" name="q" class="form-control" placeholder="Group Search...">
         <span class="input-group-btn">
           <button class="btn btn-flat"><i class="fa fa-search"></i></button>
         </span>
       </div>
       <ul class="sidebar-menu">
-        <li class="header">个人信息</li>
+        <li class="header">My Profile</li>
       </ul>
       <ul class="control-sidebar-menu">
         <li>
           <a>
             {% if user.extra.gender  %}
-              <i class="menu-icon fa fa-venus bg-yellow" title="性别"></i>
+              <i class="menu-icon fa fa-venus bg-yellow" title="gender"></i>
               <div class="menu-info">
-                <h4 class="control-sidebar-subheading">女</h4>
+                <h4 class="control-sidebar-subheading">Female</h4>
               </div>
             {% else %}
-              <i class="menu-icon fa fa-mars bg-yellow" title="性别"></i>
+              <i class="menu-icon fa fa-mars bg-yellow" title="gender"></i>
               <div class="menu-info">
-                <h4 class="control-sidebar-subheading">男</h4>
+                <h4 class="control-sidebar-subheading">Male</h4>
               </div>
             {% endif %}
           </a>
         </li>
         <li>
           <a>
-            <i class="menu-icon fa fa-birthday-cake bg-red" title="生日"></i>
+            <i class="menu-icon fa fa-birthday-cake bg-red" title="birth"></i>
             <div class="menu-info">
               <h4 id="profile-birth" class="control-sidebar-subheading">{{ user.extra.birth }}</h4>
             </div>
@@ -75,7 +75,7 @@
         </li>
         <li>
           <a>
-            <i class="menu-icon fa fa-envelope-o bg-light-blue" title="邮箱"></i>
+            <i class="menu-icon fa fa-envelope-o bg-light-blue" title="email"></i>
             <div class="menu-info">
               <h4 id="profile-email1" class="control-sidebar-subheading"></h4>
               <p id="profile-email2"></p>
@@ -84,7 +84,7 @@
         </li>
         <li>
           <a>
-            <i class="menu-icon fa fa-location-arrow bg-green" title="位置"></i>
+            <i class="menu-icon fa fa-location-arrow bg-green" title="location"></i>
             <div class="menu-info">
               <h4 id="profile-location1" class="control-sidebar-subheading"></h4>
               <p id="profile-location2"></p>
@@ -94,7 +94,7 @@
         <li>
         <li>
           <a>
-            <i class="menu-icon fa fa-institution bg-maroon" title="所属"></i>
+            <i class="menu-icon fa fa-institution bg-maroon" title="institution"></i>
             <div class="menu-info">
               <h4 id="profile-institution" class="control-sidebar-subheading"></h4>
             </div>
@@ -102,7 +102,7 @@
         </li>
         <li>
           <a>
-            <i class="menu-icon fa fa-star bg-teal" title="积分"></i>
+            <i class="menu-icon fa fa-star bg-teal" title="credits"></i>
             <div class="menu-info">
               <h4 class="control-sidebar-subheading">{{ user.extra.credits }}</h4>
             </div>
@@ -113,8 +113,8 @@
   </aside>
 {% endblock %}
 
-{% block content_header %}设置{% endblock %}
-{% block content_header2 %}设置{% endblock %}
+{% block content_header %}LineMe Settings{% endblock %}
+{% block content_header2 %}Settings{% endblock %}
 
 {% block content %}
   <div class="row">
@@ -123,20 +123,20 @@
         <li>
           <i class="fa fa-user bg-yellow"></i>
           <div class="timeline-item">
-            <h3 class="timeline-header no-border">基本信息</h3>
+            <h3 class="timeline-header no-border">Basic Infomation</h3>
             <div class="timeline-body">
               <table class="table table-bordered">
                 <tbody>
                   <tr>
-                    <th>账号</th>
+                    <th>Account</th>
                     <td>{{ user.username }}</td>
                   </tr>
                   <tr>
-                    <th>邮箱</th>
+                    <th>Email</th>
                     <td>{{ user.email }}</td>
                   </tr>
                   <tr>
-                    <th>积分</th>
+                    <th>Credits</th>
                     <td>{{ user.extra.credits }}</td>
                   </tr>
                 </tbody>
@@ -147,7 +147,7 @@
         <li id="avatar">
           <i class="fa fa-magic bg-purple"></i>
           <div class="timeline-item">
-            <h3 class="timeline-header">上传头像</h3>
+            <h3 class="timeline-header">Upload Avatar</h3>
             <div class="timeline-body">
               <div id="image-cropper">
                 <div class="row">
@@ -161,10 +161,10 @@
                   </div>
                   <div class="col-md-5 text-center btn-group-cropper">
                     <div class="row" style="margin-bottom: 15px">
-                      <button id="select" class="btn btn-primary btn-flat" ><i class="fa fa-image pull-left"></i>图片</button>
+                      <button id="select" class="btn btn-primary btn-flat" ><i class="fa fa-image pull-left"></i>Image</button>
                     </div>
                     <div class="row">
-                      <button id="upload" class="export btn btn-success btn-flat" disabled><i class="fa fa-upload pull-left"></i>上传</button>
+                      <button id="upload" class="export btn btn-success btn-flat" disabled><i class="fa fa-upload pull-left"></i>Upload</button>
                     </div>
                   </div>
                 </div>
@@ -176,13 +176,13 @@
         <li>
           <i class="fa fa-lock bg-blue"></i>
           <div class="timeline-item">
-            <h3 class="timeline-header">更改密码</h3>
+            <h3 class="timeline-header">Reset Password</h3>
             <div class="timeline-body">
               <div class="row">
                 <form id="form-passwd" method="post">
                   <div class="form-group">
                     <div class="row">
-                      <label class="col-sm-4 control-label">原密码</label>
+                      <label class="col-sm-4 control-label">Original Password</label>
                       <div class="col-sm-8">
                         <input type="password" name="old" class="form-control">
                       </div>
@@ -190,7 +190,7 @@
                   </div>
                   <div class="form-group">
                     <div class="row">
-                      <label class="col-sm-4 control-label">新密码</label>
+                      <label class="col-sm-4 control-label">New Password</label>
                       <div class="col-sm-8">
                         <input type="password" name="new" class="form-control">
                       </div>
@@ -198,7 +198,7 @@
                   </div>
                   <div class="form-group">
                     <div class="row">
-                      <label class="col-sm-4 control-label">再次输入</label>
+                      <label class="col-sm-4 control-label">Re-enter Password</label>
                       <div class="col-sm-8">
                         <input type="password" name="new2" class="form-control">
                       </div>
@@ -208,7 +208,7 @@
               </div>
             </div>
             <div class="timeline-footer">
-              <button class="btn bg-blue btn-flat btn-xs" data-toggle="modal" data-target="#modal-reset-passwd">更改密码</button>
+              <button class="btn bg-blue btn-flat btn-xs" data-toggle="modal" data-target="#modal-reset-passwd">Reset Password</button>
             </div>
           </div>
         </li>
@@ -230,26 +230,26 @@
             </form>
             </div>
             <div class="timeline-footer">
-              <button id="save-pri" class="btn btn-flat btn-xs bg-red">保存隐私设置</button>
+              <button id="save-pri" class="btn btn-flat btn-xs bg-red">Save Privacy</button>
             </div>
           </div>
         </li>
         <li>
           <i class="fa fa-code bg-maroon"></i>
           <div class="timeline-item">
-            <h3 class="timeline-header">关于 LineMe</h3>
+            <h3 class="timeline-header">About LineMe</h3>
             <div class="timeline-body">
               <img src="/media/images/logo.jpg" class="img-responsive" alt="LineMe Logo">
               <br>
               <blockquote>
-                <p>LineMe是一个基于d3.js，echart和django的多层社交网络数据收集网站。</p>
-                <p>代码由
+                <p>LineMe is based on d3.js, echart and django.</p>
+                <p>Developed by
                   <a href="http://seeleit.com" target="_blank">@HevLfreis</a>
-                  开发维护，托管在
-                  <a href="https://github.com/HevLfreis/LineMe" target="_blank">Github</a>。
-                  任何问题请联系hevlhayt@foxmail.com。
+                  , code in
+                  <a href="https://github.com/HevLfreis/LineMe" target="_blank">Github</a>.
+                  Contact: hevlhayt@foxmail.com。
                 </p>
-                <p>&copy; 2016 上海交通大学复杂网络与控制实验室。</p>
+                <p>&copy; 2016 SJTU CNC. </p>
               </blockquote>
             </div>
           </div>
@@ -280,7 +280,7 @@
 {% block extra_js %}
   <script src="/static/plugins/cropit/js/jquery.cropit.js"></script>
   <script src="/static/plugins/switchery/js/switchery.min.js"></script>
-  <script src="/static/lineme/js/zh_cn/trip/trip-none.js"></script>
+  <script src="/static/lineme/js/us_en/trip/trip-none.js"></script>
   <script type="text/javascript">
     $('#profile-email1').text(emails[0]);
     $('#profile-email2').text('@'+emails[1]);
@@ -288,10 +288,10 @@
     $('#profile-location1').text(locations[0]);
     $('#profile-location2').text(locations[1]);
     $('#profile-institution').text(function(){
-      return institution==""?"无":institution;
+      return institution==""?"Blank":institution;
     });
 
     $('#search').autocomplete();
   </script>
-  <script src="/static/lineme/js/zh_cn/settings.js"></script>
+  <script src="/static/lineme/js/us_en/settings.js"></script>
 {% endblock %}

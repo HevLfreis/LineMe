@@ -5,6 +5,16 @@
 # Time: 19:09
 import hashlib
 
+from LineMe.settings import DEPLOYED_LANGUAGE
+
+
+def get_template_dir(appname):
+    lang = DEPLOYED_LANGUAGE
+    if lang == 'zh-cn':
+        return appname + '/zh_cn/'
+    else:
+        return appname + '/us_en/'
+
 
 def logger_join(*args, **kwargs):
     if not args:

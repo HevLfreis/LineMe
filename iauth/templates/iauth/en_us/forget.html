@@ -1,0 +1,35 @@
+{% extends "basic_gate.html" %}
+
+{% block title %}Forget Password{% endblock %}
+
+{% block content %}
+  <div class="login-box-body">
+    {% if status == 1 %}
+      <h2 class="login-box-msg">Email is sent</h2>
+    {% elif status == 2 %}
+      <h2 class="login-box-msg">Password reseted</h2>
+    {% elif status == -3 %}
+      <h2 class="login-box-msg">Link is expired or invalid</h2>
+    {% else %}
+      <p class="login-box-msg">Forget Password</p>
+      <form method="post">
+        {% if status == -1 %}
+          <div class="form-group has-error has-feedback">
+          <label class="control-label"><i class="fa fa-times"></i> Invalid Email</label>
+        {% else %}
+          <div class="form-group has-feedback">
+        {% endif %}
+          <input name="email" type="email" class="form-control" placeholder="Email">
+          <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+        </div>
+        <div class="row">
+          <div class="col-xs-offset-8 col-xs-4">
+            <button type="submit" class="btn btn-primary btn-block btn-flat" onclick="this.form.submit(); this.disabled=true;">Send Email</button>
+          </div>
+        </div>
+      </form>
+    {% endif %}
+    <a href="{% url 'login' %}">Return to login</a><br>
+    <a href="{% url 'register' %}" class="text-center">Register a new account</a>
+  </div>
+{% endblock %}

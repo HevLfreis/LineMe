@@ -1,6 +1,6 @@
-{% extends "zh_cn/basic_main.html" %}
+{% extends "us_en/basic_main.html" %}
 
-{% block title %}群{% endblock %}
+{% block title %}Group{% endblock %}
 
 {% block meta %}
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -21,21 +21,21 @@
       <form method="post" action="{% url 'join' group.id %}" class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-          <h4 class="modal-title">秘钥错误</h4>
+          <h4 class="modal-title">Identifier Wrong</h4>
         </div>
         <div class="modal-body">
           <div class="form-group has-feedback">
-            <label for="member-identifier">验证</label>
+            <label for="member-identifier">Identifier</label>
             {% if group.identifier == 0 %}
-              <input type="text" class="form-control" name="identifier" placeholder="重新输入验证秘钥">
+              <input type="text" class="form-control" name="identifier" placeholder="Re-enter identifier">
             {% elif group.identifier == 1 %}
-              <input type="text" class="form-control" name="identifier" placeholder="重新输入邮箱">
+              <input type="text" class="form-control" name="identifier" placeholder="Re-enter email">
             {% endif %}
             <span class="glyphicon glyphicon-info-sign form-control-feedback"></span>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="submit" class="btn btn-primary btn-flat">加入</button>
+          <button type="submit" class="btn btn-primary btn-flat">Follow</button>
         </div>
       </form>
     </div>
@@ -46,20 +46,20 @@
       <form method="post" action="{% url 'joinRequest' group.id %}" class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-          <h4 class="modal-title">注意</h4>
+          <h4 class="modal-title">Attention</h4>
         </div>
         <div class="modal-body">
           <blockquote>
-            <h4>你的名字不在成员列表中</h4>
-            <h4>你可以向群主发送入群请求</h4>
+            <h4>You are not in this group's list.</h4>
+            <h4>Please send a request to the creator.</h4>
           </blockquote>
         </div>
         <div class="modal-footer">
           <div class="form-group has-feedback pull-left" style="margin-bottom: 0">
-              <input type="text" class="form-control" name="message" placeholder="消息">
+              <input type="text" class="form-control" name="message" placeholder="Message">
             <span class="glyphicon glyphicon-info-sign form-control-feedback"></span>
           </div>
-          <button type="submit" class="btn btn-primary btn-flat">发送</button>
+          <button type="submit" class="btn btn-primary btn-flat">Send Request</button>
         </div>
       </form>
     </div>
@@ -75,17 +75,17 @@
         </div>
         <div class="pull-left info">
           <p>{{ user.username }}</p>
-          <a href="#"><i class="fa fa-circle text-success"></i> 在线</a>
+          <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
         </div>
       </div>
       <div id="search" class="input-group sidebar-form">
-        <input type="text" name="q" class="form-control" placeholder="搜索群...">
+        <input type="text" name="q" class="form-control" placeholder="Group Search...">
         <span class="input-group-btn">
           <button class="btn btn-flat"><i class="fa fa-search"></i></button>
         </span>
       </div>
       <ul class="sidebar-menu">
-        <li class="header">我的群</li>
+        <li class="header">My Groups</li>
         {% for k, v in sug.items %}
           <li>
             <a href="{% url 'group' k %}">
@@ -112,9 +112,9 @@
 {% endblock %}
 
 {% block content_header %}
-  群信息: <span class="text-bold">{{ group.group_name }}</span>
+  Group Information: <span class="text-bold">{{ group.group_name }}</span>
 {% endblock %}
-{% block content_header2 %}群{% endblock %}
+{% block content_header2 %}Group{% endblock %}
 
 {% block content %}
   <div class="row">
@@ -169,7 +169,7 @@
           bg-blue
         {% endif %} text-center">
           <h3 class="widget-user-username"><strong>{{ group.group_name }}</strong></h3>
-          <h5 class="widget-user-desc">由 {{ creator.username }} 创建</h5>
+          <h5 class="widget-user-desc">created by {{ creator.username }}</h5>
         </div>
         <div class="widget-user-image">
           <img class="img-circle" src="/media/images/avatars/{{ creator.id }}.png"  alt="User Avatar">
@@ -180,37 +180,37 @@
               <div class="description-block">
                 <h5 class="description-header">
                   {% if group.identifier == 0 %}
-                    秘钥
+                    Special Code
                   {% elif group.identifier == 1 %}
-                    邮箱
+                    Email
                   {% else %}
-                    无验证
+                    No Validation
                   {% endif %}
                 </h5>
-                <span class="description-text">验证</span>
+                <span class="description-text">IDENTIFIER</span>
               </div>
             </div>
             <div class="col-sm-4 border-right">
               <div class="description-block">
                 <h5 class="description-header">{{ members_count }}</h5>
-                <span class="description-text">成员</span>
+                <span class="description-text">MEMBERS</span>
               </div>
             </div>
             <div class="col-sm-4">
               <div class="description-block">
                 <h5 class="description-header">{{ group.created_time|date:'Y m d' }}</h5>
-                <span class="description-text">创建时间</span>
+                <span class="description-text">CREATED</span>
               </div>
             </div>
           </div>
           {% if follow_status == 1 %}
-            <button class="btn btn-lg btn-success btn-block btn-flat" disabled><b>已加入</b></button>
+            <button class="btn btn-lg btn-success btn-block btn-flat" disabled><b>Already in Group</b></button>
           {% elif follow_status == -1 %}
-            <button class="btn btn-lg btn-warning btn-block btn-flat" disabled><b>请求已发送</b></button>
+            <button class="btn btn-lg btn-warning btn-block btn-flat" disabled><b>Request Already Sent</b></button>
           {% elif follow_status < -1 %}
-            <button id="follow" class="btn btn-lg btn-danger btn-block btn-flat"><b>验证失败</b></button>
+            <button id="follow" class="btn btn-lg btn-danger btn-block btn-flat"><b>Follow Failed</b></button>
           {% else %}
-            <button id="follow" class="btn btn-lg btn-block bg-orange btn-flat">加入</button>
+            <button id="follow" class="btn btn-lg btn-block bg-orange btn-flat">Follow</button>
           {% endif %}
         </div>
       </div>
@@ -229,9 +229,9 @@
 
 {% block extra_js %}
   <script src="/static/plugins/icheck/icheck.min.js"></script>
-  <script src="/static/lineme/js/zh_cn/trip/trip-none.js"></script>
+  <script src="/static/lineme/js/us_en/trip/trip-none.js"></script>
   <script type="text/javascript">
     $('#search').autocomplete();
   </script>
-  <script src="/static/lineme/js/zh_cn/group2.js"></script>
+  <script src="/static/lineme/js/us_en/group2.js"></script>
 {% endblock %}

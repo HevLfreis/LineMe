@@ -8,7 +8,7 @@ from django.utils import timezone
 
 from LineMe.constants import PROJECT_NAME
 from LineMe.settings import logger, DEPLOYED_LANGUAGE
-from LineMe.utils import logger_join, md5
+from LineMe.utils import logger_join, md5, get_template_dir
 from LineMe.validations import validate_passwd, validate_email_for_reset
 from friendnet.methods.basic.user import create_user
 from iauth.forms import LoginForm, RegisterForm
@@ -17,10 +17,7 @@ from iauth.methods.utils import login_user, rt_existed, send_reset_passwd_email
 from iauth.models import ResetToken
 
 lang = DEPLOYED_LANGUAGE
-if lang == 'zh-cn':
-    template_dir = 'auth/zh_cn/'
-else:
-    template_dir = 'auth/'
+template_dir = get_template_dir('iauth')
 
 
 def i_login(request):

@@ -152,8 +152,10 @@ class Command(BaseCommand):
             #     G_group.remove_edge(s, t)
         print cnt
 
+        # print sum([k*v for k, v in cnt.items()])
+        print G_all_confirmed.number_of_edges() / float(G_group.number_of_edges())
+
         cnt = Counter(G_group.degree().values())
-        print sum(G_group.degree().values()) / float(G_group.number_of_edges())
         print len(self.members) / float(len(groups))
 
         print cnt

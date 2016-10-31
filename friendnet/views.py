@@ -9,6 +9,7 @@ from django.shortcuts import redirect, render
 
 from LineMe.constants import PROJECT_NAME, CITIES_TABLE, PRIVACIES
 from LineMe.settings import DEPLOYED_LANGUAGE
+from LineMe.utils import get_template_dir
 from friendnet.forms import *
 from friendnet.methods.algorithm.recommender import Recommender
 from friendnet.methods.algorithm.search import SearchEngine
@@ -30,10 +31,7 @@ from iauth.methods.session import get_session_consume
 # Todo: cookie based first login
 
 lang = DEPLOYED_LANGUAGE
-if lang == 'zh-cn':
-    template_dir = 'friendnet/zh_cn/'
-else:
-    template_dir = 'friendnet/'
+template_dir = get_template_dir('friendnet')
 
 
 def redirect2main(request):
@@ -265,7 +263,7 @@ def rcmd_panel(request, groupid):
 
         groupid = check_groupid(user, groupid)
         if groupid == 0:
-            return render(request, 'friendnet/ego_rcmd.html')
+            return render(request, template_dir+'ego_rcmd.html')
 
         # rcmd_gms = Recommender(user).simple(groupid)
         rcmd_gms = Recommender(user).friend(groupid)

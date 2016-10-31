@@ -1,6 +1,6 @@
-{% extends "zh_cn/basic_main.html" %}
+{% extends "us_en/basic_main.html" %}
 
-{% block title %}全局网络{% endblock %}
+{% block title %}Global Network{% endblock %}
 
 {% block extra_css %}
   <link rel="stylesheet" href="/static/plugins/three/css/style.css">
@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block nav_changer %}
-  <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="我的网络">
+  <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="My Net">
     {% if group %}
       <a href="{% url 'egoId' group.id %}">
     {% else %}
@@ -31,17 +31,17 @@
         </div>
         <div class="pull-left info">
           <p>{{ user.username }}</p>
-          <a href="#"><i class="fa fa-circle text-success"></i> 在线</a>
+          <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
         </div>
       </div>
       <div id="search" class="input-group sidebar-form">
-        <input type="text" name="q" class="form-control" placeholder="搜索群...">
+        <input type="text" name="q" class="form-control" placeholder="Group Search...">
         <span class="input-group-btn">
           <button class="btn btn-flat"><i class="fa fa-search"></i></button>
         </span>
       </div>
       <ul class="sidebar-menu">
-        <li class="header">我的群</li>
+        <li class="header">My Groups</li>
         {% for group in groups %}
           <li>
             <a href="{% url 'globalId' group.id %}">
@@ -68,10 +68,10 @@
 {% endblock %}
 
 {% block content_header %}
-  全局网络{% if group %}: <span class="text-bold">{{ group.group_name }}</span>{% endif %}
-  <small>查看你的全局网络</small>
+  Global Network{% if group %}: <span class="text-bold">{{ group.group_name }}</span>{% endif %}
+  <small>view your entire global networks here</small>
 {% endblock %}
-{% block content_header2 %}全局网络{% endblock %}
+{% block content_header2 %}Global Network{% endblock %}
 
 {% block content %}
   <div class="row">
@@ -81,12 +81,12 @@
           {% if not group %}
             <h1 class="panel-text-center text-navy text-bold">
               <span class="fa fa-arrow-left"></span>
-              &nbsp;&nbsp;&nbsp;点击左侧选择群
+              &nbsp;&nbsp;&nbsp;Click Left to Select Group
             </h1>
           {% else %}
-            <a id="three-mode" class="three text-center" hidden>3D模式</a>
-            <a id="map-mode" class="map text-center" hidden>地图模式</a>
-            <a id="normal-mode" class="normal text-center" hidden>普通模式</a>
+            <a id="three-mode" class="three text-center" hidden>3D MODE</a>
+            <a id="map-mode" class="map text-center" hidden>MAP MODE</a>
+            <a id="normal-mode" class="normal text-center">NORMAL MODE</a>
             <div class="loader-inner line-scale panel-text-center text-center">
               <div></div>
               <div></div>
@@ -120,7 +120,7 @@
     <div class="col-md-3 col-sm-12" id="info-panel">
       <div class="box box-warning">
         <div class="box-header with-border">
-          <h3 class="box-title">拓扑信息</h3>
+          <h3 class="box-title">Information</h3>
         </div>
         <div class="box-body box-global-info-body">
           {% if group %}
@@ -128,8 +128,8 @@
             <table class="table no-margin">
               <thead>
                 <tr>
-                  <th class="col-md-6">中心性排名</th>
-                  <th class="col-md-6">成员</th>
+                  <th class="col-md-6">Centrality Rank</th>
+                  <th class="col-md-6">Name</th>
                 </tr>
               </thead>
               <tbody>
@@ -141,7 +141,7 @@
                 {% endfor %}
                 <tr>
                   <td>{{ my_rank }}</td>
-                  <td>我</td>
+                  <td>Me</td>
                 </tr>
               </tbody>
             </table>
@@ -149,36 +149,36 @@
             <table class="table no-margin">
               <thead>
                 <tr>
-                  <th>平均度</th>
+                  <th>Average Degree</th>
                   <td>{{ average_degree|floatformat:"2" }}</td>
                 </tr>
               </thead>
-              <tbody>
+              <thead>
                 <tr>
                   {% if average_distance == -1 %}
-                    <th>网络未连通</th>
+                    <th>Network Not Connected</th>
                     <td></td>
                   {% else %}
-                    <th>平均距离</th>
+                    <th>Average Distance</th>
                     <td>{{ average_distance|floatformat:"2" }}</td>
                   {% endif %}
                 </tr>
-              </tbody>
+              </thead>
             </table>
             </br>
             <blockquote>
               <ul>
-                <li>你构造的连边覆盖了全局网络的 {{ cover }}%</li>
+                <li>Your links cover {{ cover }}% of the global network</li>
                 </br>
                 {% if bestfriend %}
-                  <li>你最好的朋友是 <a href="#">{{ bestfriend.member_name }}</a>, 有{{ bf_count }}个人将你们两人连接到了一起</li>
+                  <li>Your best friend is <a href="#">{{ bestfriend.member_name }}</a>, {{ bf_count }} members have lined you two</li>
                   </br>
                 {% endif %}
                 {% if heart %}
-                  <li><a href="#">{{ heart.member_name }}</a> 最懂你</li>
+                  <li><a href="#">{{ heart.member_name }}</a> is the member who knows you best</li>
                 {% endif %}
                 {% if similar %}
-                  <li><a href="#">{{ similar.member_name }}</a> 跟你很相似</li>
+                  <li><a href="#">{{ similar.member_name }}</a> is similar to you</li>
                 {% endif %}
               </ul>
             </blockquote>
@@ -218,9 +218,9 @@
     <script src="/static/plugins/three/js/tween.js"></script>
     <script src="/static/plugins/three/js/css3drenderer.js"></script>
     <script src="/static/plugins/three/js/viz.js"></script>
-    <script src="/static/lineme/js/zh_cn/trip/trip-global.js"></script>
-    <script src="/static/lineme/js/zh_cn/global.js"></script>
+    <script src="/static/lineme/js/us_en/trip/trip-global.js"></script>
+    <script src="/static/lineme/js/us_en/global.js"></script>
   {% else %}
-    <script src="/static/lineme/js/zh_cn/trip/trip-none.js"></script>
+    <script src="/static/lineme/js/us_en/trip/trip-none.js"></script>
   {% endif %}
 {% endblock %}

@@ -1,0 +1,31 @@
+{% extends "basic_gate.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+  <div class="login-box-body">
+    <p class="login-box-msg">Sign in to create your friend networks</p>
+    <form method="post">
+      {% if status == -1 %}
+        <div class="form-group has-error has-feedback">
+        <label class="control-label"><i class="fa fa-times"></i> Invalid Username / Password</label>
+      {% else %}
+        <div class="form-group has-feedback">
+      {% endif %}
+        <input name="username" type="text" class="form-control" placeholder="Username">
+        <span class="glyphicon glyphicon-user form-control-feedback"></span>
+      </div>
+      <div class="form-group has-feedback">
+        <input name="password" type="password" class="form-control" placeholder="Password">
+        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+      </div>
+      <div class="row">
+        <div class="col-xs-offset-8 col-xs-4">
+          <button type="submit" class="btn btn-primary btn-block btn-flat">Sign In</button>
+        </div>
+      </div>
+    </form>
+    <a href="#">I forgot my password</a><br>
+    <a href="{% url 'register' %}" class="text-center">Register a new account</a>
+  </div>
+{% endblock %}

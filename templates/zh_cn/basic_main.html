@@ -4,7 +4,9 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>{{ project_name }} | {% block title %}{% endblock %}</title>
+    {% block meta %}
 {#    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">#}
+    {% endblock %}
     <link rel="shortcut icon" href="/media/favicon.ico">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="//cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css">
@@ -30,6 +32,7 @@
         <nav class="navbar navbar-static-top" role="navigation">
           <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
+              {% block nav_changer %}{% endblock %}
               <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="{% if msgs_count > 0  %}你有 {{ msgs_count }} 条连边请求{% else %}无新消息{% endif %}">
                 <a href="{% url 'home' %}">
                   <i class="fa fa-envelope-o"></i>
@@ -70,12 +73,11 @@
       <div class="content-wrapper">
         <section class="content-header">
           <h1>
-            {% block header_name %}{% endblock %}
-{#            <small>Optional description</small>#}
+            {% block content_header %}{% endblock %}
           </h1>
           <ol class="breadcrumb">
             <li><a href="{% url 'home' %}"><i class="fa fa-home"></i>{{ project_name }}</a></li>
-            <li class="active">{% block header_name2 %}{% endblock %}</li>
+            <li class="active">{% block content_header2 %}{% endblock %}</li>
           </ol>
         </section>
         <section class="content">
@@ -99,7 +101,7 @@
       <script src="/static/plugins/rollbar/js/jquery.rollbar.min.js"></script>
       <script src="/static/lineme/js/rollbar.js"></script>
       <script src="/static/plugins/trip/js/trip.js"></script>
-      <script src="/static/lineme/js/autocomplete.js"></script>
+      <script src="/static/lineme/js/us_en/autocomplete.js"></script>
       <script src="/static/lineme/js/analytics.js"></script>
       {% block extra_js %}{% endblock %}
     {% endcompress %}
