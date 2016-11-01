@@ -77,6 +77,9 @@ class Command(BaseCommand):
         print 'average added friends female: ', links_female.count() / float(female_count)
         print 'average added friends: ', friend_links.count() / float(self.members.count()), '\n'
 
+        links_new = self.after_time(links, datetime.datetime(2016, 10, 28))
+        print 'new links count: ', links_new.count(), '\n'
+
         # G_all = self.build_graph(links)
         # G_friend = self.build_graph(friend_links)
         # G_other = self.build_graph(other_links)
@@ -92,99 +95,99 @@ class Command(BaseCommand):
         self.print_info(G_all_confirmed, 'u')
 
         # groups
-        cf = csv.reader(file('D:\master\LineMe\student list/grouping.csv', 'rb'))
-
-        groups, members = {}, []
-        i = 0
-        for line in cf:
-            if line[0] == '1':
-                groups[i] = members
-                i += 1
-                members = [line[2].strip().decode('utf-8')]
-
-            else:
-                members.append(line[2].strip().decode('utf-8'))
-        groups[i] = members
-
-        for k, v in groups.items():
-            # print k, ': ', ' '.join(v)
-
-            new_list = []
-
-            for name in v:
-                try:
-                    new_list.append(self.members.get(member_name=name))
-                except Exception, e:
-                    new_list.append(self.members.filter(member_name=name, is_joined=True)[0])
-
-            groups[k] = new_list
-
-        group_average_degree_index = {}
-        for k, v in groups.items():
-            group_average_degree_index[k] = sum([G_all_confirmed.degree(m) for m in v])
-
-        # print group_average_degree_index
-
-        for top in sorted(group_average_degree_index, key=group_average_degree_index.get, reverse=True)[:3]:
-            print ' '.join([m.member_name for m in groups[top]])
-            print [G_all_confirmed.degree(m) for m in groups[top]]
-
-        group_index = {m: k for k, v in groups.items() for m in v}
-
-        G_group = nx.Graph()
-
-        for k, v in groups.items():
-            G_group.add_node(k)
-
-        for s, t in G_all_confirmed.edges():
-            # print s.member_name, t.member_name
-            s, t = group_index[s], group_index[t]
-            if not G_group.has_edge(s, t):
-                G_group.add_edge(s, t, weight=1)
-            else:
-                G_group[s][t]['weight'] += 1
-
-        cnt = Counter()
-        for s, t, d in G_group.edges(data=True):
-            # print s, t, d['weight']
-            cnt[d['weight']] += 1
-            # if d['weight'] < len(groups[s]) * len(groups[t]) / 2.0:
-            #     G_group.remove_edge(s, t)
-        print cnt
-
-        # print sum([k*v for k, v in cnt.items()])
-        print G_all_confirmed.number_of_edges() / float(G_group.number_of_edges())
-
-        cnt = Counter(G_group.degree().values())
-        print len(self.members) / float(len(groups))
-
-        print cnt
-        self.print_info(G_group, 'group')
+        # cf = csv.reader(file('D:\master\LineMe\student list/grouping.csv', 'rb'))
+        #
+        # groups, members = {}, []
+        # i = 0
+        # for line in cf:
+        #     if line[0] == '1':
+        #         groups[i] = members
+        #         i += 1
+        #         members = [line[2].strip().decode('utf-8')]
+        #
+        #     else:
+        #         members.append(line[2].strip().decode('utf-8'))
+        # groups[i] = members
+        #
+        # for k, v in groups.items():
+        #     # print k, ': ', ' '.join(v)
+        #
+        #     new_list = []
+        #
+        #     for name in v:
+        #         try:
+        #             new_list.append(self.members.get(member_name=name))
+        #         except Exception, e:
+        #             new_list.append(self.members.filter(member_name=name, is_joined=True)[0])
+        #
+        #     groups[k] = new_list
+        #
+        # group_average_degree_index = {}
+        # for k, v in groups.items():
+        #     group_average_degree_index[k] = sum([G_all_confirmed.degree(m) for m in v])
+        #
+        # # print group_average_degree_index
+        #
+        # for top in sorted(group_average_degree_index, key=group_average_degree_index.get, reverse=True)[:3]:
+        #     print ' '.join([m.member_name for m in groups[top]])
+        #     print [G_all_confirmed.degree(m) for m in groups[top]]
+        #
+        # group_index = {m: k for k, v in groups.items() for m in v}
+        #
+        # G_group = nx.Graph()
+        #
+        # for k, v in groups.items():
+        #     G_group.add_node(k)
+        #
+        # for s, t in G_all_confirmed.edges():
+        #     # print s.member_name, t.member_name
+        #     s, t = group_index[s], group_index[t]
+        #     if not G_group.has_edge(s, t):
+        #         G_group.add_edge(s, t, weight=1)
+        #     else:
+        #         G_group[s][t]['weight'] += 1
+        #
+        # cnt = Counter()
+        # for s, t, d in G_group.edges(data=True):
+        #     # print s, t, d['weight']
+        #     cnt[d['weight']] += 1
+        #     # if d['weight'] < len(groups[s]) * len(groups[t]) / 2.0:
+        #     #     G_group.remove_edge(s, t)
+        # print cnt
+        #
+        # # print sum([k*v for k, v in cnt.items()])
+        # print G_all_confirmed.number_of_edges() / float(G_group.number_of_edges())
+        #
+        # cnt = Counter(G_group.degree().values())
+        # print len(self.members) / float(len(groups))
+        #
+        # print cnt
+        # self.print_info(G_group, 'group')
 
         # single node
-        # s, n, u, z, o = 0, 0, 0, 0, 0
-        # for m in G_all_confirmed.nodes():
-        #     if G_all_confirmed.degree(m) == 0:
-        #         s += 1
-        #         if m.user is None:
-        #             n += 1
-        #             print m.member_name, 'not in'
-        #
-        #         elif not links.filter(creator=m.user).exists():
-        #             z += 1
-        #             print get_user_name(m.user), 'no link create'
-        #
-        #         elif not links.filter((Q(source_member=m) | Q(target_member=m))).exists():
-        #             u += 1
-        #
-        #         else:
-        #             print get_user_name(m.user)
-        #             t = links.filter(creator=m.user)
-        #             for a in t:
-        #                 print a.status, a.source_member.member_name, a.target_member.member_name
-        #             o += 1
-        #
-        # print 'single: ', s, 'not in: ', n, 'no link: ', z, 'no invite: ', u, 'other: ', o
+        s, n, u, z, o = 0, 0, 0, 0, 0
+        for m in G_all_confirmed.nodes():
+            if G_all_confirmed.degree(m) == 0:
+                s += 1
+                if m.user is None:
+                    n += 1
+                    print m.member_name, 'not in'
+
+                elif not links.filter(creator=m.user).exists():
+                    z += 1
+                    print get_user_name(m.user), 'no link create'
+
+                elif not links.filter((Q(source_member=m) | Q(target_member=m))).exists():
+                    u += 1
+
+                else:
+                    print get_user_name(m.user)
+                    t = links.filter(creator=m.user)
+                    for a in t:
+                        print a.status, a.source_member.member_name, a.target_member.member_name
+                    o += 1
+
+        print 'single: ', s, 'not in: ', n, 'no link: ', z, 'no invite: ', u, 'other: ', o
 
 
         # user confirmed links count
@@ -380,6 +383,9 @@ class Command(BaseCommand):
     def both_rejected(self, links):
         return links.filter(status=-3)
 
+    def after_time(self, links, timestamp):
+        return links.filter(created_time__gt=timestamp)
+
     def print_info(self, G, name):
         print name
         print 'nodes: ', G.number_of_nodes(), ' links: ', G.number_of_edges()
@@ -389,6 +395,10 @@ class Command(BaseCommand):
         return 2.0 * G.number_of_edges() / G.number_of_nodes()
 
     def average_shortest_path_length(self, G):
+        # for g in nx.connected_component_subgraphs(G):
+        #     for n in g.nodes():
+        #         print n.member_name
+        #     print '=='
         d = [nx.average_shortest_path_length(g) for g in nx.connected_component_subgraphs(G) if g.number_of_nodes() > 1]
         print '(', len(d), 'component)',
         return sum(d) / len(d)

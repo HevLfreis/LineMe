@@ -168,12 +168,16 @@
 		this.sliders.stop().fadeTo(this.settings.sliderOpacityTime,1);
 		window.clearInterval(this.timer);
 		//var start = (new Date).getTime();
+
 		this.timer = window.setInterval(this.fixFn(function(){
 			this.scroll(vs+easing(n/steps,n,0,1,steps)*v,hs+easing(n/steps,n,0,1,steps)*h);
 			if(++n > steps){ 
-				//console.logs('Time: '+((new Date).getTime()-start)+' / '+this.settings.scrollTime);
-				window.clearInterval(this.timer); 
-				this.sliders.stop().fadeTo(this.settings.sliderOpacityTime,this.settings.sliderOpacity);
+				//console.log('Time: '+((new Date).getTime()-start)+' / '+this.settings.scrollTime);
+				window.clearInterval(this.timer);
+				this.timer = window.setTimeout(this.fixFn(function(){
+					this.sliders.stop().fadeTo(this.settings.sliderOpacityTime,this.settings.sliderOpacity);
+				}),this.settings.sliderOpacityDelay);
+				//this.sliders.stop().fadeTo(this.settings.sliderOpacityTime,this.settings.sliderOpacity);
 			}
 		}),this.settings.scrollInterval);
 	};
@@ -289,20 +293,22 @@
     	//slider move on mousewheel
     	this.bindEvent(this.container,'mousewheel',function(e,delta,deltaX,deltaY){
     		//don't scroll container if mouse is within "textarea" or "select" elements
+			console.log(delta, deltaX, deltaY)
     		var targetNode = e.target.nodeName;
     		if(targetNode == 'TEXTAREA' || (targetNode == 'SELECT' || targetNode == 'OPTION')) {
     			e.stopPropagation();
     			return;
     		}
     		//scroll content
-    		this.scroll(this.vslider.position().top - this.settings.wheelSpeed * deltaY, 
-    			   		this.hslider.position().left + this.settings.wheelSpeed * deltaX, e);
+    		//this.scroll(this.vslider.position().top - this.settings.wheelSpeed * deltaY,
+    		//	   		this.hslider.position().left + this.settings.wheelSpeed * deltaX, e);
+			this.easeScroll(-this.settings.wheelSpeed * deltaY,-this.settings.wheelSpeed * deltaX);
     		//highlight scroll handle
     		this.sliders.stop().fadeTo(this.settings.sliderOpacityTime,1);
-			window.clearTimeout(this.timer);
-			this.timer = window.setTimeout(this.fixFn(function(){
-				this.sliders.stop().fadeTo(this.settings.sliderOpacityTime,this.settings.sliderOpacity);
-			}),this.settings.sliderOpacityDelay);
+			//window.clearTimeout(this.timer);
+			//this.timer = window.setTimeout(this.fixFn(function(){
+			//	this.sliders.stop().fadeTo(this.settings.sliderOpacityTime,this.settings.sliderOpacity);
+			//}),this.settings.sliderOpacityDelay);
 			//always prevent global page scroll if we scroll within container
 			if(this.settings.blockGlobalScroll && (this.vdiff || this.hdiff)){
 				e.preventDefault();

@@ -1,9 +1,8 @@
 /**
  * Created by hevlhayt@foxmail.com
- * Date: 2016/6/24
- * Time: 20:04
+ * Date: 2016/11/1
+ * Time: 19:50
  */
-
 $(function() {
 
     window.mobileAndTabletcheck = function() {
@@ -12,16 +11,9 @@ $(function() {
         return check;
     };
 
-    if (!mobileAndTabletcheck())
-        $('body, .box-global-info-body').rollbar({
-            scroll: 'vertical',
-            sliderOpacity: 0.3,
-            zIndex: 2000,
-            blockGlobalScroll: true,
-            wheelSpeed: 20,
-            touchSpeed: 0.4,
-            sliderSize: '25%',
-            lazyCheckScroll: 500,
-        });
-});
+    if (!mobileAndTabletcheck()) {
+        $("body").mCustomScrollbar({ theme: 'dark' });
+        $(".box-global-info-body").mCustomScrollbar({ theme: 'dark-3' });
+    }
 
+});
