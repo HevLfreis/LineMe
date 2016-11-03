@@ -19,6 +19,11 @@ circle {
     stroke: #38363a;
 }
 
+.link-thin {
+    stroke-width: 1px;
+    stroke-opacity: 0.2;
+}
+
 .link-unconfirmed {
     stroke-width: 3px;
     stroke-opacity: 0.1;
@@ -39,6 +44,10 @@ circle {
 .link-selected {
     stroke-width: 5px;
     stroke-opacity: 0.8;
+}
+
+.link-unselected {
+    stroke-opacity: 0.04;
 }
 
 @keyframes fade-in {

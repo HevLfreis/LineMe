@@ -53,7 +53,7 @@
         vis.each(function (d, i) {
 
             var force = d3.layout.force()
-                .charge(-50)
+                .charge(-80)
                 .linkDistance(100)
                 .size([visWidth, visHeight]);
 
@@ -91,7 +91,7 @@
             });
             link.enter().insert("line", ".node")
                 .attr("class", function (d) {
-                    return "link-unconfirmed";
+                    return "link-thin";
                 });
 
             node = node.data(nodes, function (d) {

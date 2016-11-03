@@ -12,8 +12,13 @@ $(function() {
     };
 
     if (!mobileAndTabletcheck()) {
-        $("body").mCustomScrollbar({ theme: 'dark' });
-        $(".box-global-info-body").mCustomScrollbar({ theme: 'dark-3' });
+        $("body").mCustomScrollbar({
+            theme: 'tianyi',
+            mouseWheel:{
+				scrollAmount:"250"
+            }
+        });
+        $(".box-global-info-body").mCustomScrollbar({ theme: 'dark-mini' });
     }
 
 });

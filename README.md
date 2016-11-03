@@ -17,6 +17,7 @@ Location: http://lime.seeleit.com/
 * input-mask
 * Trip.js
 * select2
+* custom scrollbar
 * cropit
 * django
 * django-htmlmin

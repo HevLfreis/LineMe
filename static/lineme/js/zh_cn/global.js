@@ -51,6 +51,10 @@ $(function() {
     var width = $mp.width(),
         height = $mp.height();
 
+    var initScale = 0.5;
+    var zoomWidth = (width-initScale*width) / 2,
+        zoomHeight = (height-initScale*height) / 2;
+
     $('#map').width(width).height(height);
     $('#three').width(width).height(height);
 
@@ -64,7 +68,7 @@ $(function() {
     var yScale = d3.scale.linear()
         .domain([0,height]).range([0, height]);
 
-    var charge = -1200;
+    var charge = -1800;
 
     var color = d3.scale.category10();
     //var color = function(i){
@@ -77,12 +81,13 @@ $(function() {
         .scaleExtent([0.1,10])
         .x(xScale)
         .y(yScale)
-        .on("zoom", redraw);
+        .on("zoom", redraw)
+        .translate([zoomWidth,zoomHeight]).scale(initScale);
 
 
     var force = d3.layout.force()
         .charge(charge)
-        .linkDistance(400)
+        .linkDistance(600)
         .size([width, height])
         .friction(0.5);
 
@@ -133,6 +138,7 @@ $(function() {
         .attr('stroke', 'black')
         .attr('stroke-width', 1)
         .attr('id', 'vis')
+        .attr("transform", "translate("+zoomWidth+","+zoomHeight+") scale("+initScale+")")
         .call(tip);
 
 
@@ -198,8 +204,10 @@ $(function() {
 
 
     function start(){
+
         force.nodes(nodes)
-            .links(links);
+            .links(links)
+            .linkDistance(3.2*nodes.length+100);
 
         link = link.data(links, function(d){return d.source.id + "," + d.target.id;});
         link.enter().insert("line", ".node")
@@ -251,7 +259,7 @@ $(function() {
             if (n.source.id == d.id || n.target.id == d.id) {
                 d3.select(this).classed("link-selected", true);
             }
-            else d3.select(this).classed("link-selected", false);
+            else d3.select(this).classed("link-unselected", true);
         });
     }
 
@@ -261,7 +269,7 @@ $(function() {
         tip.hide();
         node.style("stroke", function(n) { return color(n.group); });
         link.classed("link-selected", false);
-
+        link.classed("link-unselected", false);
     }
 
     function dragstarted(d) {

@@ -208,15 +208,12 @@ class Graph:
                                 'group': 0}],
                     "links": []}]
 
-        layers, data = {}, []
+        max_weight = max([d['weight'] for (s, t, d) in self.G.edges(data=True)])
+        layers, data = {w+1: [] for w in xrange(max_weight)}, []
 
         for (s, t, d) in self.G.edges(data=True):
-            if d['weight'] in layers:
-                for i in xrange(d['weight']):
-                    layers[i].append((s, t))
-            else:
-                for i in xrange(d['weight']):
-                    layers[i] = [(s, t)]
+            for i in xrange(d['weight']):
+                layers[i+1].append((s, t))
 
         for k, layer in layers.items():
             nodes, links = set([]), []

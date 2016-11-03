@@ -238,7 +238,6 @@ $(function() {
             .attr("cy", 0)
             .attr("cx", 0);
 
-
         force.on("tick", function() {
             link.attr("x1", function(d) { return d.source.x; })
                 .attr("y1", function(d) { return d.source.y; })
@@ -286,6 +285,7 @@ $(function() {
             .on("mouseover", nodeMouseover)
 
             .call(drag);
+
         node.exit().remove();
 
         var updateNodes = node.filter(function(d){
@@ -328,7 +328,6 @@ $(function() {
 
         // prevent drag click
         if (d3.event.defaultPrevented) return;
-        //console.log('Node click: ', d.name);
         if(!selected){
             selected = d;
             d3.select(this).style('stroke', '#cd3b23');
@@ -386,7 +385,7 @@ $(function() {
             if (n.source.id == d.id || n.target.id == d.id) {
                 d3.select(this).classed("link-selected", true);
             }
-            else d3.select(this).classed("link-selected", false);
+            else d3.select(this).classed("link-unselected", true);
         });
     }
 
@@ -396,7 +395,7 @@ $(function() {
         tip.attr('class', 'd3-tip').show(d);
         tip.hide();
         node.style("stroke", function(n) { return color(n.group); });
-        link.classed("link-selected", false);
+        link.classed("link-selected link-unselected", false);
     }
 
 
@@ -411,7 +410,6 @@ $(function() {
     }
 
     function dragstarted(d) {
-        //console.logs('drag start');
         d3.event.sourceEvent.stopPropagation();
     }
 

@@ -77,14 +77,15 @@ class Command(BaseCommand):
         print 'average added friends female: ', links_female.count() / float(female_count)
         print 'average added friends: ', friend_links.count() / float(self.members.count()), '\n'
 
-        links_new = self.after_time(links, datetime.datetime(2016, 10, 28))
+        horizon = datetime.datetime(2016, 10, 27, 10, 0, 0)
+        links_new = self.after_time(links, horizon)
         print 'new links count: ', links_new.count(), '\n'
 
         # G_all = self.build_graph(links)
         # G_friend = self.build_graph(friend_links)
         # G_other = self.build_graph(other_links)
         #
-        G_all_confirmed = self.build_graph(links_confirmed)
+        # G_all_confirmed = self.build_graph(links_confirmed)
         # G_friend_confirmed = self.build_graph(friend_links_confirmed)
         # G_other_confirmed = self.build_graph(other_links_confirmed)
 
@@ -92,35 +93,137 @@ class Command(BaseCommand):
         # G_friend_unconfirmed = self.build_graph(friend_links_unconfirmed)
         # G_other_unconfirmed = self.build_graph(other_links_unconfirmed)
 
-        self.print_info(G_all_confirmed, 'u')
+        G_standard = self.build_graph(self.before_time(links_confirmed, horizon))
+
+        self.print_info(G_standard, 'standard')
 
         # groups
         # cf = csv.reader(file('D:\master\LineMe\student list/grouping.csv', 'rb'))
+        cf = csv.reader(file(BASE_DIR+'/static/data/grouping.csv', 'rb'))
+
+        groups, members = {}, []
+        i = 0
+        for line in cf:
+            if line[0] == '1':
+                groups[i] = members
+                i += 1
+                members = [line[2].strip().decode('utf-8')]
+
+            else:
+                members.append(line[2].strip().decode('utf-8'))
+        groups[i] = members
+        del groups[0]
+
+        for k, v in groups.items():
+            # print k, ': ', ' '.join(v)
+
+            new_list = []
+
+            for name in v:
+                try:
+                    new_list.append(self.members.get(member_name=name))
+                except Exception, e:
+                    new_list.append(self.members.filter(member_name=name, is_joined=True)[0])
+
+            groups[k] = new_list
+
+        print 'total groups: ', len(groups)
+
+        group_link_count = {}
+        for k, v in groups.items():
+            count = sum([links.filter(creator=m.user).count() for m in v])
+            group_link_count[k] = count
+
+        sorted_group_link_count = self.sort_dict_and_print(groups, group_link_count)
+        print '==='
+
+
+        # for best in sorted_group_link_count[:3]:
+        #     v = groups[best]
+        #     set([link for m in v
+        #              for link in links.filter(creator=m.user)
+        #              if G_standard.has_edge(link.source_member, link.target_member)]))
+
+
+        group_new_link_count = {}
+        for k, v in groups.items():
+            count = sum([links_new.filter(creator=m.user).count() for m in v])
+            group_new_link_count[k] = count
+
+        self.sort_dict_and_print(groups, group_new_link_count)
+        print '==='
+
+        group_accuracy = {}
+        for k, v in groups.items():
+            # group_accuracy[k] = len(set([link for m in v
+            #                              for link in links.filter(creator=m.user)
+            #                              if G_standard.has_edge(link.source_member, link.target_member)])) \
+            #                     / float(group_link_count[k])
+
+            G_this_group = nx.Graph()
+            for m in v:
+                for link in links.filter(creator=m.user):
+                    if G_standard.has_edge(link.source_member, link.target_member):
+                        G_this_group.add_edge(link.source_member, link.target_member, status=True)
+                    else:
+                        G_this_group.add_edge(link.source_member, link.target_member, status=False)
+
+            group_accuracy[k] = len([1 for s, t, d in G_this_group.edges(data=True) if d['status']]) / float(G_this_group.number_of_edges())
         #
-        # groups, members = {}, []
-        # i = 0
-        # for line in cf:
-        #     if line[0] == '1':
-        #         groups[i] = members
-        #         i += 1
-        #         members = [line[2].strip().decode('utf-8')]
+        for g in sorted(group_accuracy, key=group_accuracy.get, reverse=True):
+            print ' '.join([m.member_name for m in groups[g]]), group_accuracy[g], group_link_count[g]
+
+        print '==='
+
+        group_new_link_accuracy = {}
+        for k, v in groups.items():
+            # group_new_link_accuracy[k] = len(set([link for m in v
+            #                                  for link in links_new.filter(creator=m.user)
+            #                                  if G_standard.has_edge(link.source_member, link.target_member)])) \
+            #                         / float(group_link_count[k])
+
+            G_this_group = nx.Graph()
+            for m in v:
+                for link in links_new.filter(creator=m.user):
+                    if G_standard.has_edge(link.source_member, link.target_member):
+                        G_this_group.add_edge(link.source_member, link.target_member, status=True)
+                    else:
+                        G_this_group.add_edge(link.source_member, link.target_member, status=False)
+
+            group_new_link_accuracy[k] = len([1 for s, t, d in G_this_group.edges(data=True) if d['status']]) / float(G_this_group.number_of_edges())
+
+        for g in sorted(group_new_link_accuracy, key=group_new_link_accuracy.get, reverse=True):
+            print ' '.join([m.member_name for m in groups[g]]), group_new_link_accuracy[g], group_new_link_count[g]
+
+        print '==='
         #
-        #     else:
-        #         members.append(line[2].strip().decode('utf-8'))
-        # groups[i] = members
-        #
+        # for g in sorted(group_accuracy, key=group_accuracy.get, reverse=True):
+        #     print ' '.join([m.member_name for m in groups[g]]), \
+        #         group_link_count[g], \
+        #         group_new_link_count[g], \
+        #         group_accuracy[g], \
+        #         group_new_link_accuracy[g]
+
+        # print sum(group_accuracy.values()) / float(len(group_accuracy))
+        # print sum(group_new_link_accuracy.values()) / float(len(group_new_link_accuracy))
+
+        # group_my_standard = {}
         # for k, v in groups.items():
-        #     # print k, ': ', ' '.join(v)
+        #     group_my_standard[k] = (group_accuracy[k]*group_link_count[k]*0.2+
+        #                             group_new_link_accuracy[k]*group_new_link_count[k]*0.8)/G_standard.number_of_edges()
         #
-        #     new_list = []
-        #
-        #     for name in v:
-        #         try:
-        #             new_list.append(self.members.get(member_name=name))
-        #         except Exception, e:
-        #             new_list.append(self.members.filter(member_name=name, is_joined=True)[0])
-        #
-        #     groups[k] = new_list
+        # for g in sorted(group_my_standard, key=group_my_standard.get, reverse=True):
+        #     print ' '.join([m.member_name for m in groups[g]]), \
+        #         group_link_count[g], \
+        #         group_new_link_count[g], \
+        #         group_accuracy[g], \
+        #         group_new_link_accuracy[g], \
+        #         group_my_standard[g]
+
+
+
+
+
         #
         # group_average_degree_index = {}
         # for k, v in groups.items():
@@ -165,29 +268,29 @@ class Command(BaseCommand):
         # self.print_info(G_group, 'group')
 
         # single node
-        s, n, u, z, o = 0, 0, 0, 0, 0
-        for m in G_all_confirmed.nodes():
-            if G_all_confirmed.degree(m) == 0:
-                s += 1
-                if m.user is None:
-                    n += 1
-                    print m.member_name, 'not in'
-
-                elif not links.filter(creator=m.user).exists():
-                    z += 1
-                    print get_user_name(m.user), 'no link create'
-
-                elif not links.filter((Q(source_member=m) | Q(target_member=m))).exists():
-                    u += 1
-
-                else:
-                    print get_user_name(m.user)
-                    t = links.filter(creator=m.user)
-                    for a in t:
-                        print a.status, a.source_member.member_name, a.target_member.member_name
-                    o += 1
-
-        print 'single: ', s, 'not in: ', n, 'no link: ', z, 'no invite: ', u, 'other: ', o
+        # s, n, u, z, o = 0, 0, 0, 0, 0
+        # for m in G_all_confirmed.nodes():
+        #     if G_all_confirmed.degree(m) == 0:
+        #         s += 1
+        #         if m.user is None:
+        #             n += 1
+        #             print m.member_name, 'not in'
+        #
+        #         elif not links.filter(creator=m.user).exists():
+        #             z += 1
+        #             print get_user_name(m.user), 'no link create'
+        #
+        #         elif not links.filter((Q(source_member=m) | Q(target_member=m))).exists():
+        #             u += 1
+        #
+        #         else:
+        #             print get_user_name(m.user)
+        #             t = links.filter(creator=m.user)
+        #             for a in t:
+        #                 print a.status, a.source_member.member_name, a.target_member.member_name
+        #             o += 1
+        #
+        # print 'single: ', s, 'not in: ', n, 'no link: ', z, 'no invite: ', u, 'other: ', o
 
 
         # user confirmed links count
@@ -234,39 +337,39 @@ class Command(BaseCommand):
         #
         # self.print_info(G_all_confirmed, 'all confirmed')
         #
-        G_core = nx.Graph()
-
-        wc = Counter()
-        bi, nb = 0.0, 0.0
-        for (s, t, d) in G_all_confirmed.edges(data=True):
-            w = d['weight']
-
-            wc[w] += 1
-
-            if w > 1:
-                # print s.member_name, t.member_name
-
-                links = d['link']
-                couple = {s.user: False, t.user: False}
-
-                for link in links:
-                    if link.creator in couple:
-                        couple[link.creator] = True
-
-                if couple.values() == [True, True]:
-                    G_core.add_edge(s, t)
-                    bi += 1
-                else:
-                    nb += 1
-                    # for link in links:
-                    #     print link.source_member.member_name, link.target_member.member_name, get_user_name(link.creator), link.status, d['weight']
-                    #
-                    # print '======'
-
-        print 'weight distribution: ', wc, bi, nb
-
-        self.print_info(G_core, 'global core')
-        self.connected_component(G_core)
+        # G_core = nx.Graph()
+        #
+        # wc = Counter()
+        # bi, nb = 0.0, 0.0
+        # for (s, t, d) in G_all_confirmed.edges(data=True):
+        #     w = d['weight']
+        #
+        #     wc[w] += 1
+        #
+        #     if w > 1:
+        #         # print s.member_name, t.member_name
+        #
+        #         links = d['link']
+        #         couple = {s.user: False, t.user: False}
+        #
+        #         for link in links:
+        #             if link.creator in couple:
+        #                 couple[link.creator] = True
+        #
+        #         if couple.values() == [True, True]:
+        #             G_core.add_edge(s, t)
+        #             bi += 1
+        #         else:
+        #             nb += 1
+        #             # for link in links:
+        #             #     print link.source_member.member_name, link.target_member.member_name, get_user_name(link.creator), link.status, d['weight']
+        #             #
+        #             # print '======'
+        #
+        # print 'weight distribution: ', wc, bi, nb
+        #
+        # self.print_info(G_core, 'global core')
+        # self.connected_component(G_core)
         #
         # G_no_hub = copy.deepcopy(G_all_confirmed)
         #
@@ -383,6 +486,9 @@ class Command(BaseCommand):
     def both_rejected(self, links):
         return links.filter(status=-3)
 
+    def before_time(self, links, timestamp):
+        return links.filter(created_time__lt=timestamp)
+
     def after_time(self, links, timestamp):
         return links.filter(created_time__gt=timestamp)
 
@@ -390,6 +496,13 @@ class Command(BaseCommand):
         print name
         print 'nodes: ', G.number_of_nodes(), ' links: ', G.number_of_edges()
         print 'average degree: ', self.average_degree(G), 'average_shortest_path: ', self.average_shortest_path_length(G)
+
+    def sort_dict_and_print(self, groups, d, p=True):
+        std = sorted(d, key=d.get, reverse=True)
+        if p:
+            for g in std:
+                print ' '.join([m.member_name for m in groups[g]]), d[g]
+        return std
 
     def average_degree(self, G):
         return 2.0 * G.number_of_edges() / G.number_of_nodes()

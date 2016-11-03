@@ -385,7 +385,7 @@ $(function() {
             if (n.source.id == d.id || n.target.id == d.id) {
                 d3.select(this).classed("link-selected", true);
             }
-            else d3.select(this).classed("link-selected", false);
+            else d3.select(this).classed("link-unselected", true);
         });
     }
 
@@ -395,7 +395,7 @@ $(function() {
         tip.attr('class', 'd3-tip').show(d);
         tip.hide();
         node.style("stroke", function(n) { return color(n.group); });
-        link.classed("link-selected", false);
+        link.classed("link-selected link-unselected", false);
     }
 
 
