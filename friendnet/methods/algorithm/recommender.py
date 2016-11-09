@@ -12,6 +12,7 @@ from friendnet.models import GroupMember, Group
 from friendnet.models import Link
 
 
+# Todo: rewrite !!!
 class Recommender:
     def __init__(self, user):
         self.user = user

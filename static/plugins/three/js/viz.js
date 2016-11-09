@@ -41,7 +41,7 @@
             .attr("width", visWidth)
             .attr("height", visHeight);
 
-        vis.attr('fill', '#66ccff')
+        vis.attr('fill', '#53a8ff')
             .attr('stroke', 'black')
             .attr('stroke-width', 1)
             .attr('class', 'element')

@@ -139,13 +139,21 @@ def update_links(request, new_links, creator, groupid):
     for link in old_links:
         links_index[str(link.source_member.id) + ',' + str(link.target_member.id)] = link
 
-    for link in json.loads(new_links):
-        if link["source"] + ',' + link["target"] in links_index:
-            links_index[link["source"] + ',' + link["target"]] = 0
-        elif link["target"] + ',' + link["source"] in links_index:
-            links_index[link["target"] + ',' + link["source"]] = 0
-        else:
-            links_index[link["source"] + ',' + link["target"]] = 1
+    try:
+        new_links_from_json = json.loads(new_links)
+
+    except ValueError, e:
+        logger.error(logger_join('Update', get_session_id(request), 'failed', e=e))
+        return -1
+
+    else:
+        for link in new_links_from_json:
+            if link["source"] + ',' + link["target"] in links_index:
+                links_index[link["source"] + ',' + link["target"]] = 0
+            elif link["target"] + ',' + link["source"] in links_index:
+                links_index[link["target"] + ',' + link["source"]] = 0
+            else:
+                links_index[link["source"] + ',' + link["target"]] = 1
 
     my_member = myself_member(creator, groupid)
 
@@ -155,8 +163,11 @@ def update_links(request, new_links, creator, groupid):
                 continue
             elif v == 1:
 
-                source = int(k.split(',')[0])
-                target = int(k.split(',')[1])
+                s, t = k.split(',')
+                if not (s.isdigit() and t.isdigit()):
+                    continue
+
+                source, target = int(s), int(t)
 
                 if source == my_member.id:
                     if not group_member_existed(target):

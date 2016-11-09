@@ -316,9 +316,8 @@ $(function() {
         },
         series: [{
             name: 'Degree',
-            type: 'scatter',
+            type: 'bar',
             data: disData,
-            symbolSize: 12
         }]
     };
     myChart.setOption(option);

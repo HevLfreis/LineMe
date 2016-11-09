@@ -74,7 +74,7 @@ def get_user_name(user):
 
 
 def get_user_msgs(user):
-    my_members = GroupMember.objects.filter(user=user)
+    my_members = GroupMember.objects.filter(user=user).order_by('-id')
 
     msgs = []
     for mm in my_members:
@@ -89,7 +89,9 @@ def get_user_msgs(user):
             (Q(source_member=mm) & (Q(status=0) | Q(status=2) | Q(status=-2))) |
             (Q(target_member=mm) & (Q(status=0) | Q(status=1) | Q(status=-1))),
             ~Q(creator=user)
-        ).order_by('-created_time')
+        )
+
+    msgs = sorted(msgs, key=lambda x: x.created_time, reverse=True)
 
     msg_index = {}
     for msg in msgs:

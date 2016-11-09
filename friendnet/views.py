@@ -161,13 +161,18 @@ def msg_handle(request, mtype='0', handleid=0):
     elif request.is_ajax():
         links = request.POST.get('linkids')
 
-        confirm_list = json.loads(links)
-
         count = 0
-        for link in confirm_list:
-            status = link_confirm(request, user, get_link(int(link)))
-            if status == 0:
-                count += 1
+
+        try:
+            confirm_list = json.loads(links)
+        except ValueError, e:
+            pass
+        else:
+            for link in confirm_list:
+                if link.isdigit():
+                    status = link_confirm(request, user, get_link(int(link)))
+                    if status == 0:
+                        count += 1
 
         return HttpResponse(count, content_type='text/plain')
 

@@ -316,10 +316,9 @@ $(function() {
         },
         series: [{
             name: '度值',
-            type: 'scatter',
+            type: 'bar',
             data: disData,
-            symbolSize: 12
-        }]
+        }],
     };
     myChart.setOption(option);
 

@@ -4,8 +4,10 @@ import copy
 import csv
 import datetime
 import json
+import random
 from collections import Counter
 
+import math
 import networkx as nx
 import operator
 
@@ -19,12 +21,15 @@ from LineMe.settings import BASE_DIR
 from friendnet.methods.algorithm.graph import Graph
 from friendnet.methods.basic.user import get_user_name
 from friendnet.models import Link, Group, GroupMember
-# import matplotlib.pyplot as plt
+import numpy as np
 
 
 class Command(BaseCommand):
     help = 'Analysis Links of ' + PROJECT_NAME
     members = None
+    y = []
+    horizon = None
+    groups = None
 
     def add_arguments(self, parser):
         # Positional arguments
@@ -77,9 +82,10 @@ class Command(BaseCommand):
         print 'average added friends female: ', links_female.count() / float(female_count)
         print 'average added friends: ', friend_links.count() / float(self.members.count()), '\n'
 
-        horizon = datetime.datetime(2016, 10, 27, 10, 0, 0)
-        links_new = self.after_time(links, horizon)
-        print 'new links count: ', links_new.count(), '\n'
+        self.horizon = datetime.datetime(2016, 10, 27, 10, 0, 0)
+        links_new = self.after_time(links, self.horizon)
+        links_old = self.before_time(links, self.horizon)
+        print 'new/old links count: ', links_new.count(), links_old.count(), '\n'
 
         # G_all = self.build_graph(links)
         # G_friend = self.build_graph(friend_links)
@@ -93,28 +99,41 @@ class Command(BaseCommand):
         # G_friend_unconfirmed = self.build_graph(friend_links_unconfirmed)
         # G_other_unconfirmed = self.build_graph(other_links_unconfirmed)
 
-        G_standard = self.build_graph(self.before_time(links_confirmed, horizon))
+        # self.print_info(G_all_confirmed, 'standard')
+
+        G_standard = self.build_graph_id(self.before_time(links_confirmed, self.horizon))
+        G_new = self.build_graph_id(links_new)
 
         self.print_info(G_standard, 'standard')
+        self.print_info(G_new, 'new')
+
+        # print sum([1.0 for s, t in G_new.edges() if G_standard.has_edge(s, t)]), G_standard.number_of_edges()
+        # print sum([1.0 for s, t in G_new.edges() if G_standard.has_edge(s, t)]) / G_standard.number_of_edges()
+        #
+        # for s, t in G_new.edges():
+        #     if G_standard.has_edge(s, t):
+        #         G_standard.remove_edge(s, t)
+        #
+        # print [[k, v / float(G_standard.number_of_nodes())] for k, v in Counter(G_standard.degree().values()).items()]
 
         # groups
-        # cf = csv.reader(file('D:\master\LineMe\student list/grouping.csv', 'rb'))
-        cf = csv.reader(file(BASE_DIR+'/static/data/grouping.csv', 'rb'))
+        cf = csv.reader(file('D:\master\LineMe\student list/grouping.csv', 'rb'))
+        # cf = csv.reader(file(BASE_DIR + '/static/data/grouping.csv', 'rb'))
 
-        groups, members = {}, []
+        self.groups, members = {}, []
         i = 0
         for line in cf:
             if line[0] == '1':
-                groups[i] = members
+                self.groups[i] = members
                 i += 1
                 members = [line[2].strip().decode('utf-8')]
 
             else:
                 members.append(line[2].strip().decode('utf-8'))
-        groups[i] = members
-        del groups[0]
+        self.groups[i] = members
+        del self.groups[0]
 
-        for k, v in groups.items():
+        for k, v in self.groups.items():
             # print k, ': ', ' '.join(v)
 
             new_list = []
@@ -125,77 +144,180 @@ class Command(BaseCommand):
                 except Exception, e:
                     new_list.append(self.members.filter(member_name=name, is_joined=True)[0])
 
-            groups[k] = new_list
+            self.groups[k] = new_list
 
-        print 'total groups: ', len(groups)
+        print 'total groups: ', len(self.groups)
+
+        # end = 58
+        end = 20
+
+        # random_group = {k: random.random() for k, v in self.groups.items()}
+        # for i in range(1, end):
+        #     print 'i = ', i
+        #     c, p = self.crowdsourcing(sorted(random_group, key=random_group.get, reverse=True), G_standard, links, i)
+        #
+        # print '=========='
+        #
+        group_degree = {k: sum([G_standard.degree(m.id) for m in v]) / float(len(v)) for k, v in self.groups.items()}
+        # sorted_group_degree = self.sort_dict_and_print(group_degree)
+        # for i in range(1, end):
+        #     print 'i = ', i
+        #     c, p = self.crowdsourcing(sorted_group_degree, G_standard, links, i)
+        #
+        # print '=========='
+        #
+        # betweenness = nx.betweenness_centrality(G_standard)
+        # sorted_group_betweenness = sorted({k: sum([betweenness[m.id] for m in v]) for k, v in self.groups.items()}, reverse=True)
+        # for i in range(1, end):
+        #     print 'i = ', i
+        #     c, p = self.crowdsourcing(sorted_group_betweenness, G_standard, links, i)
+        #
+        # print '=========='
+
+        # #############################################################################
+        #
 
         group_link_count = {}
-        for k, v in groups.items():
+        for k, v in self.groups.items():
             count = sum([links.filter(creator=m.user).count() for m in v])
             group_link_count[k] = count
-
-        sorted_group_link_count = self.sort_dict_and_print(groups, group_link_count)
-        print '==='
-
-
-        # for best in sorted_group_link_count[:3]:
-        #     v = groups[best]
-        #     set([link for m in v
-        #              for link in links.filter(creator=m.user)
-        #              if G_standard.has_edge(link.source_member, link.target_member)]))
-
-
-        group_new_link_count = {}
-        for k, v in groups.items():
-            count = sum([links_new.filter(creator=m.user).count() for m in v])
-            group_new_link_count[k] = count
-
-        self.sort_dict_and_print(groups, group_new_link_count)
-        print '==='
-
-        group_accuracy = {}
-        for k, v in groups.items():
-            # group_accuracy[k] = len(set([link for m in v
-            #                              for link in links.filter(creator=m.user)
-            #                              if G_standard.has_edge(link.source_member, link.target_member)])) \
-            #                     / float(group_link_count[k])
-
-            G_this_group = nx.Graph()
-            for m in v:
-                for link in links.filter(creator=m.user):
-                    if G_standard.has_edge(link.source_member, link.target_member):
-                        G_this_group.add_edge(link.source_member, link.target_member, status=True)
-                    else:
-                        G_this_group.add_edge(link.source_member, link.target_member, status=False)
-
-            group_accuracy[k] = len([1 for s, t, d in G_this_group.edges(data=True) if d['status']]) / float(G_this_group.number_of_edges())
         #
-        for g in sorted(group_accuracy, key=group_accuracy.get, reverse=True):
-            print ' '.join([m.member_name for m in groups[g]]), group_accuracy[g], group_link_count[g]
+        sorted_group_link_count = self.sort_dict_and_print(group_link_count)
 
-        print '==='
+        for i in range(1, end):
+            print 'i = ', i
+            c, p = self.crowdsourcing(sorted_group_link_count, G_standard, links, i)
 
-        group_new_link_accuracy = {}
-        for k, v in groups.items():
-            # group_new_link_accuracy[k] = len(set([link for m in v
-            #                                  for link in links_new.filter(creator=m.user)
-            #                                  if G_standard.has_edge(link.source_member, link.target_member)])) \
-            #                         / float(group_link_count[k])
+        print '=========='
+        #
+        # #############################################################################
+        #
+        # group_new_link_count = {}
+        # for k, v in self.groups.items():
+        #     count = sum([links_new.filter(creator=m.user).count() for m in v])
+        #     group_new_link_count[k] = count
+        #
+        # sorted_group_new_link_count = self.sort_dict_and_print(group_new_link_count)
+        #
+        # for i in range(1, end):
+        #     print 'i = ', i
+        #     self.crowdsourcing(sorted_group_new_link_count, G_standard, links, i)
+        # print '=========='
+        #
+        # #############################################################################
+        #
 
-            G_this_group = nx.Graph()
-            for m in v:
-                for link in links_new.filter(creator=m.user):
-                    if G_standard.has_edge(link.source_member, link.target_member):
-                        G_this_group.add_edge(link.source_member, link.target_member, status=True)
-                    else:
-                        G_this_group.add_edge(link.source_member, link.target_member, status=False)
+        group_accuracy, group_cover = {}, {}
+        for k, v in self.groups.items():
 
-            group_new_link_accuracy[k] = len([1 for s, t, d in G_this_group.edges(data=True) if d['status']]) / float(G_this_group.number_of_edges())
+            G_this_group = self.link_join(v, links, G_standard)
+            if G_this_group.number_of_edges() == 0:
+                group_accuracy[k], group_cover[k] = 0, 0
+                continue
+            else:
+                true_count = len([1 for s, t, d in G_this_group.edges(data=True) if d['status']])
+                group_accuracy[k], group_cover[k] = \
+                    true_count / float(G_this_group.number_of_edges()), \
+                    true_count / float(G_standard.number_of_edges())
 
-        for g in sorted(group_new_link_accuracy, key=group_new_link_accuracy.get, reverse=True):
-            print ' '.join([m.member_name for m in groups[g]]), group_new_link_accuracy[g], group_new_link_count[g]
+        sorted_group_accuracy = self.sort_dict_and_print(group_accuracy, [group_link_count, group_cover])
+        for i in range(1, end):
+            print 'i = ', i
+            c, p = self.crowdsourcing(sorted_group_accuracy, G_standard, links, i)
 
-        print '==='
+        print '=========='
+
+        sorted_group_accuracy = self.sort_dict_and_print(group_cover, [group_link_count, group_cover])
+        for i in range(1, end):
+            print 'i = ', i
+            c, p = self.crowdsourcing(sorted_group_accuracy, G_standard, links, i)
+
+        print '=========='
+        #
+        # sorted_group_accuracy = self.sort_dict_and_print({k: group_accuracy[k]*group_cover[k]
+        #                                                   for k, v in self.groups.items()})
+        # for i in range(1, end):
+        #     print 'i = ', i
+        #     c, p = self.crowdsourcing(sorted_group_accuracy, G_standard, links, i)
+        #
+        # print '=========='
+        #
+        # sorted_group_accuracy = self.sort_dict_and_print({k: group_accuracy[k]*group_cover[k]*math.log((group_degree[k] + 10) / 10.0)
+        #                                                   for k, v in self.groups.items()},
+        #                                                  [group_link_count, group_cover, group_accuracy, group_degree])
+        # for i in range(1, end):
+        #     print 'i = ', i
+        #     c, p = self.crowdsourcing(sorted_group_accuracy, G_standard, links, i)
+        #
+        # print '=========='
+        #
+        sorted_group_accuracy = self.sort_dict_and_print({k: group_accuracy[k]+group_cover[k]
+                                                          for k, v in self.groups.items()},
+                                                         [group_link_count, group_cover, group_accuracy, group_degree])
+        for i in range(1, end):
+            print 'i = ', i
+            c, p = self.crowdsourcing(sorted_group_accuracy, G_standard, links, i)
+
+        print '=========='
+        #
+        # self.result_recorder(self.y, end)
+
+
+        ############################################################################
+
+        # group_new_link_accuracy, group_new_link_cover = {}, {}
+        # for k, v in self.groups.items():
+        #
+        #     G_this_group = self.link_join(v, links_new, G_standard)
+        #     if G_this_group.number_of_edges() == 0:
+        #         group_new_link_accuracy[k], group_new_link_cover[k] = 0, 0
+        #         continue
+        #     else:
+        #         true_count = len([1 for s, t, d in G_this_group.edges(data=True) if d['status']])
+        #         group_new_link_accuracy[k], group_new_link_cover[k] = \
+        #             true_count / float(G_this_group.number_of_edges()), \
+        #             true_count / float(G_standard.number_of_edges())
+
+        # sorted_group_accuracy = self.sort_dict_and_print(group_accuracy)
+        # for i in range(1, 20):
+        #     print 'i = ', i
+        #     self.crowdsourcing(sorted_group_accuracy, G_standard, links, i)
+
+        # sorted_group_accuracy = self.sort_dict_and_print({k: group_new_link_accuracy[k] * group_new_link_cover[k] for k, v in self.groups.items()})
+        # for i in range(1, 20):
+        #     print 'i = ', i
+        #     self.crowdsourcing(sorted_group_accuracy, G_standard, links, i)
+        # print '=========='
+        #
+        # sorted_group_accuracy = self.sort_dict_and_print({k: group_new_link_accuracy[k] * group_new_link_cover[k] * group_degree[k] for k, v in self.groups.items()})
+        # for i in range(1, 20):
+        #     print 'i = ', i
+        #     self.crowdsourcing(sorted_group_accuracy, G_standard, links, i)
+        # print '=========='
+
+
+
+        #
+        # group_new_link_accuracy = {}
+        # for k, v in groups.items():
+        #     G_this_group = nx.Graph()
+        #     for m in v:
+        #         for link in links_new.filter(creator=m.user):
+        #             if G_standard.has_edge(link.source_member_id, link.target_member_id):
+        #                 G_this_group.add_edge(link.source_member_id, link.target_member_id, status=True)
+        #             else:
+        #                 G_this_group.add_edge(link.source_member_id, link.target_member_id, status=False)
+        #
+        #     if G_this_group.number_of_edges() == 0:
+        #         group_new_link_accuracy[k] = 0
+        #         continue
+        #     else:
+        #         group_new_link_accuracy[k] = len([1 for s, t, d in G_this_group.edges(data=True) if d['status']]) / float(G_this_group.number_of_edges())
+        #
+        # for g in sorted(group_new_link_accuracy, key=group_new_link_accuracy.get, reverse=True):
+        #     print ' '.join([m.member_name for m in groups[g]]), group_new_link_accuracy[g], group_new_link_count[g]
+        #
+        # print '==='
         #
         # for g in sorted(group_accuracy, key=group_accuracy.get, reverse=True):
         #     print ' '.join([m.member_name for m in groups[g]]), \
@@ -403,8 +525,8 @@ class Command(BaseCommand):
         #                     c += 1
         #                     # print p[m1][m2]
         #                     continue
-                # p = nx.shortest_path(G_all_confirmed, source=m1, target=m2)
-                # print p
+        # p = nx.shortest_path(G_all_confirmed, source=m1, target=m2)
+        # print p
 
         # print 'shortest path through: '
         # print c / len(self.members) ** 2
@@ -474,6 +596,20 @@ class Command(BaseCommand):
                 G[s][t]['link'].append(link)
         return G
 
+    def build_graph_id(self, links):
+        G = nx.Graph()
+        for m in self.members:
+            G.add_node(m.id)
+
+        for link in links:
+            s, t = link.source_member_id, link.target_member_id
+            if not G.has_edge(s, t):
+                G.add_edge(s, t, link=[link], weight=1)
+            else:
+                G[s][t]['weight'] += 1
+                G[s][t]['link'].append(link)
+        return G
+
     def confirmed(self, links):
         return links.filter(status=3)
 
@@ -495,14 +631,35 @@ class Command(BaseCommand):
     def print_info(self, G, name):
         print name
         print 'nodes: ', G.number_of_nodes(), ' links: ', G.number_of_edges()
-        print 'average degree: ', self.average_degree(G), 'average_shortest_path: ', self.average_shortest_path_length(G)
+        print 'average degree: ', self.average_degree(G), 'average_shortest_path: ', self.average_shortest_path_length(
+            G)
 
-    def sort_dict_and_print(self, groups, d, p=True):
+    def sort_dict_and_print(self, d, args=list(), p=True):
         std = sorted(d, key=d.get, reverse=True)
         if p:
-            for g in std:
-                print ' '.join([m.member_name for m in groups[g]]), d[g]
+            for i, g in enumerate(std):
+                print i, ' ', ' '.join([m.member_name for m in self.groups[g]]), d[g],
+                for arg in args:
+                    print arg[g],
+                print ''
         return std
+
+    def result_recorder(self, y, end):
+        with open('result.txt', 'w') as f:
+            c, p = [], []
+            f.write('[')
+            for i, n in enumerate(y):
+
+                if i % (end-1) == 0 and i != 0:
+                    f.write(str(c)+',\n')
+                    f.write(str(p)+',\n')
+
+                    c, p = [], []
+                c.append(n[0])
+                p.append(n[1])
+            f.write(str(c)+',\n')
+            f.write(str(p)+',\n')
+            f.write(']')
 
     def average_degree(self, G):
         return 2.0 * G.number_of_edges() / G.number_of_nodes()
@@ -521,24 +678,63 @@ class Command(BaseCommand):
             if g.number_of_nodes() != 1:
                 print g.number_of_nodes(), g.number_of_edges()
 
-    # def find_bilink(self, links, link):
-    #     creator = link.creator
-    #     s_u = link.source_member.user
-    #     t_u = link.target_member.user
-    #
-    #     if s_u == creator:
-    #         red = links.filter((Q(source_member=link.source_member, target_member=link.target_member) |
-    #                             Q(source_member=link.target_member, target_member=link.source_member)),
-    #                            creator=t_u).exclude(id=link.id)
-    #     elif t_u == creator:
-    #         red = links.filter((Q(source_member=link.source_member, target_member=link.target_member) |
-    #                             Q(source_member=link.target_member, target_member=link.source_member)),
-    #                            creator=s_u).exclude(id=link.id)
-    #
-    #     return red
+    def link_join(self, group, links, G_standard):
+        G_this_group = nx.Graph()
+        for m in group:
+            for link in links.filter(creator=m.user):
+                s, t = link.source_member_id, link.target_member_id
+                if G_standard.has_edge(s, t):
+                    G_this_group.add_edge(s, t, status=True)
+                else:
+                    G_this_group.add_edge(s, t, status=False)
 
-    # def link_created_count_interval(self, f, t):
-    #     return
+        return G_this_group
+
+    def crowdsourcing(self, sorted_groups, G_standard, links, top):
+        G_best = nx.Graph()
+        for best in sorted_groups[:top]:
+            for m in self.groups[best]:
+                for link in links.filter(creator=m.user):
+                    s, t = link.source_member_id, link.target_member_id
+                    if G_standard.has_edge(s, t):
+                        G_best.add_edge(s, t, status=True)
+                    else:
+                        G_best.add_edge(s, t, status=False)
+
+        G_before = nx.Graph()
+        for before in sorted_groups[:top]:
+            for m in self.groups[before]:
+                for link in links.filter(creator=m.user, created_time__lt=self.horizon, status=3):
+                    s, t = link.source_member_id, link.target_member_id
+
+                    G_before.add_edge(s, t, status=True)
+
+        correct = sum([1.0 for (s, t, d) in G_best.edges(data=True) if d['status']])
+        c, p = correct / G_standard.number_of_edges(), correct / G_best.number_of_edges()
+        print 'cover ratio: ', c
+        print 'correct ratio: ', p
+        print G_before.number_of_edges() / float(G_standard.number_of_edges())
+        self.y.append((c, p))
+        return c, p
+
+        # def find_bilink(self, links, link):
+        #     creator = link.creator
+        #     s_u = link.source_member.user
+        #     t_u = link.target_member.user
+        #
+        #     if s_u == creator:
+        #         red = links.filter((Q(source_member=link.source_member, target_member=link.target_member) |
+        #                             Q(source_member=link.target_member, target_member=link.source_member)),
+        #                            creator=t_u).exclude(id=link.id)
+        #     elif t_u == creator:
+        #         red = links.filter((Q(source_member=link.source_member, target_member=link.target_member) |
+        #                             Q(source_member=link.target_member, target_member=link.source_member)),
+        #                            creator=s_u).exclude(id=link.id)
+        #
+        #     return red
+
+        # def link_created_count_interval(self, f, t):
+        #     return
 
 
 
@@ -802,9 +998,9 @@ class Command(BaseCommand):
         #                 if links.filter(creator=s.user, source_member=t, target_member=s).exists():
         #                     print s.member_name, t.member_name
 
-            # else:
-                # if Link.objects.filter()
-                # print s.member_name, t.member_name, G_all.degree(s), G_all.degree(t)
+        # else:
+        # if Link.objects.filter()
+        # print s.member_name, t.member_name, G_all.degree(s), G_all.degree(t)
 
         # print 'ratio: ', c / G_all_unconfirmed.number_of_edges(), c, u, f
 
@@ -868,7 +1064,7 @@ class Command(BaseCommand):
         # print 'average degree: ', self.average_degree(G_other_unconfirmed)
         # print 'average distance: ', self.average_shortest_path_length(G_other_unconfirmed), '\n'
 
-                # for m in self.members:
+        # for m in self.members:
         #     if m is not None:
         #         G = Graph(m.user, Group.objects.get(id=10001)).ego_builder().bingo()
         #         es = links.filter(creator=m.user)
@@ -902,13 +1098,3 @@ class Command(BaseCommand):
         #             b += 1
         #
         # print a, b
-
-
-
-
-
-
-
-
-
-

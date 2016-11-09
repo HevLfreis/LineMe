@@ -41,7 +41,7 @@ $(function() {
 
     var force = d3.layout.force()
         .charge(charge)
-        .linkDistance(400)
+        .linkDistance(600)
         .size([width, height]);
 
 

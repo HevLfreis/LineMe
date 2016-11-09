@@ -2,7 +2,7 @@
   <ul class="todo-list ui-sortable">
     {% for msg in msgs %}
       <li id="msg-{{ msg.id }}">
-        <input type="checkbox" value="{{ msg.id }}" name="">
+        <input type="checkbox" value="{{ msg.id }}" name="msg">
           <span class="text">
             {% load filters %}
             <a href="#">{{ msg_creators|get_value:msg }}</a>

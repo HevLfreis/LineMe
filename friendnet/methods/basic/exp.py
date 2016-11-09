@@ -3,6 +3,7 @@
 # created by hevlhayt@foxmail.com 
 # Date: 2016/10/7
 # Time: 12:29
+import datetime
 import networkx as nx
 from django.db.models import Q
 
@@ -56,3 +57,30 @@ def only_hub(G):
     for g in nx.connected_component_subgraphs(G):
         if g.number_of_nodes() != 1:
             print g.number_of_nodes(), g.number_of_edges()
+
+
+def private_link(G):
+    new_links = Link.objects.filter(group__id=10001, created_time__gt=datetime.datetime(2016, 10, 27, 10, 0, 0))
+
+    G_new = build_graph_id(new_links)
+
+    for s, t in G_new.edges():
+        if G.has_edge(s, t):
+            G.remove_edge(s, t)
+
+    print G_new.number_of_edges(), G.number_of_edges()
+
+    return G
+
+
+def build_graph_id(links):
+    G = nx.Graph()
+
+    for link in links:
+        s, t = link.source_member_id, link.target_member_id
+        if not G.has_edge(s, t):
+            G.add_edge(s, t, link=[link], weight=1)
+        else:
+            G[s][t]['weight'] += 1
+            G[s][t]['link'].append(link)
+    return G

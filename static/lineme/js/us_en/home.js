@@ -143,7 +143,7 @@ $(function() {
 
     function confirmChoosed() {
         var selected = [];
-        $('input[type="checkbox"]').each(function() {
+        $('input[type="checkbox"][name="msg"]').each(function() {
             if($(this).parent('[class*="icheckbox"]').hasClass("checked")) {
                 selected.push($(this).val());
             }
