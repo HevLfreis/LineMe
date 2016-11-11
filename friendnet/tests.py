@@ -17,6 +17,10 @@ from django.test import TestCase
 for a in []:
     print a
 
+cnt = Counter()
+cnt['a'] += 1
+print cnt
+
 
 
 

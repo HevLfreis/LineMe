@@ -3,6 +3,8 @@
 # created by hevlhayt@foxmail.com 
 # Date: 2016/8/12
 # Time: 10:52
+from collections import Counter
+
 from django.db.models import Q
 
 from friendnet.methods.basic.group import get_group_joined_num
@@ -22,21 +24,21 @@ class Recommender:
             return None
 
         gmout, gmin = [], []
-        ls = Link.objects.filter(
+        links_you = Link.objects.filter(
             group__id=groupid,
             creator=self.user
         )
 
-        for l in ls:
-            if l.source_member not in gmin or l.target_member not in gmin:
-                gmin.append(l.source_member)
-                gmin.append(l.target_member)
+        for l in links_you:
+            if l.source_member_id not in gmin or l.target_member_id not in gmin:
+                gmin.append(l.source_member_id)
+                gmin.append(l.target_member_id)
 
         for gm in GroupMember.objects.filter(
                 group__id=groupid
         ).exclude(user=self.user).order_by('-is_joined'):
 
-            if gm not in gmin:
+            if gm.id not in gmin:
                 gmout.append(gm)
 
         return gmout
@@ -52,42 +54,37 @@ class Recommender:
         # group members already in your ego graph
         gmin = set([])
         for l in links.filter(creator=self.user):
-            if l.source_member not in gmin or l.target_member not in gmin:
-                gmin.add(l.source_member)
-                gmin.add(l.target_member)
+            if l.source_member_id not in gmin or l.target_member_id not in gmin:
+                gmin.add(l.source_member_id)
+                gmin.add(l.target_member_id)
 
         # group members already not in your ego graph
-        gms = set(GroupMember.objects.filter(
-            group__id=groupid
-        ).exclude(user=self.user)) - gmin
+        gms = \
+            set(GroupMember.objects.filter(group__id=groupid)) \
+            - set(GroupMember.objects.filter(id__in=gmin))
 
-        ls = links.filter(
+        links_you = links.filter(
             (Q(source_member=my_member) | Q(target_member=my_member)),
             group__id=groupid
         ).exclude(creator=self.user)
 
-        friends = {}
-        for l in ls:
-            if l.source_member == my_member and l.source_member not in gmin:
-                if l.target_member in friends:
-                    friends[l.target_member] += 1
-                else:
-                    friends[l.target_member] = 1
+        friends = Counter()
+        for l in links_you:
+            if l.source_member_id == my_member.id and l.target_member_id not in gmin:
+                friends[l.target_member_id] += 1
 
-            elif l.target_member == my_member and l.target_member not in gmin:
-                if l.source_member in friends:
-                    friends[l.source_member] += 1
-                else:
-                    friends[l.source_member] = 1
+            elif l.target_member_id == my_member.id and l.source_member_id not in gmin:
+                friends[l.source_member_id] += 1
 
         # top k members linking to you
-        gmt = [k for k, v in sorted(friends.items(), key=lambda x: x[1], reverse=True)]
+        gmt_list = [k for k, v in sorted(friends.items(), key=lambda x: x[1], reverse=True)]
+        gmt_dict = {m.id: m for m in GroupMember.objects.filter(id__in=gmt_list)}
+        gmt = [gmt_dict[m] for m in gmt_list]
 
         gms -= set(gmt)
 
         # gms convert to a list
         gms = gmt + list(gms)
-
         return gms
 
     def group(self):

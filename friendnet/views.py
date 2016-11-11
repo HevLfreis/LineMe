@@ -29,6 +29,7 @@ from iauth.methods.session import get_session_consume
 # Todo: ///check all place with user input///, deal with utf-8 chinese, check all filter to get
 # Todo: member in group multiple?
 # Todo: cookie based first login
+# Todo: check all places with .source/target_member
 
 lang = DEPLOYED_LANGUAGE
 template_dir = get_template_dir('friendnet')

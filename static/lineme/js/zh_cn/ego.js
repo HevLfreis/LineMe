@@ -435,6 +435,10 @@ $(function() {
         saved = true;
         submiting = true;
 
+        var $modal = $('#modal-success');
+        $modal.modal('show');
+        resetMenu();
+
         var data = JSON.stringify(links.map(function(a){
             return {"source":a.source.id.toString(), "target":a.target.id.toString()};
         }));
@@ -448,10 +452,13 @@ $(function() {
                 linksCopy = links.slice(0);
                 linkedIndexCopy = $.extend({}, linkedIndex);
 
-                if (msg == 0) $('#modal-success').modal('show');
+                if (msg == 0) {
+                    $modal.find('.modal-content').removeClass('modal-transparent');
+                    $modal.find('.loader-inner').remove();
+                    $modal.find('.modal-hidden').fadeIn();
+                }
                 else alert("更新失败");
                 updateRcmdPanel(1);
-                resetMenu();
 
                 submiting = false;
             },

@@ -5,6 +5,7 @@
 {% block extra_css %}
   <link rel="stylesheet" href="/static/lineme/css/graph.css">
   <link rel="stylesheet" href="/static/lineme/css/ego.css">
+  <link rel="stylesheet" href="/static/lineme/css/loading.css">
   <link rel="stylesheet" href="/static/lineme/css/borderMenu.css">
   <link rel="stylesheet" href="/static/plugins/d3/css/d3-tip.css">
 {% endblock %}
@@ -12,16 +13,25 @@
 {% block modal %}
   <div class="modal fade" id="modal-success">
     <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-          <h4 class="modal-title">Attention</h4>
+      <div class="modal-content modal-transparent">
+        <div class="loader-inner line-scale line-white text-center">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
         </div>
-        <div class="modal-body">
-          <h4>Update Links Successfully</h4>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-primary btn-flat" data-dismiss="modal">OK</button>
+        <div class="modal-hidden" hidden>
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+            <h4 class="modal-title">Attention</h4>
+          </div>
+          <div class="modal-body">
+            <h4>Update Links Successfully</h4>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-primary btn-flat" data-dismiss="modal">OK</button>
+          </div>
         </div>
       </div>
     </div>

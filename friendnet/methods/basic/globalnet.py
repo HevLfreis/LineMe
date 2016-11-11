@@ -18,28 +18,28 @@ def get_user_global_core(groupid):
     return Graph(Group.objects.get(id=groupid)).core_builder()
 
 
-@cache.get_or_set('global')
+# @cache.get_or_set('global')
 def get_user_global_basic(user, groupid):
     return get_user_global_core(groupid).core(user)
 
 
-@cache.get_or_set('globalnet')
+# @cache.get_or_set('globalnet')
 def get_user_global_graph(user, groupid):
     # without color, save 70% time
     return get_user_global_basic(user, groupid).dictify()
 
 
-@cache.get_or_set('globalmap')
+# @cache.get_or_set('globalmap')
 def get_user_global_map(user, groupid):
     return get_user_global_basic(user, groupid).map2dict()
 
 
-@cache.get_or_set('globalthree')
+# @cache.get_or_set('globalthree')
 def get_user_global_three(user, groupid):
     return get_user_global_basic(user, groupid).three2dict()
 
 
-@cache.get_or_set('globalinfo')
+# @cache.get_or_set('globalinfo')
 def get_user_global_info(user, groupid):
     return graph_analyzer(user, groupid)
 

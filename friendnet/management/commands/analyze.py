@@ -87,6 +87,8 @@ class Command(BaseCommand):
         links_old = self.before_time(links, self.horizon)
         print 'new/old links count: ', links_new.count(), links_old.count(), '\n'
 
+        print self.single_rejected(links_old).count(), self.both_rejected(links_old).count()
+
         # G_all = self.build_graph(links)
         # G_friend = self.build_graph(friend_links)
         # G_other = self.build_graph(other_links)
@@ -289,11 +291,11 @@ class Command(BaseCommand):
         #     self.crowdsourcing(sorted_group_accuracy, G_standard, links, i)
         # print '=========='
         #
-        # sorted_group_accuracy = self.sort_dict_and_print({k: group_new_link_accuracy[k] * group_new_link_cover[k] * group_degree[k] for k, v in self.groups.items()})
-        # for i in range(1, 20):
-        #     print 'i = ', i
-        #     self.crowdsourcing(sorted_group_accuracy, G_standard, links, i)
-        # print '=========='
+        sorted_group_accuracy = self.sort_dict_and_print({k: group_new_link_accuracy[k] * group_new_link_cover[k] * group_degree[k] for k, v in self.groups.items()})
+        for i in range(1, 20):
+            print 'i = ', i
+            self.crowdsourcing(sorted_group_accuracy, G_standard, links, i)
+        print '=========='
 
 
 

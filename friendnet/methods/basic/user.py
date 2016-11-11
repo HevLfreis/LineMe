@@ -5,6 +5,7 @@
 # Time: 13:51
 import datetime
 import re
+from collections import Counter
 
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
@@ -93,20 +94,20 @@ def get_user_msgs(user):
 
     msgs = sorted(msgs, key=lambda x: x.created_time, reverse=True)
 
-    msg_index = {}
+    msg_index = Counter()
+    my_members_id = [m.id for m in my_members]
+
     for msg in msgs:
-        if msg.source_member in my_members:
-            if msg.target_member in msg_index:
-                msg_index[msg.target_member] += 1
-            else:
-                msg_index[msg.target_member] = 1
-        elif msg.target_member in my_members:
-            if msg.source_member in msg_index:
-                msg_index[msg.source_member] += 1
-            else:
-                msg_index[msg.source_member] = 1
+        if msg.source_member_id in my_members_id:
+            msg_index[msg.target_member_id] += 1
+
+        elif msg.target_member_id in my_members_id:
+            msg_index[msg.source_member_id] += 1
+
         else:
             continue
+
+    msg_index = {GroupMember.objects.get(id=mid): count for mid, count in msg_index.items()}
 
     return msgs, msg_index
 

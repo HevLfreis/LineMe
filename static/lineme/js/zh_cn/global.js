@@ -8,21 +8,29 @@ $(function() {
 
     var mobile = window.mobileAndTabletcheck();
 
+    var graphCreated = {'network': true, '#map': false, '#three': false};
+
     var changeMode = function(id1, id2, bid1, bid2, name1, name2, visible, viz) {
         $(id1).mouseover(function(){
             $(this).text(name2);
         }).mouseout(function(){
             $(this).text(name1);
         }).click(function(){
+
+            if (bid2 == '#map' && !graphCreated[bid2]) {
+                createMap();
+            }
+            else if (bid2 == '#three' && !graphCreated[bid2]) {
+                createThree();
+            }
+
+            graphCreated[bid2] = true;
+
             $(bid1).removeClass('pt-page-scaleUpDown pt-page-delay300').addClass('pt-page-scaleDown');
             $(bid2).addClass('pt-page-scaleUpDown pt-page-delay300');
             if (visible) $(bid2).css('visibility', 'visible');
             $(this).hide();
             $(id2).show();
-
-            if (viz) {
-                VIZ.transform('flow');
-            }
 
             if (id2 != '#normal-mode') force.stop();
         });
@@ -322,135 +330,142 @@ $(function() {
     };
     myChart.setOption(option);
 
-    $.get(gMapUrl, function(result){
+    function createMap() {
+        $.get(gMapUrl, function (result) {
 
-        var option2 = {
-            //backgroundColor: '#f7f7f7',
+            var option2 = {
+                //backgroundColor: '#f7f7f7',
 
-            tooltip : {
-                trigger: 'item',
-                padding: 10,
-                borderColor: '#777',
-                borderWidth: 1,
-                formatter : function(obj){
-                    if(obj.dataType == 'node' || obj.dataType == undefined)
-                        return '<div style="border-bottom: 1px solid rgba(255,255,255,.3); font-size: 16px;padding-bottom: 7px;margin-bottom: 7px">'+obj.name+'</div>'+'成员数 : '+obj.value[2]+"</br>朋友数 : "+obj.value[3];
-                }
-            },
-
-            geo: {
-                map: 'china',
-                label: {
-                    emphasis: {
-                        show: false
+                tooltip: {
+                    trigger: 'item',
+                    padding: 10,
+                    borderColor: '#777',
+                    borderWidth: 1,
+                    formatter: function (obj) {
+                        if (obj.dataType == 'node' || obj.dataType == undefined)
+                            return '<div style="border-bottom: 1px solid rgba(255,255,255,.3); font-size: 16px;padding-bottom: 7px;margin-bottom: 7px">' + obj.name + '</div>' + '成员数 : ' + obj.value[2] + "</br>朋友数 : " + obj.value[3];
                     }
                 },
-                zoom: 1.2,
-                roam: true,
-                itemStyle: {
-                    normal: {
-                        areaColor: '#5f7e9c',
-                        borderColor: '#fff'
-                    },
-                    emphasis: {
-                        areaColor: '#49739B'
-                    }
-                }
-            },
-            series : [
-                {
-                    name: 'city',
-                    type: 'graph',
-                    coordinateSystem: 'geo',
-                    //data: convertData(data),
-                    data: result.nodes,
-                    //symbolSize: function (val) {
-                    //    return val[2] / 10;
-                    //},
 
-                    // Todo: size relate to num of friends
-                    symbolSize: 15,
+                geo: {
+                    map: 'china',
                     label: {
-                        emphasis : {
+                        emphasis: {
                             show: false
                         }
                     },
-                    links: result.links,
-                    lineStyle: {
-                        normal: {
-                            color: '#ffd200',
-                            opacity: 0.8,
-                            width: 1.8,
-                            curveness: 0.08,
-                        },
-                    },
+                    zoom: 1.2,
+                    roam: true,
                     itemStyle: {
                         normal: {
-                            opacity: 0.8,
-                            shadowBlur: 10,
-                            shadowOffsetX: 0,
-                            shadowOffsetY: 0,
-                            shadowColor: 'rgba(0, 0, 0, 0.5)',
-                            color: function(obj){
-                                if(obj.value[3] == 0) return '#f94040';
-                                else return '#4be7a1';
-                            }
+                            areaColor: '#5f7e9c',
+                            borderColor: '#fff'
+                        },
+                        emphasis: {
+                            areaColor: '#49739B'
                         }
                     }
                 },
-                {
-                    name: '故乡',
-                    type: 'effectScatter',
-                    coordinateSystem: 'geo',
-                    data: result.nodes.filter(function (d) {
-                        return d.self == true;
-                    }),
-                    symbolSize: 25,
-                    showEffectOn: 'render',
-                    rippleEffect: {
-                        brushType: 'stroke'
-                    },
-                    hoverAnimation: true,
-                    label: {
-                        normal: {
-                            formatter: '我',
-                            position: 'right',
-                            show: true,
-                            textStyle: {
-                                fontSize: 15
+                series: [
+                    {
+                        name: 'city',
+                        type: 'graph',
+                        coordinateSystem: 'geo',
+                        //data: convertData(data),
+                        data: result.nodes,
+                        //symbolSize: function (val) {
+                        //    return val[2] / 10;
+                        //},
+
+                        // Todo: size relate to num of friends
+                        symbolSize: 15,
+                        label: {
+                            emphasis: {
+                                show: false
+                            }
+                        },
+                        links: result.links,
+                        lineStyle: {
+                            normal: {
+                                color: '#ffd200',
+                                opacity: 0.8,
+                                width: 1.8,
+                                curveness: 0.08,
+                            },
+                        },
+                        itemStyle: {
+                            normal: {
+                                opacity: 0.8,
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowOffsetY: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)',
+                                color: function (obj) {
+                                    if (obj.value[3] == 0) return '#f94040';
+                                    else return '#4be7a1';
+                                }
                             }
                         }
                     },
-                    itemStyle: {
-                        normal: {
-                            color: '#fff542',
-                            opacity: 0.9,
-                            shadowBlur: 30,
-                            shadowOffsetX: 0,
-                            shadowOffsetY: 0,
-                            shadowColor: 'rgba(0, 0, 0, 0.5)',
-                        }
-                    },
-                    zlevel: 1
-                }
-            ]
-        };
+                    {
+                        name: '故乡',
+                        type: 'effectScatter',
+                        coordinateSystem: 'geo',
+                        data: result.nodes.filter(function (d) {
+                            return d.self == true;
+                        }),
+                        symbolSize: 25,
+                        showEffectOn: 'render',
+                        rippleEffect: {
+                            brushType: 'stroke'
+                        },
+                        hoverAnimation: true,
+                        label: {
+                            normal: {
+                                formatter: '我',
+                                position: 'right',
+                                show: true,
+                                textStyle: {
+                                    fontSize: 15
+                                }
+                            }
+                        },
+                        itemStyle: {
+                            normal: {
+                                color: '#fff542',
+                                opacity: 0.9,
+                                shadowBlur: 30,
+                                shadowOffsetX: 0,
+                                shadowOffsetY: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)',
+                            }
+                        },
+                        zlevel: 1
+                    }
+                ]
+            };
 
-        var myMap = echarts.init(document.getElementById('map'), 'roma');
-        myMap.setOption(option2);
-        $('#map').find('.loader-inner').remove();
-    });
-
-    if (!mobile) {
-        d3.json(gThreeUrl, function (error, data) {
-            VIZ.drawElements(data);
-            //VIZ.transform('flow');
-            $('#three').find('.loader-inner').remove();
-            VIZ.render();
-            VIZ.animate();
-            window.addEventListener('resize', VIZ.onWindowResize, false);
+            var myMap = echarts.init(document.getElementById('map'), 'roma');
+            myMap.setOption(option2);
+            $('#map').find('.loader-inner').remove();
         });
     }
+
+    function createThree() {
+        if (!mobile) {
+            d3.json(gThreeUrl, function (error, data) {
+                VIZ.drawElements(data);
+                window.addEventListener('resize', VIZ.onWindowResize, false);
+                setTimeout(function() {
+                    VIZ.transform('flow');
+                    VIZ.render();
+                    VIZ.animate();
+                    $('#three').find('.loader-inner').remove();
+                }, 2800);
+            });
+        }
+    }
+
 
 });
 
