@@ -6,6 +6,7 @@ from django.core.paginator import PageNotAnInteger
 from django.core.paginator import Paginator, EmptyPage
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
+from django.views.decorators.cache import never_cache
 
 from LineMe.constants import PROJECT_NAME, CITIES_TABLE, PRIVACIES
 from LineMe.settings import DEPLOYED_LANGUAGE
@@ -108,6 +109,7 @@ def home(request):
 
 
 @login_required
+@never_cache
 def msg_panel(request):
     user = request.user
 

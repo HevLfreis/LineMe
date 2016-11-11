@@ -13,13 +13,14 @@ from django.test import TestCase
 # j = json.load(file(os.path.join(STATIC_FOLDER, 'data/cities.json')))
 #
 # print j["People's Republic of China"]
+G = nx.Graph()
 
-for a in []:
-    print a
+G.add_edge(1, 2)
+G.add_edge(1, 3)
+print G[1]
 
-cnt = Counter()
-cnt['a'] += 1
-print cnt
+
+
 
 
 

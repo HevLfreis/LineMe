@@ -33,7 +33,7 @@ class GroupMember(models.Model):
     #     return self.member_name.decode('utf-8')
 
     def __str__(self):
-        return self.member_name.encode('utf-8')
+        return self.member_name.encode('gbk')
 
 
 class MemberRequest(models.Model):

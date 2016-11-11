@@ -11,14 +11,25 @@ $(function() {
         return check;
     };
 
-    if (!mobileAndTabletcheck()) {
-        $("body").mCustomScrollbar({
-            theme: 'tianyi',
-            mouseWheel:{
-				scrollAmount:"250"
-            }
-        });
-        $(".box-global-info-body").mCustomScrollbar({ theme: 'dark-mini' });
-    }
+    window.setScrollbar = function() {
+        if (!mobileAndTabletcheck()) {
+            $("body").mCustomScrollbar({
+                theme: 'tianyi',
+                mouseWheel:{
+                    scrollAmount:"250"
+                }
+            });
+            $(".box-global-info-body").mCustomScrollbar({ theme: 'dark-mini' });
+        }
+    };
+
+    window.destroyScrollbar = function() {
+        if (!mobileAndTabletcheck()) {
+            $('body').mCustomScrollbar("destroy");
+            $(".box-global-info-body").mCustomScrollbar("destroy");
+        }
+    };
+
+    setScrollbar()
 
 });

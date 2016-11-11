@@ -101,7 +101,10 @@ class Command(BaseCommand):
         # G_friend_unconfirmed = self.build_graph(friend_links_unconfirmed)
         # G_other_unconfirmed = self.build_graph(other_links_unconfirmed)
 
-        # self.print_info(G_all_confirmed, 'standard')
+        #############################################################################
+        #############################################################################
+        #############################################################################
+        # crowdsourcing
 
         G_standard = self.build_graph_id(self.before_time(links_confirmed, self.horizon))
         G_new = self.build_graph_id(links_new)
@@ -112,46 +115,41 @@ class Command(BaseCommand):
         # print sum([1.0 for s, t in G_new.edges() if G_standard.has_edge(s, t)]), G_standard.number_of_edges()
         # print sum([1.0 for s, t in G_new.edges() if G_standard.has_edge(s, t)]) / G_standard.number_of_edges()
         #
-        # for s, t in G_new.edges():
-        #     if G_standard.has_edge(s, t):
-        #         G_standard.remove_edge(s, t)
-        #
-        # print [[k, v / float(G_standard.number_of_nodes())] for k, v in Counter(G_standard.degree().values()).items()]
 
         # groups
-        cf = csv.reader(file('D:\master\LineMe\student list/grouping.csv', 'rb'))
-        # cf = csv.reader(file(BASE_DIR + '/static/data/grouping.csv', 'rb'))
-
-        self.groups, members = {}, []
-        i = 0
-        for line in cf:
-            if line[0] == '1':
-                self.groups[i] = members
-                i += 1
-                members = [line[2].strip().decode('utf-8')]
-
-            else:
-                members.append(line[2].strip().decode('utf-8'))
-        self.groups[i] = members
-        del self.groups[0]
-
-        for k, v in self.groups.items():
-            # print k, ': ', ' '.join(v)
-
-            new_list = []
-
-            for name in v:
-                try:
-                    new_list.append(self.members.get(member_name=name))
-                except Exception, e:
-                    new_list.append(self.members.filter(member_name=name, is_joined=True)[0])
-
-            self.groups[k] = new_list
-
-        print 'total groups: ', len(self.groups)
-
-        # end = 58
-        end = 20
+        # cf = csv.reader(file('D:\master\LineMe\student list/grouping.csv', 'rb'))
+        # # cf = csv.reader(file(BASE_DIR + '/static/data/grouping.csv', 'rb'))
+        #
+        # self.groups, members = {}, []
+        # i = 0
+        # for line in cf:
+        #     if line[0] == '1':
+        #         self.groups[i] = members
+        #         i += 1
+        #         members = [line[2].strip().decode('utf-8')]
+        #
+        #     else:
+        #         members.append(line[2].strip().decode('utf-8'))
+        # self.groups[i] = members
+        # del self.groups[0]
+        #
+        # for k, v in self.groups.items():
+        #     # print k, ': ', ' '.join(v)
+        #
+        #     new_list = []
+        #
+        #     for name in v:
+        #         try:
+        #             new_list.append(self.members.get(member_name=name))
+        #         except Exception, e:
+        #             new_list.append(self.members.filter(member_name=name, is_joined=True)[0])
+        #
+        #     self.groups[k] = new_list
+        #
+        # print 'total groups: ', len(self.groups)
+        #
+        # # end = 58
+        # end = 20
 
         # random_group = {k: random.random() for k, v in self.groups.items()}
         # for i in range(1, end):
@@ -160,7 +158,7 @@ class Command(BaseCommand):
         #
         # print '=========='
         #
-        group_degree = {k: sum([G_standard.degree(m.id) for m in v]) / float(len(v)) for k, v in self.groups.items()}
+        # group_degree = {k: sum([G_standard.degree(m.id) for m in v]) / float(len(v)) for k, v in self.groups.items()}
         # sorted_group_degree = self.sort_dict_and_print(group_degree)
         # for i in range(1, end):
         #     print 'i = ', i
@@ -179,18 +177,18 @@ class Command(BaseCommand):
         # #############################################################################
         #
 
-        group_link_count = {}
-        for k, v in self.groups.items():
-            count = sum([links.filter(creator=m.user).count() for m in v])
-            group_link_count[k] = count
+        # group_link_count = {}
+        # for k, v in self.groups.items():
+        #     count = sum([links.filter(creator=m.user).count() for m in v])
+        #     group_link_count[k] = count
+        # #
+        # sorted_group_link_count = self.sort_dict_and_print(group_link_count)
         #
-        sorted_group_link_count = self.sort_dict_and_print(group_link_count)
-
-        for i in range(1, end):
-            print 'i = ', i
-            c, p = self.crowdsourcing(sorted_group_link_count, G_standard, links, i)
-
-        print '=========='
+        # for i in range(1, end):
+        #     print 'i = ', i
+        #     c, p = self.crowdsourcing(sorted_group_link_count, G_standard, links, i)
+        #
+        # print '=========='
         #
         # #############################################################################
         #
@@ -209,32 +207,32 @@ class Command(BaseCommand):
         # #############################################################################
         #
 
-        group_accuracy, group_cover = {}, {}
-        for k, v in self.groups.items():
-
-            G_this_group = self.link_join(v, links, G_standard)
-            if G_this_group.number_of_edges() == 0:
-                group_accuracy[k], group_cover[k] = 0, 0
-                continue
-            else:
-                true_count = len([1 for s, t, d in G_this_group.edges(data=True) if d['status']])
-                group_accuracy[k], group_cover[k] = \
-                    true_count / float(G_this_group.number_of_edges()), \
-                    true_count / float(G_standard.number_of_edges())
-
-        sorted_group_accuracy = self.sort_dict_and_print(group_accuracy, [group_link_count, group_cover])
-        for i in range(1, end):
-            print 'i = ', i
-            c, p = self.crowdsourcing(sorted_group_accuracy, G_standard, links, i)
-
-        print '=========='
-
-        sorted_group_accuracy = self.sort_dict_and_print(group_cover, [group_link_count, group_cover])
-        for i in range(1, end):
-            print 'i = ', i
-            c, p = self.crowdsourcing(sorted_group_accuracy, G_standard, links, i)
-
-        print '=========='
+        # group_accuracy, group_cover = {}, {}
+        # for k, v in self.groups.items():
+        #
+        #     G_this_group = self.link_join(v, links, G_standard)
+        #     if G_this_group.number_of_edges() == 0:
+        #         group_accuracy[k], group_cover[k] = 0, 0
+        #         continue
+        #     else:
+        #         true_count = len([1 for s, t, d in G_this_group.edges(data=True) if d['status']])
+        #         group_accuracy[k], group_cover[k] = \
+        #             true_count / float(G_this_group.number_of_edges()), \
+        #             true_count / float(G_standard.number_of_edges())
+        #
+        # sorted_group_accuracy = self.sort_dict_and_print(group_accuracy, [group_link_count, group_cover])
+        # for i in range(1, end):
+        #     print 'i = ', i
+        #     c, p = self.crowdsourcing(sorted_group_accuracy, G_standard, links, i)
+        #
+        # print '=========='
+        #
+        # sorted_group_accuracy = self.sort_dict_and_print(group_cover, [group_link_count, group_cover])
+        # for i in range(1, end):
+        #     print 'i = ', i
+        #     c, p = self.crowdsourcing(sorted_group_accuracy, G_standard, links, i)
+        #
+        # print '=========='
         #
         # sorted_group_accuracy = self.sort_dict_and_print({k: group_accuracy[k]*group_cover[k]
         #                                                   for k, v in self.groups.items()})
@@ -253,96 +251,85 @@ class Command(BaseCommand):
         #
         # print '=========='
         #
-        sorted_group_accuracy = self.sort_dict_and_print({k: group_accuracy[k]+group_cover[k]
-                                                          for k, v in self.groups.items()},
-                                                         [group_link_count, group_cover, group_accuracy, group_degree])
-        for i in range(1, end):
-            print 'i = ', i
-            c, p = self.crowdsourcing(sorted_group_accuracy, G_standard, links, i)
-
-        print '=========='
+        # sorted_group_accuracy = self.sort_dict_and_print({k: group_accuracy[k]+group_cover[k]
+        #                                                   for k, v in self.groups.items()},
+        #                                                  [group_link_count, group_cover, group_accuracy, group_degree])
+        # for i in range(1, end):
+        #     print 'i = ', i
+        #     c, p = self.crowdsourcing(sorted_group_accuracy, G_standard, links, i)
+        #
+        # print '=========='
         #
         # self.result_recorder(self.y, end)
 
+        G_wrong = G_new.copy()
+        for s, t in G_wrong.edges():
+            if G_standard.has_edge(s, t):
+                G_wrong.remove_edge(s, t)
 
-        ############################################################################
+        self.print_info(G_wrong, 'wrong')
 
-        # group_new_link_accuracy, group_new_link_cover = {}, {}
-        # for k, v in self.groups.items():
+        for m in sorted(G_standard.degree(), key=G_standard.degree().get, reverse=True)[:10]:
+            print GroupMember.objects.get(id=m).member_name, G_standard.degree(m)
+
+        print ''
+
+        for m in sorted(G_wrong.degree(), key=G_wrong.degree().get, reverse=True):
+            print GroupMember.objects.get(id=m).member_name, G_standard.degree(m), G_wrong.degree(m)
+
+
+        # # not recovered
+        # G_not_recovered = G_standard.copy()
+        # for s, t in G_new.edges():
+        #     if G_not_recovered.has_edge(s, t):
+        #         G_not_recovered.remove_edge(s, t)
         #
-        #     G_this_group = self.link_join(v, links_new, G_standard)
-        #     if G_this_group.number_of_edges() == 0:
-        #         group_new_link_accuracy[k], group_new_link_cover[k] = 0, 0
-        #         continue
-        #     else:
-        #         true_count = len([1 for s, t, d in G_this_group.edges(data=True) if d['status']])
-        #         group_new_link_accuracy[k], group_new_link_cover[k] = \
-        #             true_count / float(G_this_group.number_of_edges()), \
-        #             true_count / float(G_standard.number_of_edges())
-
-        # sorted_group_accuracy = self.sort_dict_and_print(group_accuracy)
-        # for i in range(1, 20):
-        #     print 'i = ', i
-        #     self.crowdsourcing(sorted_group_accuracy, G_standard, links, i)
-
-        # sorted_group_accuracy = self.sort_dict_and_print({k: group_new_link_accuracy[k] * group_new_link_cover[k] for k, v in self.groups.items()})
-        # for i in range(1, 20):
-        #     print 'i = ', i
-        #     self.crowdsourcing(sorted_group_accuracy, G_standard, links, i)
-        # print '=========='
+        # print [[k, v / float(G_not_recovered.number_of_nodes())] for k, v in Counter(G_not_recovered.degree().values()).items()]
         #
-        sorted_group_accuracy = self.sort_dict_and_print({k: group_new_link_accuracy[k] * group_new_link_cover[k] * group_degree[k] for k, v in self.groups.items()})
-        for i in range(1, 20):
-            print 'i = ', i
-            self.crowdsourcing(sorted_group_accuracy, G_standard, links, i)
-        print '=========='
+        # private_member = set([])
+        # clear_member = set([])
+        # c, my, his = 0, 0, 0
+        # for node in G_not_recovered.nodes():
+        #     if G_not_recovered.degree(node) > 5:
+        #         private_member.add(node)
+        #         for neighbor in G_not_recovered.neighbors(node):
+        #             for link in self.before_time(links_confirmed, self.horizon).filter(Q(source_member__id=node, target_member__id=neighbor) | Q(source_member__id=neighbor, target_member__id=node)):
+        #                 # print str(link), GroupMember.objects.get(id=node).member_name
+        #                 c += 1
+        #                 if link.source_member_id == node:
+        #                     if link.target_member.user == link.creator:
+        #                         his += 1
+        #                     elif link.source_member.user == link.creator:
+        #                         my += 1
+        #
+        #                 elif link.target_member_id == node:
+        #                     if link.target_member.user == link.creator:
+        #                         my += 1
+        #                     elif link.source_member.user == link.creator:
+        #                         his += 1
+        #     elif G_not_recovered.degree(node) == 0:
+        #         clear_member.add(node)
+        # print c, my, his
+        #
+        # c, n = 0, 0.0
+        # for m in private_member:
+        #     c += 1
+        #     if 30 < G_standard.degree(m) < 50:
+        #         n += 1
+        #     print GroupMember.objects.get(id=m), G_standard.degree(m), G_not_recovered.degree(m)
+        #
+        # print n / c, c, n
+        #
+        # print [G_standard.degree(n) for n in clear_member]
+
+
+        #############################################################################
+        #############################################################################
+        #############################################################################
 
 
 
-        #
-        # group_new_link_accuracy = {}
-        # for k, v in groups.items():
-        #     G_this_group = nx.Graph()
-        #     for m in v:
-        #         for link in links_new.filter(creator=m.user):
-        #             if G_standard.has_edge(link.source_member_id, link.target_member_id):
-        #                 G_this_group.add_edge(link.source_member_id, link.target_member_id, status=True)
-        #             else:
-        #                 G_this_group.add_edge(link.source_member_id, link.target_member_id, status=False)
-        #
-        #     if G_this_group.number_of_edges() == 0:
-        #         group_new_link_accuracy[k] = 0
-        #         continue
-        #     else:
-        #         group_new_link_accuracy[k] = len([1 for s, t, d in G_this_group.edges(data=True) if d['status']]) / float(G_this_group.number_of_edges())
-        #
-        # for g in sorted(group_new_link_accuracy, key=group_new_link_accuracy.get, reverse=True):
-        #     print ' '.join([m.member_name for m in groups[g]]), group_new_link_accuracy[g], group_new_link_count[g]
-        #
-        # print '==='
-        #
-        # for g in sorted(group_accuracy, key=group_accuracy.get, reverse=True):
-        #     print ' '.join([m.member_name for m in groups[g]]), \
-        #         group_link_count[g], \
-        #         group_new_link_count[g], \
-        #         group_accuracy[g], \
-        #         group_new_link_accuracy[g]
 
-        # print sum(group_accuracy.values()) / float(len(group_accuracy))
-        # print sum(group_new_link_accuracy.values()) / float(len(group_new_link_accuracy))
-
-        # group_my_standard = {}
-        # for k, v in groups.items():
-        #     group_my_standard[k] = (group_accuracy[k]*group_link_count[k]*0.2+
-        #                             group_new_link_accuracy[k]*group_new_link_count[k]*0.8)/G_standard.number_of_edges()
-        #
-        # for g in sorted(group_my_standard, key=group_my_standard.get, reverse=True):
-        #     print ' '.join([m.member_name for m in groups[g]]), \
-        #         group_link_count[g], \
-        #         group_new_link_count[g], \
-        #         group_accuracy[g], \
-        #         group_new_link_accuracy[g], \
-        #         group_my_standard[g]
 
 
 

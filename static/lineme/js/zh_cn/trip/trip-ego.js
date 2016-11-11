@@ -24,10 +24,14 @@ $(function() {
         showCloseBox: true,
         showNavigation: true,
         tripTheme: "yeti",
-        delay: -1
+        delay: -1,
+        onEnd: function() {
+            setScrollbar();
+        }
     });
 
     $("#help").on("click", function () {
+        destroyScrollbar();
         trip1.start();
     });
 
