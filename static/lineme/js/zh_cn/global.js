@@ -63,6 +63,13 @@ $(function() {
     var zoomWidth = (width-initScale*width) / 2,
         zoomHeight = (height-initScale*height) / 2;
 
+    tip.style({
+        "height": 50*initScale+'px',
+        "font-size": 20*initScale+'px',
+        "padding": 14*initScale+'px '+15*initScale+'px '+15*initScale+'px '+30*initScale+'px'
+    });
+    tip.offset([0, -20*initScale]);
+
     $('#map').width(width).height(height);
     $('#three').width(width).height(height);
 
@@ -324,7 +331,7 @@ $(function() {
         },
         series: [{
             name: '度值',
-            type: 'bar',
+            type: 'scatter',
             data: disData,
         }],
     };
@@ -465,8 +472,6 @@ $(function() {
             });
         }
     }
-
-
 });
 
 

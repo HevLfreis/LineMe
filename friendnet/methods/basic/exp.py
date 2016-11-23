@@ -84,3 +84,32 @@ def build_graph_id(links):
             G[s][t]['weight'] += 1
             G[s][t]['link'].append(link)
     return G
+
+
+def community_test(G, weight=9):
+    for s, t, d in G.edges(data=True):
+        if d['weight'] < weight:
+            G.remove_edge(s, t)
+
+    for n in G.nodes():
+        if G.degree(n) == 0:
+            G.remove_node(n)
+
+    return G
+
+
+def wrong(G):
+    s, t = 10041, 10069
+
+    cliques = []
+    for clique in list(nx.find_cliques(G)):
+        if s in cliques:
+            cliques.append(set(clique))
+
+    neighbors = G.neighbors(s)
+
+    G.remove_nodes_from(set(G.nodes()) - {t, s} - set(neighbors))
+
+    G.add_edge(s, t, status=True, weight=1, id=100)
+
+    return G

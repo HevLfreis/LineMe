@@ -31,13 +31,13 @@ def login_user(request, username, password):
         return False
 
 
-def send_reset_passwd_email(email, href):
+def send_reset_passwd_email(username, email, href):
     send_mail(
         'Reset your password in LineMe: '+email,
         'LineMe',
         'cnclineme@126.com',
         [email],
-        html_message='<h3>Hi~</h3>'
+        html_message='<h3>Hi~ '+username+'</h3>'
                      '<p>You are resetting your password in LineMe via this email</p>'
                      '<p>Click the following link to process</p>'
                      '<p>The link will expired in 30 mins</p>'

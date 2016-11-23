@@ -7,6 +7,7 @@ import json
 import random
 from collections import Counter
 
+import datetime
 import networkx as nx
 from django.db.models import Count, Q
 
@@ -27,6 +28,7 @@ class Graph:
         self.members = GroupMember.objects.filter(group=group)
         self.me = None
         self.raw_links = Link.objects.filter(group=group)
+        # self.raw_links = Link.objects.filter(group=group, created_time__lt=datetime.datetime(2016, 10, 27, 10, 0, 0))
         self.confirmed_raw_links = self.raw_links.filter(status=3)
         self.member_index = {m.id: m for m in self.members}
 
@@ -337,7 +339,7 @@ class GraphAnalyzer:
         return self.Graph.get_member(sorted_friends[0][0]), sorted_friends[0][1]
 
     def graph_communities(self):
-        communities = nx.k_clique_communities(self.G, 3)
+        communities = nx.k_clique_communities(self.G, 6)
         communities_index = {}
         for i, group in enumerate(communities):
             for member in group:

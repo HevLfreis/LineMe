@@ -153,7 +153,7 @@ def forget(request):
         href = 'https://lime.seeleit.com/resetbyemail/'+token
 
         try:
-            send_reset_passwd_email(email, href)
+            send_reset_passwd_email(user.username, email, href)
         except Exception, e:
             logger.error(logger_join('Forget', email, e=e))
             context['status'] = -2

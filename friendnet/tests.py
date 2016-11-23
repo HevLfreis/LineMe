@@ -19,6 +19,10 @@ G.add_edge(1, 2)
 G.add_edge(1, 3)
 print G[1]
 
+for i in range(5):
+    print i
+    i += 1
+
 
 
 

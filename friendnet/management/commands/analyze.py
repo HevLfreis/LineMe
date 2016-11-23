@@ -8,6 +8,8 @@ import random
 from collections import Counter
 
 import math
+from itertools import product
+
 import networkx as nx
 import operator
 
@@ -45,6 +47,8 @@ class Command(BaseCommand):
 
         male_count = self.members.filter(user__extra__gender=False).count()
         female_count = self.members.filter(user__extra__gender=True).count()
+
+        print male_count, female_count
 
         links = Link.objects.filter(group__id=groupid)
         friend_links = links.filter(Q(source_member__user=F('creator')) | Q(target_member__user=F('creator')))
@@ -89,28 +93,273 @@ class Command(BaseCommand):
 
         print self.single_rejected(links_old).count(), self.both_rejected(links_old).count()
 
-        # G_all = self.build_graph(links)
+        # G_all = self.build_graph_id(links)
         # G_friend = self.build_graph(friend_links)
         # G_other = self.build_graph(other_links)
         #
-        # G_all_confirmed = self.build_graph(links_confirmed)
+        G_all_confirmed = self.build_graph_id(links_confirmed)
         # G_friend_confirmed = self.build_graph(friend_links_confirmed)
         # G_other_confirmed = self.build_graph(other_links_confirmed)
 
-        # G_all_unconfirmed = self.build_graph(links_unconfirmed)
+        # G_all_unconfirmed = self.build_graph_id(links_unconfirmed)
         # G_friend_unconfirmed = self.build_graph(friend_links_unconfirmed)
         # G_other_unconfirmed = self.build_graph(other_links_unconfirmed)
+
+        self.print_info(G_all_confirmed, 'confirmed')
+
+        for i in xrange(2, 20):
+            c = list(nx.k_clique_communities(G_all_confirmed, i))
+            print len(c)
+
+        # cnt1 = Counter()
+        # cnt2 = Counter()
+        #
+        # user_member_index = {m.user.id: m.id for m in self.members}
+        #
+        # for s, t, d in G_all_confirmed.edges(data=True):
+        #     weight = d['weight']
+        #     links = d['link']
+        #     cnt1[weight] += 1
+        #
+        #     neighbors = set(G_all_confirmed.neighbors(s)) | set(G_all_confirmed.neighbors(t))
+        #     # print neighbors
+        #
+        #
+        # print [[k, v] for k, v in cnt1.items()]
+        # print sum([k * v for k, v in cnt1.items()])
+        # print [[k, v / cnt1[k]] for k, v in cnt2.items()]
+
+        # c_15 = list(nx.k_clique_communities(G_all_confirmed, 15))
+        #
+        # for a in c_15:
+        #     print ' '.join([m.member_name for m in GroupMember.objects.filter(id__in=a)])
+        #     print '---'
+
+        # max_weight = max([d['weight'] for s, t, d in G_all_confirmed.edges(data=True)])
+        # #
+        # all_module = []
+        #
+        # for i in [k for k in xrange(15)][2::3]:
+        #     print i
+        #     module = []
+        #     l = []
+        #     for j in xrange(1, max_weight+1):
+        #         G_weight = G_all_confirmed.copy()
+        #         for s, t, d in G_all_confirmed.edges(data=True):
+        #             if d['weight'] < j:
+        #                 G_weight.remove_edge(s, t)
+        #
+        #         print G_weight.number_of_edges()
+        #
+        #         c = list(nx.k_clique_communities(G_weight, i+1))
+        #         l.append(len(c))
+        #
+        #
+        #         m = self.modularity(G_all_confirmed, c)
+        #         module.append(m)
+        #         print j, m
+        #
+        #     print module
+        #     print l
+        #     all_module.append(module)
+        #
+        # print all_module
+
+        # k_weight = [(15, 1), (12, 3), (9, 3), (6, 9), (3, 13)]
+        #
+        # for k, w in k_weight:
+        #     G_weight = G_all_confirmed.copy()
+        #     for s, t, d in G_all_confirmed.edges(data=True):
+        #         if d['weight'] < w:
+        #             G_weight.remove_edge(s, t)
+        #
+        #     c = list(nx.k_clique_communities(G_weight, k))
+        #
+        #     print len(c)
+        #
+        #     comm_links = 0.0
+        #     for m in xrange(len(c)):
+        #         for n in xrange(m+1, len(c)):
+        #             for a in c[m]:
+        #                 for b in c[n]:
+        #                     if G_weight.has_edge(a, b):
+        #                         comm_links += 1
+        #
+        #     print comm_links / len(c) / (len(c) - 1) * 2
+
+
+
+
+        # print G_all_confirmed.number_of_edges() / float(G_all.number_of_edges())
+        #
+        # for s, t in G_all_confirmed.edges():
+        #     G_all.remove_edge(s, t)
+        #
+        # self.print_info(G_all, 'unconfirmed')
+        # # self.print_info(G_all_unconfirmed, 'unconfirmed')
+        #
+        # sorted_degree = sorted(G_all.degree(), key=G_all.degree().get, reverse=True)
+        #
+        # for n in sorted_degree[:10]:
+        #     print GroupMember.objects.get(id=n), G_all.degree(n)
+        #
+        # print '==='
+        #
+        # cnt = Counter()
+        # for link in self.unconfirmed_not_reject(links_unconfirmed):
+        #     if link.status == 2:
+        #         cnt[link.source_member_id] += 1
+        #     elif link.status == 1:
+        #         cnt[link.target_member_id] += 1
+        #     else:
+        #         cnt[link.source_member_id] += 1
+        #         cnt[link.target_member_id] += 1
+        #
+        # for k, v in cnt.items():
+        #     print GroupMember.objects.get(id=k), v
+        #
+        # print sum([v for k, v in cnt.items()])
+
+
+
+        # c = list(nx.k_clique_communities(G_all_confirmed, 15))
+        # print self.modularity(G_all_confirmed, c)
+        # for clique in c:
+        #     # print clique
+        #     print len(clique)
+        #     print ' '.join([GroupMember.objects.get(id=node).member_name for node in clique])
+        #
+        # cliques = []
+        # for clique in list(nx.find_cliques(G_all_confirmed)):
+        #     if set(clique) not in cliques:
+        #         cliques.append(set(clique))
+        #
+        # print len(cliques)
+        #
+        # cnt = Counter([len(c) for c in cliques])
+        # print [[k, v] for k, v in cnt.items()]
+        #
+        # sorted_cliques = sorted(cliques, key=lambda x: len(x), reverse=True)
+        #
+        # # for clique in sorted_cliques:
+        # #     print ' '.join([GroupMember.objects.get(id=node).member_name for node in clique])
+        #
+        # print len(sorted_cliques)
+        #
+        # for j in xrange(2, 12):
+        #
+        #     new_cliques = []
+        #     base = sorted_cliques[0]
+        #     for i in xrange(1, len(sorted_cliques)):
+        #
+        #         # print ' '.join([GroupMember.objects.get(id=node).member_name for node in clique])
+        #         c1 = sorted_cliques[i]
+        #         if len(c1 - base) <= j:
+        #             base = base | c1
+        #         else:
+        #             new_cliques.append(base)
+        #             base = c1
+        #
+        #         # print len(new_cliques)
+        #     # new_cliques.append(base)
+        #     # print ' '.join([GroupMember.objects.get(id=node).member_name for node in base])
+        #     # print '====='
+        #
+        #     # sorted_cliques = sorted(new_cliques, key=lambda x: len(x), reverse=True)
+        #     sorted_cliques = new_cliques
+        #
+        #     # if len(sorted_cliques) < 200:
+        #     #     for clique in sorted_cliques:
+        #     #         print ' '.join([GroupMember.objects.get(id=node).member_name for node in clique]), len(clique)
+        #     #     print '====='
+        #
+        #     # print len(sorted_cliques)
+        #
+        #     # for clique in sorted_cliques:
+        #     #     print ' '.join([GroupMember.objects.get(id=node).member_name for node in clique])
+        #     #
+        #
+        #     print len(sorted_cliques)
+        #
+        # for clique in sorted_cliques:
+        #     print ' '.join([GroupMember.objects.get(id=node).member_name for node in clique])
+        #
+        # print "==="
+        #
+        # final_cliques = {i: c for i, c in enumerate(sorted_cliques)}
+        #
+        # for k1, v1 in final_cliques.items():
+        #     for k2, v2 in final_cliques.items():
+        #         # print k1, k2
+        #         if k1 < k2:
+        #             if len(v1 - v2) < 5:
+        #                 final_cliques[k1] = v1 | v2
+        #                 del final_cliques[k2]
+        #
+        # print len(final_cliques)
+        # final_cliques = final_cliques.values()
+        #
+        #
+        # # for clique in final_cliques:
+        # #     print ' '.join([GroupMember.objects.get(id=node).member_name for node in clique])
+        #
+        # for i in xrange(1, len(final_cliques)):
+        #     for j in xrange(i):
+        #         final_cliques[i] -= final_cliques[j]
+        #
+        # final_cliques = filter(lambda x: len(x) != 0, final_cliques)
+        #
+        # print 'module: ', self.modularity(G_all_confirmed, final_cliques)
+        #
+        # for clique in final_cliques:
+        #     print ' '.join([GroupMember.objects.get(id=node).member_name for node in clique]), len(clique)
+        # #
+        # # # print sum([len(a) for a in final_cliques.values()])
+        #
+        # other_members = set(G_all_confirmed.nodes()) - set([n for clique in final_cliques for n in clique])
+        #
+        # print ' '.join([GroupMember.objects.get(id=node).member_name for node in other_members]), len(other_members)
+        #
+        # other_index = {}
+        # for m in other_members:
+        #     maxi, maxe = len(final_cliques), 0
+        #     for i, clique in enumerate(final_cliques):
+        #         embed = len(set(G_all_confirmed.neighbors(m)) & clique)
+        #         # print embed
+        #         if embed > maxe and embed > len(clique) / 5:
+        #             maxi = i
+        #
+        #     other_index[m] = maxi
+        #
+        # print ' '.join([GroupMember.objects.get(id=node).member_name+' '+str(v) for node, v in other_index.items()])
+        #
+        # final_cliques.append(set([]))
+        # for k, v in other_index.items():
+        #     # if v == len(final_cliques):
+        #     #     continue
+        #     final_cliques[v].add(k)
+        #
+        # print sum([len(n) for n in final_cliques])
+        # print 'module: ', self.modularity(G_all_confirmed, final_cliques)
+        #
+        # for clique in final_cliques:
+        #     print ' '.join([GroupMember.objects.get(id=node).member_name for node in clique]), len(clique)
 
         #############################################################################
         #############################################################################
         #############################################################################
         # crowdsourcing
 
-        G_standard = self.build_graph_id(self.before_time(links_confirmed, self.horizon))
+        links_confirmed_old = self.before_time(links_confirmed, self.horizon)
+        #
+        # print links_confirmed_old.count()
+        #
+        G_standard = self.build_graph_id(links_confirmed_old)
         G_new = self.build_graph_id(links_new)
+        # #
+        # self.print_info(G_standard, 'standard')
+        # self.print_info(G_new, 'new')
 
-        self.print_info(G_standard, 'standard')
-        self.print_info(G_new, 'new')
 
         # print sum([1.0 for s, t in G_new.edges() if G_standard.has_edge(s, t)]), G_standard.number_of_edges()
         # print sum([1.0 for s, t in G_new.edges() if G_standard.has_edge(s, t)]) / G_standard.number_of_edges()
@@ -148,16 +397,23 @@ class Command(BaseCommand):
         #
         # print 'total groups: ', len(self.groups)
         #
-        # # end = 58
-        # end = 20
+        # end = 58
+        # end = 12
 
-        # random_group = {k: random.random() for k, v in self.groups.items()}
-        # for i in range(1, end):
-        #     print 'i = ', i
-        #     c, p = self.crowdsourcing(sorted(random_group, key=random_group.get, reverse=True), G_standard, links, i)
+        # nc, np = 0, 0
+        # for j in range(100):
+        #     random_group = {k: random.random() for k, v in self.groups.items()}
+        #     for i in range(1, end):
+        #         print 'i = ', i
+        #         c, p = self.crowdsourcing(sorted(random_group, key=random_group.get, reverse=True), G_standard, links, i)
+        #         if i == 10:
+        #             nc += c
+        #             np += p
         #
-        # print '=========='
         #
+        #     print '=========='
+        # print nc / 100.0, np / 100.0
+
         # group_degree = {k: sum([G_standard.degree(m.id) for m in v]) / float(len(v)) for k, v in self.groups.items()}
         # sorted_group_degree = self.sort_dict_and_print(group_degree)
         # for i in range(1, end):
@@ -173,10 +429,10 @@ class Command(BaseCommand):
         #     c, p = self.crowdsourcing(sorted_group_betweenness, G_standard, links, i)
         #
         # print '=========='
-
-        # #############################################################################
         #
-
+        # # #############################################################################
+        # #
+        #
         # group_link_count = {}
         # for k, v in self.groups.items():
         #     count = sum([links.filter(creator=m.user).count() for m in v])
@@ -189,24 +445,24 @@ class Command(BaseCommand):
         #     c, p = self.crowdsourcing(sorted_group_link_count, G_standard, links, i)
         #
         # print '=========='
+        # #
+        # # #############################################################################
+        # #
+        # # group_new_link_count = {}
+        # # for k, v in self.groups.items():
+        # #     count = sum([links_new.filter(creator=m.user).count() for m in v])
+        # #     group_new_link_count[k] = count
+        # #
+        # # sorted_group_new_link_count = self.sort_dict_and_print(group_new_link_count)
+        # #
+        # # for i in range(1, end):
+        # #     print 'i = ', i
+        # #     self.crowdsourcing(sorted_group_new_link_count, G_standard, links, i)
+        # # print '=========='
+        # #
+        # # #############################################################################
+        # #
         #
-        # #############################################################################
-        #
-        # group_new_link_count = {}
-        # for k, v in self.groups.items():
-        #     count = sum([links_new.filter(creator=m.user).count() for m in v])
-        #     group_new_link_count[k] = count
-        #
-        # sorted_group_new_link_count = self.sort_dict_and_print(group_new_link_count)
-        #
-        # for i in range(1, end):
-        #     print 'i = ', i
-        #     self.crowdsourcing(sorted_group_new_link_count, G_standard, links, i)
-        # print '=========='
-        #
-        # #############################################################################
-        #
-
         # group_accuracy, group_cover = {}, {}
         # for k, v in self.groups.items():
         #
@@ -227,12 +483,12 @@ class Command(BaseCommand):
         #
         # print '=========='
         #
-        # sorted_group_accuracy = self.sort_dict_and_print(group_cover, [group_link_count, group_cover])
-        # for i in range(1, end):
-        #     print 'i = ', i
-        #     c, p = self.crowdsourcing(sorted_group_accuracy, G_standard, links, i)
-        #
-        # print '=========='
+        # # sorted_group_accuracy = self.sort_dict_and_print(group_cover, [group_link_count, group_cover])
+        # # for i in range(1, end):
+        # #     print 'i = ', i
+        # #     c, p = self.crowdsourcing(sorted_group_accuracy, G_standard, links, i)
+        # #
+        # # print '=========='
         #
         # sorted_group_accuracy = self.sort_dict_and_print({k: group_accuracy[k]*group_cover[k]
         #                                                   for k, v in self.groups.items()})
@@ -242,14 +498,14 @@ class Command(BaseCommand):
         #
         # print '=========='
         #
-        # sorted_group_accuracy = self.sort_dict_and_print({k: group_accuracy[k]*group_cover[k]*math.log((group_degree[k] + 10) / 10.0)
-        #                                                   for k, v in self.groups.items()},
-        #                                                  [group_link_count, group_cover, group_accuracy, group_degree])
-        # for i in range(1, end):
-        #     print 'i = ', i
-        #     c, p = self.crowdsourcing(sorted_group_accuracy, G_standard, links, i)
-        #
-        # print '=========='
+        # # sorted_group_accuracy = self.sort_dict_and_print({k: group_accuracy[k]*group_cover[k]*math.log((group_degree[k] + 10) / 10.0)
+        # #                                                   for k, v in self.groups.items()},
+        # #                                                  [group_link_count, group_cover, group_accuracy, group_degree])
+        # # for i in range(1, end):
+        # #     print 'i = ', i
+        # #     c, p = self.crowdsourcing(sorted_group_accuracy, G_standard, links, i)
+        # #
+        # # print '=========='
         #
         # sorted_group_accuracy = self.sort_dict_and_print({k: group_accuracy[k]+group_cover[k]
         #                                                   for k, v in self.groups.items()},
@@ -259,32 +515,149 @@ class Command(BaseCommand):
         #     c, p = self.crowdsourcing(sorted_group_accuracy, G_standard, links, i)
         #
         # print '=========='
-        #
+
         # self.result_recorder(self.y, end)
 
-        G_wrong = G_new.copy()
-        for s, t in G_wrong.edges():
-            if G_standard.has_edge(s, t):
-                G_wrong.remove_edge(s, t)
+        # G_wrong = G_new.copy()
+        # for s, t in G_wrong.edges():
+        #     if G_standard.has_edge(s, t):
+        #         G_wrong.remove_edge(s, t)
+        #
+        # self.print_info(G_wrong, 'wrong')
+        #
+        # print sum([len(list(nx.common_neighbors(G_standard, s, t))) / float(len(set(G_standard.neighbors(s)) | set(G_standard.neighbors(t)))) for s, t in G_wrong.edges()]) / float(G_wrong.number_of_edges())
+        #
+        # for s, t, d in G_wrong.edges(data=True):
+        #     if d['weight'] > 5:
+        #         print s, t, d['weight']
+        #         print GroupMember.objects.get(id=s).member_name, GroupMember.objects.get(id=t).member_name
+        #
+        # cliques = []
+        # for clique in list(nx.find_cliques(G_wrong)):
+        #     if set(clique) not in cliques:
+        #         cliques.append(set(clique))
+        #
+        # cnt = Counter([len(c) for c in cliques])
+        # print [[k, v / float(G_wrong.number_of_edges())] for k, v in cnt.items()]
+        #
+        # print len(cliques)
 
-        self.print_info(G_wrong, 'wrong')
+        # cnt = Counter([len(c) for c in cliques])
+        # print cnt
 
-        for m in sorted(G_standard.degree(), key=G_standard.degree().get, reverse=True)[:10]:
-            print GroupMember.objects.get(id=m).member_name, G_standard.degree(m)
+        # cnt = Counter()
+        # for s, t in G_wrong.edges():
+        #     print s, t
+        #
+        #     for c in cliques:
+        #         if s in c:
+        #             tc = c
+        #             sub = G_standard.subgraph(tc.add(t))
+        #             if not nx.is_connected(sub):
+        #                 print 'hi'
+        #             cnt[(s, t)] += 1
+        #
+        #         elif t in c:
+        #             tc = c
+        #             sub = G_standard.subgraph(tc.add(s))
+        #             if not nx.is_connected(sub):
+        #                 print 'hi'
+        #
+        #             cnt[(s, t)] += 1
+        #
+        #     # print cnt
+        #
+        # print sorted(cnt, key=cnt.get, reverse=True)[0]
 
-        print ''
+        # for clique in sorted(cliques, key=lambda x: len(x), reverse=True):
+        #     print ' '.join([GroupMember.objects.get(id=node).member_name for node in clique])
+        #
+        # print ''
+        # cliques = []
+        # for clique in list(nx.find_cliques(G_wrong)):
+        #     cliques.append(G_wrong.subgraph(clique))
+        #
+        # for clique in sorted(cliques, key=lambda x: x.number_of_nodes(), reverse=True):
+        #     print ' '.join([GroupMember.objects.get(id=node).member_name for node in clique])
+        #
+        #
+        # cnt = Counter()
+        # c = 0
+        # for s, t, d in G_wrong.edges(data=True):
+        #     cnt[d['weight']] += 1
+        #     # if d['weight'] > 6:
+        #     #     print d['link'][0], d['weight']
+        #     c += len(list(nx.common_neighbors(G_standard, s, t))) / float(len(set(G_standard.neighbors(s)) | set(G_standard.neighbors(t))))
+        # print cnt
+        # print c / G_wrong.number_of_edges()
+        #
+        # cnt = Counter()
+        # c = 0
+        # for s, t, d in G_standard.edges(data=True):
+        #     cnt[d['weight']] += 1
+        #     # if d['weight'] > 6:
+        #     #     print d['link'][0], d['weight']
+        #     embed = len(list(nx.common_neighbors(G_standard, s, t))) / float(len(set(G_standard.neighbors(s)) | set(G_standard.neighbors(t))))
+        #     c += embed
+        #     # print embed
+        # print cnt
+        # print c / G_standard.number_of_edges()
+        #
+        #
+        # for m in sorted(G_standard.degree(), key=G_standard.degree().get, reverse=True)[:10]:
+        #     print GroupMember.objects.get(id=m).member_name, G_standard.degree(m)
+        #
+        # print ''
+        # #
+        # s, w = [], []
+        # for m in sorted(G_wrong.degree(), key=G_wrong.degree().get, reverse=True):
+        #     print GroupMember.objects.get(id=m).member_name, G_standard.degree(m), G_wrong.degree(m)
+        #     s.append(G_standard.degree(m))
+        #     w.append(G_wrong.degree(m))
+        #
+        # print s, w
 
-        for m in sorted(G_wrong.degree(), key=G_wrong.degree().get, reverse=True):
-            print GroupMember.objects.get(id=m).member_name, G_standard.degree(m), G_wrong.degree(m)
 
-
-        # # not recovered
+        # not recovered
+        # G_recovered = G_standard.copy()
         # G_not_recovered = G_standard.copy()
         # for s, t in G_new.edges():
         #     if G_not_recovered.has_edge(s, t):
         #         G_not_recovered.remove_edge(s, t)
         #
+        # for s, t in G_not_recovered.edges():
+        #     G_recovered.remove_edge(s, t)
+        #
+        # clique_index = {}
+        # for i, c in enumerate(c_15):
+        #     for m in c:
+        #         if m in clique_index:
+        #             clique_index[m].add(i)
+        #         else:
+        #             clique_index[m] = {i}
+        #
+        # for s, t in G_not_recovered.edges():
+        #     if s not in clique_index or t not in clique_index:
+        #         print s, t
+        #         continue
+        #     cs, ts = clique_index[s], clique_index[t]
+        #     print s, t, cs, ts
+
+
+        #
+        # print G_not_recovered.number_of_edges()
+        #
+        # cnt = Counter()
+        # for s, t, d in G_not_recovered.edges(data=True):
+        #     cnt[d['weight']] += 1
+        #
+        # print cnt
+        # #
+        # print 1 - G_not_recovered.number_of_edges() / float(G_standard.number_of_edges())
+        #
         # print [[k, v / float(G_not_recovered.number_of_nodes())] for k, v in Counter(G_not_recovered.degree().values()).items()]
+        # print sum([len(list(nx.common_neighbors(G_standard, s, t))) / float(len(set(G_standard.neighbors(s)) | set(G_standard.neighbors(t)))) for s, t in G_recovered.edges()]) / float(G_recovered.number_of_edges())
+        # print sum([len(list(nx.common_neighbors(G_standard, s, t))) / float(len(set(G_standard.neighbors(s)) | set(G_standard.neighbors(t)))) for s, t in G_not_recovered.edges()]) / float(G_not_recovered.number_of_edges())
         #
         # private_member = set([])
         # clear_member = set([])
@@ -321,17 +694,12 @@ class Command(BaseCommand):
         # print n / c, c, n
         #
         # print [G_standard.degree(n) for n in clear_member]
-
+        # for n in clear_member:
+        #     print GroupMember.objects.get(id=n)
 
         #############################################################################
         #############################################################################
         #############################################################################
-
-
-
-
-
-
 
 
 
@@ -605,6 +973,9 @@ class Command(BaseCommand):
     def unconfirmed(self, links):
         return links.exclude(status=3)
 
+    def unconfirmed_not_reject(self, links):
+        return links.filter(status__gte=0)
+
     def single_rejected(self, links):
         return links.filter(status__lt=0).exclude(status=-3)
 
@@ -705,6 +1076,39 @@ class Command(BaseCommand):
         print G_before.number_of_edges() / float(G_standard.number_of_edges())
         self.y.append((c, p))
         return c, p
+
+    def modularity(self, G, communities, weight='weight'):
+
+        multigraph = G.is_multigraph()
+        directed = G.is_directed()
+        m = G.size(weight=weight)
+        if directed:
+            out_degree = dict(G.out_degree(weight=weight))
+            in_degree = dict(G.in_degree(weight=weight))
+            norm = 1 / m
+        else:
+            out_degree = dict(G.degree(weight=weight))
+            in_degree = out_degree
+            norm = 1 / (2 * m)
+
+        def val(u, v):
+            try:
+                if multigraph:
+                    w = sum(d.get(weight, 1) for k, d in G[u][v].items())
+                else:
+                    w = G[u][v].get(weight, 1)
+            except KeyError:
+                w = 0
+            # Double count self-loops if the graph is undirected.
+            if u == v and not directed:
+                w *= 2
+            return w - in_degree[u] * out_degree[v] * norm
+
+        Q = sum(val(u, v) for c in communities for u, v in product(c, repeat=2))
+        return Q * norm
+
+
+
 
         # def find_bilink(self, links, link):
         #     creator = link.creator

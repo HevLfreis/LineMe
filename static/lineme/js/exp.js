@@ -23,7 +23,7 @@ $(function() {
     var yScale = d3.scale.linear()
         .domain([0,height]).range([0, height]);
 
-    var charge = -1200;
+    var charge = -800;
 
     var color = d3.scale.category10();
     //var color = function(i){
@@ -41,7 +41,7 @@ $(function() {
 
     var force = d3.layout.force()
         .charge(charge)
-        .linkDistance(600)
+        .linkDistance(300)
         .size([width, height]);
 
 

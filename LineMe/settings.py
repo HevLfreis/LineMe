@@ -38,7 +38,7 @@ if DEPLOYMENT:
     SESSION_COOKIE_SECURE = True
     # SECURE_SSL_REDIRECT = True
 
-DEPLOYED_LANGUAGE = 'zh-cn'
+DEPLOYED_LANGUAGE = 'us-en'
 
 
 # Application definition

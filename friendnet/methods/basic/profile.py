@@ -9,7 +9,8 @@ import re
 from LineMe.constants import CITIES_TABLE
 from LineMe.settings import logger
 from LineMe.utils import logger_join
-from friendnet.models import Extra
+from friendnet.methods.basic.user import get_user_name
+from friendnet.models import Extra, GroupMember
 from iauth.methods.session import get_session_id
 
 
@@ -40,6 +41,8 @@ class Profile:
             self.user.save()
             ue.save()
 
+            self.update_groupmember_names()
+
         except Exception, e:
             # print 'Profile update failed: ', e
             logger.error(logger_join('Update', get_session_id(self.request), 'failed', e=e))
@@ -57,3 +60,9 @@ class Profile:
                         if self.country in CITIES_TABLE and self.city in CITIES_TABLE[self.country]:
                             return True
         return False
+
+    def update_groupmember_names(self):
+        members = GroupMember.objects.filter(user=self.user)
+        for m in members:
+            m.member_name = get_user_name(self.user)
+            m.save()

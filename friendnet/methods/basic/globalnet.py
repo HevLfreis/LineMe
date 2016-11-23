@@ -45,8 +45,8 @@ def get_user_global_info(user, groupid):
 
 
 def get_user_global_exp(user, groupid):
-    func = exp.private_link
-    G = Graph(Group.objects.get(id=groupid)).global_builder(user).proceeding(func)
+    func = exp.community_test
+    G = Graph(Group.objects.get(id=groupid)).global_builder(user).proceeding(func).color()
     return G.dictify()
 
 

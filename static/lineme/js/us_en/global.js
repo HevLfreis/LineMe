@@ -37,13 +37,13 @@ $(function() {
     };
 
     if (!mobile) {
-        changeMode('#normal-mode', '#map-mode', '#network', '#map', '普通模式', '地图模式', true, false);
-        changeMode('#map-mode', '#three-mode', '#map', '#three', '地图模式', '3D模式', true, true);
-        changeMode('#three-mode', '#normal-mode', '#three', '#network', '3D模式', '普通模式', false, false);
+        changeMode('#normal-mode', '#map-mode', '#network', '#map', 'NORMAL MODE', 'MAP MODE', true, false);
+        changeMode('#map-mode', '#three-mode', '#map', '#three', 'MAP MODE', '3D MODE', true, true);
+        changeMode('#three-mode', '#normal-mode', '#three', '#network', '3D MODE', 'NORMAL MODE', false, false);
     }
     else {
-        changeMode('#normal-mode', '#map-mode', '#network', '#map', '普通模式', '地图模式', true, false);
-        changeMode('#map-mode', '#normal-mode', '#map', '#network', '地图模式', '普通模式', false, true);
+        changeMode('#normal-mode', '#map-mode', '#network', '#map', 'NORMAL MODE', 'MAP MODE', true, false);
+        changeMode('#map-mode', '#normal-mode', '#map', '#network', 'MAP MODE', 'NORMAL MODE', false, true);
     }
 
 
@@ -62,6 +62,13 @@ $(function() {
     var initScale = 0.5;
     var zoomWidth = (width-initScale*width) / 2,
         zoomHeight = (height-initScale*height) / 2;
+
+    tip.style({
+        "height": 50*initScale+'px',
+        "font-size": 20*initScale+'px',
+        "padding": 14*initScale+'px '+15*initScale+'px '+15*initScale+'px '+30*initScale+'px'
+    });
+    tip.offset([0, -20*initScale]);
 
     $('#map').width(width).height(height);
     $('#three').width(width).height(height);
@@ -324,7 +331,7 @@ $(function() {
         },
         series: [{
             name: 'Degree',
-            type: 'bar',
+            type: 'scatter',
             data: disData,
         }]
     };
