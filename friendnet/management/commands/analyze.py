@@ -32,6 +32,7 @@ class Command(BaseCommand):
     y = []
     horizon = None
     groups = None
+    member_user_index = {}
 
     def add_arguments(self, parser):
         # Positional arguments
@@ -44,6 +45,7 @@ class Command(BaseCommand):
 
     def analyzer(self, groupid):
         self.members = GroupMember.objects.filter(group__id=groupid)
+        self.member_user_index = {m.id: m.user.id for m in self.members if m.user is not None}
 
         male_count = self.members.filter(user__extra__gender=False).count()
         female_count = self.members.filter(user__extra__gender=True).count()
@@ -107,17 +109,19 @@ class Command(BaseCommand):
 
         self.print_info(G_all_confirmed, 'confirmed')
 
-        for i in xrange(2, 20):
-            c = list(nx.k_clique_communities(G_all_confirmed, i))
-            print len(c)
+        print sum([self.embeddedness(G_all_confirmed, s, t) for s, t in G_all_confirmed.edges()]) / float(G_all_confirmed.number_of_edges())
+
+        # for i in xrange(3, 20):
+        #     c = list(nx.k_clique_communities(G_all_confirmed, i))
+        #     print i, len(c), self.modularity(G_all_confirmed, c)
 
         # cnt1 = Counter()
-        # cnt2 = Counter()
-        #
+        # # cnt2 = Counter()
+        # #
         # user_member_index = {m.user.id: m.id for m in self.members}
         #
         # for s, t, d in G_all_confirmed.edges(data=True):
-        #     weight = d['weight']
+        #     weight = d['ks']
         #     links = d['link']
         #     cnt1[weight] += 1
         #
@@ -126,6 +130,7 @@ class Command(BaseCommand):
         #
         #
         # print [[k, v] for k, v in cnt1.items()]
+        # print [[k, v / float(G_all_confirmed.number_of_edges())] for k, v in cnt1.items()]
         # print sum([k * v for k, v in cnt1.items()])
         # print [[k, v / cnt1[k]] for k, v in cnt2.items()]
 
@@ -135,25 +140,48 @@ class Command(BaseCommand):
         #     print ' '.join([m.member_name for m in GroupMember.objects.filter(id__in=a)])
         #     print '---'
 
-        # max_weight = max([d['weight'] for s, t, d in G_all_confirmed.edges(data=True)])
+        # print self.variance([1 for i in xrange(100)])
+        # print self.variance([i for i in xrange(100)])
+
+        max_weight = max([d['ks'] for s, t, d in G_all_confirmed.edges(data=True)])
         # #
-        # all_module = []
+        # e = []
+        # v = []
+        # for j in xrange(0, max_weight):
+        #     G_weight = G_all_confirmed.copy()
+        #     for s, t, d in G_all_confirmed.edges(data=True):
+        #         if d['ks'] < j:
+        #             G_weight.remove_edge(s, t)
         #
+        #     embed_list = [self.embeddedness(G_weight, s, t) for s, t, d in G_weight.edges(data=True)]
+        #
+        #     embed = sum(embed_list) / float(G_weight.number_of_edges())
+        #     var = self.variance(embed_list)
+        #     e.append(embed)
+        #     v.append(var)
+        #     print embed, var
+        #
+        # print e
+        # print v
+
+        # #
+        all_module = []
+
         # for i in [k for k in xrange(15)][2::3]:
+        # for i in [k for k in xrange(15)][2:]:
         #     print i
         #     module = []
         #     l = []
-        #     for j in xrange(1, max_weight+1):
+        #     for j in xrange(0, max_weight):
         #         G_weight = G_all_confirmed.copy()
         #         for s, t, d in G_all_confirmed.edges(data=True):
-        #             if d['weight'] < j:
+        #             if d['ks'] < j:
         #                 G_weight.remove_edge(s, t)
         #
         #         print G_weight.number_of_edges()
         #
         #         c = list(nx.k_clique_communities(G_weight, i+1))
         #         l.append(len(c))
-        #
         #
         #         m = self.modularity(G_all_confirmed, c)
         #         module.append(m)
@@ -162,15 +190,44 @@ class Command(BaseCommand):
         #     print module
         #     print l
         #     all_module.append(module)
+
+        # for i in xrange(0, max_weight):
+        #     print i
+        #     module = []
+        #     l = []
+        #
+        #     G_weight = G_all_confirmed.copy()
+        #     for s, t, d in G_all_confirmed.edges(data=True):
+        #         if d['ks'] < i:
+        #             G_weight.remove_edge(s, t)
+        #
+        #     print G_weight.number_of_edges()
+        #
+        #     for j in [k for k in xrange(15)][2:]:
+        #
+        #         c = list(nx.k_clique_communities(G_weight, j+1))
+        #         l.append(len(c))
+        #
+        #         m = self.modularity(G_weight, c)
+        #         module.append(m)
+        #         print j, m
+        #
+        #     print module
+        #     print l
+        #
+        #     max_module = max(module)
+        #     all_module.append([max_module, module.index(max_module)])
         #
         # print all_module
 
-        # k_weight = [(15, 1), (12, 3), (9, 3), (6, 9), (3, 13)]
+        # k_k = [9,11,7,7,6,5,5,4,4,4,4]
+
+        # k_weight = [(15, 0), (13, 1), (9, 3), (7, 5), (6, 6), (4, 7), (3, 11)]
         #
         # for k, w in k_weight:
         #     G_weight = G_all_confirmed.copy()
         #     for s, t, d in G_all_confirmed.edges(data=True):
-        #         if d['weight'] < w:
+        #         if d['ks'] < w:
         #             G_weight.remove_edge(s, t)
         #
         #     c = list(nx.k_clique_communities(G_weight, k))
@@ -186,7 +243,6 @@ class Command(BaseCommand):
         #                         comm_links += 1
         #
         #     print comm_links / len(c) / (len(c) - 1) * 2
-
 
 
 
@@ -219,8 +275,6 @@ class Command(BaseCommand):
         #     print GroupMember.objects.get(id=k), v
         #
         # print sum([v for k, v in cnt.items()])
-
-
 
         # c = list(nx.k_clique_communities(G_all_confirmed, 15))
         # print self.modularity(G_all_confirmed, c)
@@ -359,7 +413,6 @@ class Command(BaseCommand):
         # #
         # self.print_info(G_standard, 'standard')
         # self.print_info(G_new, 'new')
-
 
         # print sum([1.0 for s, t in G_new.edges() if G_standard.has_edge(s, t)]), G_standard.number_of_edges()
         # print sum([1.0 for s, t in G_new.edges() if G_standard.has_edge(s, t)]) / G_standard.number_of_edges()
@@ -517,20 +570,69 @@ class Command(BaseCommand):
         # print '=========='
 
         # self.result_recorder(self.y, end)
+        #
+        G_wrong = G_new.copy()
+        for s, t in G_wrong.edges():
+            if G_standard.has_edge(s, t):
+                G_wrong.remove_edge(s, t)
+        #
+        G_wrong.remove_node(10026)
 
-        # G_wrong = G_new.copy()
+        print sum([self.embeddedness(G_all_confirmed, s, t) for s, t in G_wrong.edges()]) / float(G_wrong.number_of_edges())
+
+        #
+        # a, b, c = 0, 0, 0
+        #
+        # print G_wrong.number_of_edges(), G_standard.number_of_edges(), G_all_confirmed.number_of_edges()
         # for s, t in G_wrong.edges():
-        #     if G_standard.has_edge(s, t):
-        #         G_wrong.remove_edge(s, t)
+        #     if not G_all_confirmed.has_edge(s, t):
+        #         a += 1
+        #     else:
+        #         b += 1
+        #         if G_standard.has_edge(s, t):
+        #             c += 1
+        #
+        # print a, b, c
         #
         # self.print_info(G_wrong, 'wrong')
         #
         # print sum([len(list(nx.common_neighbors(G_standard, s, t))) / float(len(set(G_standard.neighbors(s)) | set(G_standard.neighbors(t)))) for s, t in G_wrong.edges()]) / float(G_wrong.number_of_edges())
         #
+
+        # max_weight = max([d['weight'] for s, t, d in G_wrong.edges(data=True)])
+        # print max_weight
+
+
+
+        # m, n = 0, 0
         # for s, t, d in G_wrong.edges(data=True):
         #     if d['weight'] > 5:
+        #         m += 1
         #         print s, t, d['weight']
-        #         print GroupMember.objects.get(id=s).member_name, GroupMember.objects.get(id=t).member_name
+        #         print GroupMember.objects.get(id=s).member_name, GroupMember.objects.get(id=t).member_name, str(G_all_confirmed.has_edge(s, t))
+        #         if G_all_confirmed.has_edge(s, t):
+        #             n += 1
+        #
+        # print m, n
+
+        # mm, nn = [], []
+        # for i in xrange(max_weight):
+        #
+        #     m, n = 0, 0
+        #     for s, t, d in G_wrong.edges(data=True):
+        #         if d['weight'] > i:
+        #             m += 1
+        #             # print s, t, d['weight']
+        #             # print GroupMember.objects.get(id=s).member_name, GroupMember.objects.get(id=t).member_name, str(G_all_confirmed.has_edge(s, t))
+        #             if G_all_confirmed.has_edge(s, t):
+        #                 n += 1
+        #
+        #     print m, n
+        #
+        #     mm.append(m)
+        #     nn.append(n)
+        #
+        # print mm, nn
         #
         # cliques = []
         # for clique in list(nx.find_cliques(G_wrong)):
@@ -619,14 +721,23 @@ class Command(BaseCommand):
 
 
         # not recovered
-        # G_recovered = G_standard.copy()
-        # G_not_recovered = G_standard.copy()
-        # for s, t in G_new.edges():
-        #     if G_not_recovered.has_edge(s, t):
-        #         G_not_recovered.remove_edge(s, t)
+        G_recovered = G_standard.copy()
+        G_not_recovered = G_standard.copy()
+        for s, t in G_new.edges():
+            if G_not_recovered.has_edge(s, t):
+                G_not_recovered.remove_edge(s, t)
+
+        for s, t in G_not_recovered.edges():
+            G_recovered.remove_edge(s, t)
+
+        print sum([self.embeddedness(G_all_confirmed, s, t) for s, t in G_recovered.edges()]) / float(G_recovered.number_of_edges())
+        print sum([self.embeddedness(G_all_confirmed, s, t) for s, t in G_not_recovered.edges()]) / float(G_not_recovered.number_of_edges())
+
         #
-        # for s, t in G_not_recovered.edges():
-        #     G_recovered.remove_edge(s, t)
+        for s, t, d in G_standard.edges(data=True):
+            if not G_standard.has_edge(s, t):
+                if d['ks'] > 0:
+                    print s, t, d['weight']
         #
         # clique_index = {}
         # for i, c in enumerate(c_15):
@@ -690,12 +801,28 @@ class Command(BaseCommand):
         #     if 30 < G_standard.degree(m) < 50:
         #         n += 1
         #     print GroupMember.objects.get(id=m), G_standard.degree(m), G_not_recovered.degree(m)
+        #     print ' '.join([GroupMember.objects.get(id=nei).member_name for nei in G_not_recovered.neighbors(m)])
+        #
         #
         # print n / c, c, n
         #
         # print [G_standard.degree(n) for n in clear_member]
         # for n in clear_member:
         #     print GroupMember.objects.get(id=n)
+
+
+        # G_comm = G_all_confirmed.copy()
+        # for s, t, d in G_comm.edges(data=True):
+        #     if d['ks'] < 3:
+        #         G_comm.remove_edge(s, t)
+        #
+        # comms = list(nx.k_clique_communities(G_comm, 9))
+        #
+        # print len(comms), self.modularity(G_comm, comms)
+        #
+        # for s, t in G_not_recovered.edges():
+        #     for comm in comms:
+        #         if {s, t}
 
         #############################################################################
         #############################################################################
@@ -947,10 +1074,17 @@ class Command(BaseCommand):
         for link in links:
             s, t = self.members.get(id=link.source_member_id), self.members.get(id=link.target_member_id)
             if not G.has_edge(s, t):
-                G.add_edge(s, t, link=[link], weight=1)
+                G.add_edge(s, t, link=[link], weight=1, ks=0)
             else:
                 G[s][t]['weight'] += 1
                 G[s][t]['link'].append(link)
+
+            su, tu = link.source_member.user.id, link.target_member.user.id
+            if link.creator_id == su or link.creator_id == tu:
+                pass
+            else:
+                G[s][t]['ks'] += 1
+
         return G
 
     def build_graph_id(self, links):
@@ -961,10 +1095,16 @@ class Command(BaseCommand):
         for link in links:
             s, t = link.source_member_id, link.target_member_id
             if not G.has_edge(s, t):
-                G.add_edge(s, t, link=[link], weight=1)
+                G.add_edge(s, t, link=[link], weight=1, ks=0)
             else:
                 G[s][t]['weight'] += 1
                 G[s][t]['link'].append(link)
+
+            su, tu = self.member_user_index[s], self.member_user_index[t]
+            if link.creator_id == su or link.creator_id == tu:
+                pass
+            else:
+                G[s][t]['ks'] += 1
         return G
 
     def confirmed(self, links):
@@ -1077,6 +1217,17 @@ class Command(BaseCommand):
         self.y.append((c, p))
         return c, p
 
+    def embeddedness(self, G, a, b):
+
+        my_friends = set(G.neighbors(a))
+        your_friends = set(G.neighbors(b))
+        # my_friends.add(a)
+        # your_friends.add(b)
+
+        embeddedness = len(your_friends & my_friends) / float(len(your_friends | my_friends))
+
+        return embeddedness
+
     def modularity(self, G, communities, weight='weight'):
 
         multigraph = G.is_multigraph()
@@ -1106,6 +1257,11 @@ class Command(BaseCommand):
 
         Q = sum(val(u, v) for c in communities for u, v in product(c, repeat=2))
         return Q * norm
+
+    def variance(self, seq):
+        average = sum(seq) / float(len(seq))
+        var = sum([abs(average-s) ** 2 for s in seq]) / float(len(seq))
+        return var
 
 
 

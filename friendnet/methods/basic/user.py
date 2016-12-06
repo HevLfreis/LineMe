@@ -68,7 +68,7 @@ def get_user_name(user):
     if len(first) is 0 and len(last) is 0:
         return user.username
     else:
-        if re.match(u"[\u4e00-\u9fa5]{0,10}", last):
+        if re.match(u"[\u4e00-\u9fa5]{1,10}", last):
             return last + first
         else:
             return first + ' ' + last

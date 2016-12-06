@@ -468,10 +468,12 @@ $(function() {
                     VIZ.render();
                     VIZ.animate();
                     $('#three').find('.loader-inner').remove();
-                }, 2800);
+                }, 4800);
             });
         }
     }
+
+
 });
 
 

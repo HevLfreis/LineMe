@@ -28,9 +28,9 @@ class Graph:
         self.members = GroupMember.objects.filter(group=group)
         self.me = None
         self.raw_links = Link.objects.filter(group=group)
-        # self.raw_links = Link.objects.filter(group=group, created_time__lt=datetime.datetime(2016, 10, 27, 10, 0, 0))
         self.confirmed_raw_links = self.raw_links.filter(status=3)
         self.member_index = {m.id: m for m in self.members}
+        self.member_user_index = {m.id: m.user.id if m.user else None for m in self.members}
 
     def __user_init(self, user):
         self.user = user
@@ -76,6 +76,42 @@ class Graph:
 
         return self
 
+    def exp_builder(self, horizon):
+
+        new_raw_links = self.raw_links.filter(created_time__gt=horizon)
+        old_raw_links = self.raw_links.filter(created_time__lt=horizon, status=3)
+
+        for member in self.members:
+            self.G.add_node(member.id, creator=False, group=random.randint(1, 4))
+
+        for link in old_raw_links:
+            s, t = link.source_member_id, link.target_member_id
+            if not self.G.has_edge(s, t):
+                self.G.add_edge(s, t, id=link.id, weight=1, ks=0, status=False)
+            else:
+                self.G[s][t]['weight'] += 1
+
+            su, tu = self.member_user_index[s], self.member_user_index[t]
+            if link.creator_id == su or link.creator_id == tu:
+                pass
+            else:
+                self.G[s][t]['ks'] += 1
+
+        for link in new_raw_links:
+            s, t = link.source_member_id, link.target_member_id
+            if not self.G.has_edge(s, t):
+                continue
+            else:
+                self.G[s][t]['weight'] += 1
+
+                su, tu = self.member_user_index[s], self.member_user_index[t]
+                if link.creator_id == su or link.creator_id == tu:
+                    pass
+                else:
+                    self.G[s][t]['ks'] += 1
+
+        return self
+
     def core_builder(self):
 
         for member in self.members:
@@ -84,9 +120,15 @@ class Graph:
         for link in self.confirmed_raw_links:
             s, t = link.source_member_id, link.target_member_id
             if not self.G.has_edge(s, t):
-                self.G.add_edge(s, t, id=link.id, weight=1, status=False)
+                self.G.add_edge(s, t, id=link.id, weight=1, ks=0, status=False)
             else:
                 self.G[s][t]['weight'] += 1
+
+            su, tu = self.member_user_index[s], self.member_user_index[t]
+            if link.creator_id == su or link.creator_id == tu:
+                pass
+            else:
+                self.G[s][t]['ks'] += 1
 
         return self
 
@@ -99,32 +141,6 @@ class Graph:
         for link in self.confirmed_raw_links.filter(creator=user):
             s, t = link.source_member_id, link.target_member_id
             self.G[s][t]['status'] = True
-
-        return self
-
-    def global_builder(self, user):
-
-        self.__user_init(user)
-
-        self.G.add_node(self.me.id, creator=True)
-        for member in self.members:
-            self.G.add_node(member.id, creator=False, group=random.randint(1, 4))
-
-        for link in self.confirmed_raw_links:
-
-            s, t = link.source_member_id, link.target_member_id
-
-            if not self.G.has_edge(s, t):
-                if link.creator == self.user:
-                    self.G.add_edge(s, t, id=link.id, weight=1, status=True)
-                else:
-                    self.G.add_edge(s, t, id=link.id, weight=1, status=False)
-            else:
-                if link.creator == self.user:
-                    self.G[s][t]['weight'] += 1
-                    self.G[s][t]['status'] = True
-                else:
-                    self.G[s][t]['weight'] += 1
 
         return self
 
@@ -210,12 +226,12 @@ class Graph:
                                 'group': 0}],
                     "links": []}]
 
-        max_weight = max([d['weight'] for (s, t, d) in self.G.edges(data=True)])
-        layers, data = {w+1: [] for w in xrange(max_weight)}, []
+        max_weight = max([d['ks'] for (s, t, d) in self.G.edges(data=True)])
+        layers, data = {w: [] for w in xrange(max_weight+1)}, []
 
         for (s, t, d) in self.G.edges(data=True):
-            for i in xrange(d['weight']):
-                layers[i+1].append((s, t))
+            for i in xrange(d['ks']+1):
+                layers[i].append((s, t))
 
         for k, layer in layers.items():
             nodes, links = set([]), []

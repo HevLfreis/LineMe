@@ -56,6 +56,11 @@ $(function() {
             if (data == -1) {
                 alert("Server Internal Error");
             }
+
+           // smu friend limit
+            else if (data == -2) {
+                alert("对方好友数达上限");
+            }
             else {
                 if (refresh)
                     updateMsgPanel(1);

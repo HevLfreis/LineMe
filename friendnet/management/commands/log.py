@@ -35,6 +35,9 @@ class Command(BaseCommand):
                 a = re.findall('\[.*?\]', line)
                 t = datetime.strptime(a[0], '[%Y-%m-%d %H:%M:%S]')
                 # print t
+                if len(a) < 2:
+                    continue
+
                 b = a[1][1:-1].split(',')
                 # print b
 

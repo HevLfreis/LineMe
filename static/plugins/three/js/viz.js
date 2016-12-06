@@ -62,7 +62,7 @@
             $vis.append("text")
                 .attr("class", "legend")
                 .attr("vector-effect", "non-scaling-stroke")
-                .html('Link weight: '+(i+1))
+                .html('Knowable Strength: '+(i))
                 .attr("x", visWidth - 20)
                 .attr("y", visHeight - 20);
 
@@ -125,7 +125,7 @@
             force.start();
             setTimeout(function () {
                 force.stop();
-            }, 2500);
+            }, 4500);
 
             force.on("tick", function () {
                 link.attr("x1", function (d) { return d.source.x; })

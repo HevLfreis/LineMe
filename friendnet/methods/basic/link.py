@@ -27,6 +27,10 @@ def get_link(linkid):
 def link_confirm(request, user, link):
     my_member = myself_member(user, link.group.id)
 
+    # smu
+    if limited_friends(link, 5):
+        return -2
+
     now = timezone.now()
     link.confirmed_time = now
     old_status = link.status
@@ -97,7 +101,7 @@ def link_confirm_aggregate(request, user, link):
     for l in all_links:
         status = link_confirm(request, user, l)
         if status != 0:
-            return -1
+            return status
     return 0
 
 
@@ -107,7 +111,7 @@ def link_reject_aggregate(request, user, link):
     for l in all_links:
         status = link_reject(request, user, l)
         if status != 0:
-            return -1
+            return status
     return 0
 
 
@@ -204,4 +208,13 @@ def update_links(request, new_links, creator, groupid):
 
     logger.info(logger_join('Update', get_session_id(request), gid=groupid))
     return 0
+
+
+def limited_friends(link, n):
+    if Link.objects.filter(creator=link.creator, status=3).count() >= n:
+        return True
+
+    return False
+
+
 
