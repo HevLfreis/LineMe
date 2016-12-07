@@ -17,7 +17,8 @@ G = nx.Graph()
 
 G.add_edge(1, 2)
 G.add_edge(1, 3)
-print list(nx.resource_allocation_index(G))
+G.add_edge(1, 4)
+print list(nx.resource_allocation_index(G, [(1,2),(1,3),(2,3),(1,4)]))
 
 # for i in range(5):
 #     print i

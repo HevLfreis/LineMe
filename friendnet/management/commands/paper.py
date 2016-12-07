@@ -134,14 +134,37 @@ class Command(BaseCommand):
         #     print i, len(c), self.modularity(G_standard, c)
 
         #############################################################################
-        # ks vs betweenness, negative corr
-        # betweenness = nx.edge_betweenness_centrality(G_final)
-        #
-        # a = []
-        # for st in betweenness:
-        #     # print r
-        #     a.append([betweenness[st], G_final[st[0]][st[1]]['ks']])
-        # print a
+        # ks vs betweenness, link prediction, embed, negative corr
+        betweenness = nx.edge_betweenness_centrality(G_standard)
+
+        b = {}
+        for st in betweenness:
+            # print r
+            ks = G_final[st[0]][st[1]]['ks']
+            if ks in b:
+                b[ks].append(betweenness[st])
+            else:
+                b[ks] = [betweenness[st]]
+        print [[k, sum(v) / len(v), self.variance(v)] for k, v in b.items()]
+
+        e = {}
+        for s, t in G_final.edges():
+            ks = G_final[s][t]['ks']
+            if ks in e:
+                e[ks].append(self.embeddedness(G_standard, s, t))
+            else:
+                e[ks] = [self.embeddedness(G_standard, s, t)]
+        print [[k, sum(v) / len(v), self.variance(v)] for k, v in e.items()]
+
+        r = {}
+        for s, t in G_final.edges():
+            ks = G_final[s][t]['ks']
+            pred = sum(1.0 / G_standard.degree(w) for w in nx.common_neighbors(G_standard, s, t))
+            if ks in r:
+                r[ks].append(pred)
+            else:
+                r[ks] = [pred]
+        print [[k, sum(v) / len(v), self.variance(v)] for k, v in r.items()]
 
         #############################################################################
         # ks vs degree and cluster
@@ -457,6 +480,7 @@ class Command(BaseCommand):
 
         #############################################################################
         # link prediction
+
         # ce, pe = [], []
         # for th in xrange(100):
         #     th /= 100.0

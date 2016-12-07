@@ -4,6 +4,7 @@
 # Date: 2016/7/9
 # Time: 13:52
 import json
+import friendnet.methods.patch as pt
 
 from django.db import transaction
 from django.db.models import Q
@@ -28,7 +29,7 @@ def link_confirm(request, user, link):
     my_member = myself_member(user, link.group.id)
 
     # smu
-    if limited_friends(link, 5):
+    if pt.smu(10003, link, 1):
         return -2
 
     now = timezone.now()
@@ -209,12 +210,6 @@ def update_links(request, new_links, creator, groupid):
     logger.info(logger_join('Update', get_session_id(request), gid=groupid))
     return 0
 
-
-def limited_friends(link, n):
-    if Link.objects.filter(creator=link.creator, status=3).count() >= n:
-        return True
-
-    return False
 
 
 
