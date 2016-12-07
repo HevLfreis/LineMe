@@ -1,0 +1,118 @@
+{% extends "zh_cn/basic_main.html" %}
+
+{% block title %}问卷{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="/static/plugins/icheck/flat/green.css">
+{% endblock %}
+
+{% block modal %}
+{% endblock %}
+
+{% block sidebar %}
+  <aside class="main-sidebar">
+    <section class="sidebar">
+      <div class="user-panel">
+        <div class="pull-left image">
+          <img onclick="window.location.href='{% url 'avatar' %}'" src="/media/images/avatars/{{ user.id }}.png" class="img-circle" alt="User Image" style="cursor:pointer">
+        </div>
+        <div class="pull-left info">
+          <p>{{ user.username }}</p>
+          <a href="#"><i class="fa fa-circle text-success"></i> 在线</a>
+        </div>
+      </div>
+      <div id="search" class="input-group sidebar-form">
+        <input type="text" name="q" class="form-control" placeholder="搜索群...">
+        <span class="input-group-btn">
+          <button class="btn btn-flat"><i class="fa fa-search"></i></button>
+        </span>
+      </div>
+      <ul class="sidebar-menu">
+        <li class="header">我的群</li>
+        {% for k, v in sug.items %}
+          <li>
+            <a href="{% url 'group' k %}">
+              <i class="fa fa-circle-o text-yellow"></i>
+              <span>{{ v }}</span>
+            </a>
+          </li>
+        {% endfor %}
+        {% for group in groups %}
+          <li>
+            <a href="{% url 'group' group.id %}">
+              {% if group.creator == user %}
+                <i class="fa fa-circle-o text-aqua"></i>
+              {% else %}
+                <i class="fa fa-circle-o text-green"></i>
+              {% endif %}
+              <span>{{ group.group_name }}</span>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  </aside>
+{% endblock %}
+
+{% block content_header %}
+  我创建的群: <span class="text-bold">{{ group.group_name }}</span>
+{% endblock %}
+{% block content_header2 %}群{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-md-8 col-sm-12">
+      <div class="box box-primary">
+        <div class="box-body box-profile">
+          <div class="col-md-5">
+
+          </div>
+          <div class="col-md-7">
+
+          </div>
+        </div>
+        <div class="box-footer clearfix">
+          <div class="box-tools pull-right">
+            <button type="button" class="btn bg-red">删除群</button>
+          </div>
+          <div class="box-tools pull-left">
+            <ul class="pagination pagination-sm inline">
+              {% if members.has_previous %}
+                <li><a href="{% url 'group' group.id %}?mpage={{ members.previous_page_number }}">«</a></li>
+              {% else %}
+                <li class="disabled"><a href="#">«</a></li>
+              {% endif %}
+              <li><a>{{ members.number }}/{{ members.paginator.num_pages }}</a></li>
+              {% if members.has_next %}
+                <li><a href="{% url 'group' group.id %}?mpage={{ members.next_page_number }}">»</a></li>
+              {% else %}
+                <li class="disabled"><a href="#">»</a></li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 col-sm-12">
+      <div class="box box-warning">
+        <div class="box-header with-border">
+          <h3 class="box-title">请求</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="/static/plugins/icheck/icheck.min.js"></script>
+  <script src="/static/lineme/js/zh_cn/trip/trip-none.js"></script>
+  <script type="text/javascript">
+
+    $('input[type="radio"].minimal').iCheck({
+      radioClass: 'iradio_flat-green'
+    });
+
+    $('#search').autocomplete();
+
+  </script>
+{% endblock %}

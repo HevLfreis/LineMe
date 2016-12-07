@@ -38,7 +38,7 @@ if DEPLOYMENT:
     SESSION_COOKIE_SECURE = True
     # SECURE_SSL_REDIRECT = True
 
-DEPLOYED_LANGUAGE = 'us-en'
+DEPLOYED_LANGUAGE = 'zh-cn'
 
 
 # Application definition
@@ -53,6 +53,7 @@ INSTALLED_APPS = (
     'compressor',
     'iauth',
     'friendnet',
+    'question',
 )
 
 MIDDLEWARE_CLASSES = (

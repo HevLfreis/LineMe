@@ -133,6 +133,10 @@
                 私有
               </label>
             </div>
+            <div class="form-group">
+              <label>调查问卷</label>
+              <a href="{% url 'question' group.id %}" class="btn bg-green btn-flat" style="width: 100%">激活</a>
+            </div>
             {% if group.identifier != 2 %}
               <div class="form-group">
                 <label>新成员</label>

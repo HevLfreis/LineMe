@@ -3,7 +3,6 @@
 {% block title %}Home{% endblock %}
 
 {% block extra_css %}
-  <link rel="stylesheet" href="/static/plugins/select2/select2.min.css">
   <link rel="stylesheet" href="/static/plugins/icheck/flat/green.css">
   <link rel="stylesheet" href="/static/plugins/icheck/square/blue.css">
 {% endblock %}
@@ -59,15 +58,17 @@
             </select>
           </div>
           <div class="form-group" style="margin-bottom: 0">
-            <label>Group Type</label></br>
-            <label style="padding-right: 15px">
-              <input type="radio" name="gtype" class="minimal" value="0" checked>
-              Public
-            </label>
-            <label>
-              <input type="radio" name="gtype" class="minimal" value="1">
-              Private
-            </label>
+            <label>Group Type</label>
+            <div class="input-group">
+              <label style="padding-right: 15px">
+                <input type="radio" name="gtype" class="minimal" value="0" checked>
+                Public
+              </label>
+              <label>
+                <input type="radio" name="gtype" class="minimal" value="1">
+                Private
+              </label>
+            </div>
           </div>
         </div>
         <div class="modal-footer">

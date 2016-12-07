@@ -34,6 +34,7 @@ urlpatterns = [
 
     url(r'', include('iauth.urls')),
     url(r'', include('friendnet.urls')),
+    url(r'', include('question.urls')),
 ]
 
 if settings.DEBUG:
