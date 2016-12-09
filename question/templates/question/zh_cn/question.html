@@ -4,6 +4,16 @@
 
 {% block extra_css %}
   <link rel="stylesheet" href="/static/plugins/icheck/flat/green.css">
+  <style>
+    textarea {
+      resize:none;
+    }
+
+    .add-item {
+      cursor: pointer;
+    }
+
+  </style>
 {% endblock %}
 
 {% block modal %}
@@ -55,57 +65,189 @@
 {% endblock %}
 
 {% block content_header %}
-  我创建的群: <span class="text-bold">{{ group.group_name }}</span>
+  设计问卷: <span class="text-bold">{{ group.group_name }}</span>
 {% endblock %}
-{% block content_header2 %}群{% endblock %}
+{% block content_header2 %}问卷{% endblock %}
 
 {% block content %}
   <div class="row">
     <div class="col-md-8 col-sm-12">
-      <div class="box box-primary">
-        <div class="box-body box-profile">
-          <div class="col-md-5">
-
-          </div>
-          <div class="col-md-7">
-
-          </div>
+      <div class="box box-default">
+        <div class="box-header with-border">
+          <h3 class="box-title">问卷模板</h3>
         </div>
-        <div class="box-footer clearfix">
-          <div class="box-tools pull-right">
-            <button type="button" class="btn bg-red">删除群</button>
+        <div class="box-body box-profile" id="template">
+          <div class="row">
+            <div class="col-md-5 border-right">
+              <div class="form-group has-feedback">
+                <label>普通输入框</label>
+                <input type="text" class="form-control" name="" placeholder="">
+              </div>
+            </div>
+            <div class="col-md-7">
+              <div class="form-group">
+                <label>标题</label>
+                <input type="text" class="form-control" name="title" placeholder="" oninput="titleInputListener(this)">
+              </div>
+              <div class="form-group">
+                <label>提示文字</label>
+                <input type="text" class="form-control" name="hint" placeholder="" oninput="hintInputListener(this)">
+              </div>
+            </div>
           </div>
-          <div class="box-tools pull-left">
-            <ul class="pagination pagination-sm inline">
-              {% if members.has_previous %}
-                <li><a href="{% url 'group' group.id %}?mpage={{ members.previous_page_number }}">«</a></li>
-              {% else %}
-                <li class="disabled"><a href="#">«</a></li>
-              {% endif %}
-              <li><a>{{ members.number }}/{{ members.paginator.num_pages }}</a></li>
-              {% if members.has_next %}
-                <li><a href="{% url 'group' group.id %}?mpage={{ members.next_page_number }}">»</a></li>
-              {% else %}
-                <li class="disabled"><a href="#">»</a></li>
-              {% endif %}
-            </ul>
-          </div>
+          <hr>
+        </div>
+        <div class="box-footer text-center clearfix">
+          <button type="button" class="btn bg-green">保存问卷</button>
         </div>
       </div>
     </div>
     <div class="col-md-4 col-sm-12">
       <div class="box box-warning">
         <div class="box-header with-border">
-          <h3 class="box-title">请求</h3>
+          <h3 class="box-title">添加组件</h3>
         </div>
+        <ul class="nav nav-stacked">
+          <li><a class="add-item" id="type-normal">普通输入框 <span class="pull-right badge bg-blue">1</span></a></li>
+          <li><a class="add-item" id="type-single">单选框 <span class="pull-right badge bg-aqua">0</span></a></li>
+          <li><a class="add-item" id="type-multiple">多选框 <span class="pull-right badge bg-green">0</span></a></li>
+          <li><a class="add-item" id="type-single-member">成员单选 <span class="pull-right badge bg-red">0</span></a></li>
+          <li><a class="add-item" id="type-multiple-member">成员多选 <span class="pull-right badge bg-yellow">0</span></a></li>
+        </ul>
       </div>
     </div>
   </div>
 {% endblock %}
 
 {% block extra_js %}
+  <script type="text/template" id="normal-template">
+    <div class="row">
+      <div class="col-md-5 border-right">
+        <div class="form-group has-feedback">
+          <label>普通输入框</label>
+          <input type="text" class="form-control" name="" placeholder="">
+        </div>
+        <div class="box-tools">
+          <button class="btn btn-box-tool" onclick="removeItemClickListener(this)"><i class="fa fa-times"></i> 删除此项</button>
+        </div>
+      </div>
+      <div></div>
+      <div class="col-md-7">
+        <div class="form-group">
+          <label>标题</label>
+          <input type="text" class="form-control" name="title" placeholder="" oninput="titleInputListener(this)">
+        </div>
+        <div class="form-group">
+          <label>提示文字</label>
+          <input type="text" class="form-control" name="hint" placeholder="" oninput="hintInputListener(this)">
+        </div>
+      </div>
+    </div>
+    <hr>
+  </script>
+  <script type="text/template" id="single-template">
+    <div class="row">
+      <div class="col-md-5 border-right">
+        <div class="form-group">
+          <label>单选框</label>
+          <select class="form-control select2" name="">
+          </select>
+        </div>
+        <div class="box-tools">
+          <button class="btn btn-box-tool" onclick="removeItemClickListener(this)"><i class="fa fa-times"></i> 删除此项</button>
+        </div>
+      </div>
+      <div></div>
+      <div class="col-md-7">
+        <div class="form-group">
+          <label>标题</label>
+          <input type="text" class="form-control" name="title" placeholder="" oninput="titleInputListener(this)">
+        </div>
+        <div class="form-group">
+          <label>选项</label>
+          <textarea class="form-control selections" rows="3" placeholder="选项用分号或者空格隔开" oninput="selectionInputListener(this)"></textarea>
+        </div>
+      </div>
+    </div>
+    <hr>
+  </script>
+  <script type="text/template" id="multiple-template">
+    <div class="row">
+      <div class="col-md-5 border-right">
+        <div class="form-group">
+          <label>多选框</label>
+          <select class="form-control select2" name="" multiple="multiple">
+          </select>
+        </div>
+        <div class="box-tools">
+          <button class="btn btn-box-tool" onclick="removeItemClickListener(this)"><i class="fa fa-times"></i> 删除此项</button>
+        </div>
+      </div>
+      <div></div>
+      <div class="col-md-7">
+        <div class="form-group">
+          <label>标题</label>
+          <input type="text" class="form-control" name="title" placeholder="" oninput="titleInputListener(this)">
+        </div>
+        <div class="form-group">
+          <label>选项</label>
+          <textarea class="form-control selections" rows="3" placeholder="选项用分号或者空格隔开" oninput="selectionInputListener(this)"></textarea>
+        </div>
+      </div>
+    </div>
+    <hr>
+  </script>
+  <script type="text/template" id="single-member-template">
+    <div class="row">
+      <div class="col-md-5 border-right">
+        <div class="form-group">
+          <label>成员单选</label>
+          <select class="form-control select2" name="">
+            <option selected>成员列表</option>
+          </select>
+        </div>
+        <div class="box-tools">
+          <button class="btn btn-box-tool" onclick="removeItemClickListener(this)"><i class="fa fa-times"></i> 删除此项</button>
+        </div>
+      </div>
+      <div></div>
+      <div class="col-md-7">
+        <div class="form-group">
+          <label>标题</label>
+          <input type="text" class="form-control" name="title" placeholder="" oninput="titleInputListener(this)">
+        </div>
+      </div>
+    </div>
+    <hr>
+  </script>
+  <script type="text/template" id="multiple-member-template">
+    <div class="row">
+      <div class="col-md-5 border-right">
+        <div class="form-group">
+          <label>成员多选</label>
+          <select class="form-control select2" name="">
+            <option selected>成员列表</option>
+          </select>
+        </div>
+        <div class="box-tools">
+          <button class="btn btn-box-tool" onclick="removeItemClickListener(this)"><i class="fa fa-times"></i> 删除此项</button>
+        </div>
+      </div>
+      <div></div>
+      <div class="col-md-7">
+        <div class="form-group">
+          <label>标题</label>
+          <input type="text" class="form-control" name="title" placeholder="" oninput="titleInputListener(this)">
+        </div>
+      </div>
+    </div>
+    <hr>
+  </script>
+
+  <script src="/static/plugins/select2/select2.full.min.js"></script>
   <script src="/static/plugins/icheck/icheck.min.js"></script>
   <script src="/static/lineme/js/zh_cn/trip/trip-none.js"></script>
+  <script src="/static/lineme/js/question.js"></script>
   <script type="text/javascript">
 
     $('input[type="radio"].minimal').iCheck({

@@ -3,17 +3,17 @@
     {% for msg in msgs %}
       <li id="msg-{{ msg.id }}">
         <input type="checkbox" value="{{ msg.id }}" name="msg">
-          <span class="text">
-            {% load filters %}
-            <a href="#">{{ msg_creators|get_value:msg }}</a>
-            邀请您确认在 <a href="{% url 'group' msg.group.id %}">{{ msg.group.group_name }}</a> 群中和
-            {% if msg.source_member in my_members %}
-              <a href="#">{{ msg.target_member.member_name }}</a>
-            {% else %}
-              <a href="#">{{ msg.source_member.member_name }}</a>
-            {% endif %}
-            的连边
-          </span>
+        <span class="text">
+          {% load filters %}
+          <a href="#">{{ msg_creators|get_value:msg }}</a>
+          邀请您确认在 <a href="{% url 'group' msg.group.id %}">{{ msg.group.group_name }}</a> 群中和
+          {% if msg.source_member in my_members %}
+            <a href="#">{{ msg.target_member.member_name }}</a>
+          {% else %}
+            <a href="#">{{ msg.source_member.member_name }}</a>
+          {% endif %}
+          的连边
+        </span>
         {% if msg.status <= 0 %}
           <small class="label label-warning">未确认</small>
         {% else %}

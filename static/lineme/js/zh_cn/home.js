@@ -101,11 +101,8 @@ $(function() {
             msg.find('.box-body').remove();
             msg.find('.box-footer').remove();
             msg.append(data);
-            msg.find('.box-body').hide().fadeIn();
             //msg.find('.box-body').hide().fadeIn();
-            $('input[type="checkbox"]').iCheck({
-                checkboxClass: 'icheckbox_square-blue',
-            });
+            initCheckbox();
 
             $('#confirm').click(confirmChoosed);
             keepHeight();
@@ -171,7 +168,7 @@ $(function() {
     }
 
     $('.select2[name="identifier"]').select2({
-        minimumResultsForSearch: 4
+        minimumResultsForSearch: Infinity
     }).on("change", function(e) {
         if (this.value == 2) {
             $('input[type="radio"][value="1"].minimal').iCheck('disable').iCheck('uncheck');
@@ -191,8 +188,15 @@ $(function() {
             height = new_height;
     }
 
+    function initCheckbox() {
+        $('input[type="checkbox"]').iCheck({
+            checkboxClass: 'icheckbox_square-blue',
+        });
+    }
+
     updateMsgPanel(1);
     updateInvPanel(1, null);
+    initCheckbox()
 
 });
 

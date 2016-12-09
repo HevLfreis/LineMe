@@ -135,36 +135,36 @@ class Command(BaseCommand):
 
         #############################################################################
         # ks vs betweenness, link prediction, embed, negative corr
-        betweenness = nx.edge_betweenness_centrality(G_standard)
-
-        b = {}
-        for st in betweenness:
-            # print r
-            ks = G_final[st[0]][st[1]]['ks']
-            if ks in b:
-                b[ks].append(betweenness[st])
-            else:
-                b[ks] = [betweenness[st]]
-        print [[k, sum(v) / len(v), self.variance(v)] for k, v in b.items()]
-
-        e = {}
-        for s, t in G_final.edges():
-            ks = G_final[s][t]['ks']
-            if ks in e:
-                e[ks].append(self.embeddedness(G_standard, s, t))
-            else:
-                e[ks] = [self.embeddedness(G_standard, s, t)]
-        print [[k, sum(v) / len(v), self.variance(v)] for k, v in e.items()]
-
-        r = {}
-        for s, t in G_final.edges():
-            ks = G_final[s][t]['ks']
-            pred = sum(1.0 / G_standard.degree(w) for w in nx.common_neighbors(G_standard, s, t))
-            if ks in r:
-                r[ks].append(pred)
-            else:
-                r[ks] = [pred]
-        print [[k, sum(v) / len(v), self.variance(v)] for k, v in r.items()]
+        # betweenness = nx.edge_betweenness_centrality(G_standard)
+        #
+        # b = {}
+        # for st in betweenness:
+        #     # print r
+        #     ks = G_final[st[0]][st[1]]['ks']
+        #     if ks in b:
+        #         b[ks].append(betweenness[st])
+        #     else:
+        #         b[ks] = [betweenness[st]]
+        # print [[k, sum(v) / len(v), self.variance(v)] for k, v in b.items()]
+        #
+        # e = {}
+        # for s, t in G_final.edges():
+        #     ks = G_final[s][t]['ks']
+        #     if ks in e:
+        #         e[ks].append(self.embeddedness(G_standard, s, t))
+        #     else:
+        #         e[ks] = [self.embeddedness(G_standard, s, t)]
+        # print [[k, sum(v) / len(v), self.variance(v)] for k, v in e.items()]
+        #
+        # r = {}
+        # for s, t in G_final.edges():
+        #     ks = G_final[s][t]['ks']
+        #     pred = sum(1.0 / G_standard.degree(w) for w in nx.common_neighbors(G_standard, s, t))
+        #     if ks in r:
+        #         r[ks].append(pred)
+        #     else:
+        #         r[ks] = [pred]
+        # print [[k, sum(v) / len(v), self.variance(v)] for k, v in r.items()]
 
         #############################################################################
         # ks vs degree and cluster
@@ -188,45 +188,45 @@ class Command(BaseCommand):
 
         #############################################################################
         # ks vs embed
-        # e = []
-        # v = []
-        #
-        # for j in xrange(-max_weight_wrong, 0):
-        #     print j
-        #     G_weight = G_wrong.copy()
-        #     for s, t, d in G_new.edges(data=True):
-        #         if -d['ks'] < j and G_weight.has_edge(s, t):
-        #             G_weight.remove_edge(s, t)
-        #
-        #     G_weight = nx.compose(G_standard, G_weight)
-        #
-        #     embed_list = [self.embeddedness(G_weight, s, t) for s, t in G_weight.edges()]
-        #
-        #     embed = sum(embed_list) / float(G_weight.number_of_edges())
-        #     var = self.variance(embed_list)
-        #     e.append(embed)
-        #     v.append(var)
-        #     # de.append(self.average_degree(G_weight))
-        #     print embed, var
-        #
-        # for j in xrange(0, max_weight+1):
-        #     print j
-        #     G_weight = G_standard.copy()
-        #     for s, t, d in G_final.edges(data=True):
-        #         if d['ks'] < j and G_weight.has_edge(s, t):
-        #             G_weight.remove_edge(s, t)
-        #
-        #     embed_list = [self.embeddedness(G_weight, s, t) for s, t in G_weight.edges()]
-        #
-        #     embed = sum(embed_list) / float(G_weight.number_of_edges())
-        #     var = self.variance(embed_list)
-        #     e.append(embed)
-        #     v.append(var)
-        #     # de.append(self.average_degree(G_weight))
-        #     print embed, var, G_weight.number_of_edges()
-        #
-        # print e
-        # print v
+        e = []
+        v = []
+
+        for j in xrange(-max_weight_wrong, 0):
+            print j
+            G_weight = G_wrong.copy()
+            for s, t, d in G_new.edges(data=True):
+                if -d['ks'] < j and G_weight.has_edge(s, t):
+                    G_weight.remove_edge(s, t)
+
+            G_weight = nx.compose(G_standard, G_weight)
+
+            embed_list = [self.embeddedness(G_weight, s, t) for s, t in G_weight.edges()]
+
+            embed = sum(embed_list) / float(G_weight.number_of_edges())
+            var = self.variance(embed_list)
+            e.append(embed)
+            v.append(var)
+            # de.append(self.average_degree(G_weight))
+            print embed, var
+
+        for j in xrange(0, max_weight+1):
+            print j
+            G_weight = G_standard.copy()
+            for s, t, d in G_final.edges(data=True):
+                if d['ks'] < j and G_weight.has_edge(s, t):
+                    G_weight.remove_edge(s, t)
+
+            embed_list = [self.embeddedness(G_weight, s, t) for s, t in G_weight.edges()]
+
+            embed = sum(embed_list) / float(G_weight.number_of_edges())
+            var = self.variance(embed_list)
+            e.append(embed)
+            v.append(var)
+            # de.append(self.average_degree(G_weight))
+            print embed, var, G_weight.number_of_edges()
+
+        print e
+        print v
 
         #############################################################################
         # clear community
@@ -268,7 +268,7 @@ class Command(BaseCommand):
         #                 strong += 1
         #                 break
         #
-        #     all_strong.append(strong / G_weight.number_of_edges())
+        #     all_strong.append(1 - strong / G_weight.number_of_edges())
         #
         # print all_module
         # print all_strong
