@@ -9,7 +9,7 @@ from django.http import Http404
 from LineMe.settings import logger
 from LineMe.utils import logger_join
 from friendnet.methods.basic.group import has_member
-from friendnet.methods.utils import input_filter
+from LineMe.utils import input_filter
 from friendnet.models import GroupMember, Group
 from iauth.methods.session import get_session_id
 

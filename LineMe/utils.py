@@ -5,6 +5,8 @@
 # Time: 19:09
 import hashlib
 
+import re
+
 from LineMe.settings import DEPLOYED_LANGUAGE
 
 
@@ -24,7 +26,8 @@ def logger_join(*args, **kwargs):
         if not kwargs:
             return str_arg
         else:
-            return str_arg + ' ' + ' '.join([k.upper()+':'+str(v) for k, v in kwargs.items()])
+            return str_arg + ' ' + \
+                   ' '.join([k.upper()+':'+str(v).replace('\n', '') for k, v in kwargs.items() if v is not None])
 
 
 def md5(s):
@@ -34,3 +37,10 @@ def md5(s):
         return m.hexdigest()
     else:
         return ''
+
+
+def input_filter(arg):
+    if arg and (type(arg) is str or unicode):
+        return re.sub(ur"[^a-zA-Z0-9\u4e00-\u9fa5]", '', arg)
+    else:
+        return None

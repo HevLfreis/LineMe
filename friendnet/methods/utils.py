@@ -6,11 +6,11 @@
 import re
 
 
-def input_filter(arg):
-    if arg and (type(arg) is str or unicode):
-        return re.sub(ur"[^a-zA-Z0-9\u4e00-\u9fa5]", '', arg)
-    else:
-        return None
+# def input_filter(arg):
+#     if arg and (type(arg) is str or unicode):
+#         return re.sub(ur"[^a-zA-Z0-9\u4e00-\u9fa5]", '', arg)
+#     else:
+#         return None
 
 
 

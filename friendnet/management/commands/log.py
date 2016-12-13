@@ -4,6 +4,7 @@
 # Date: 2016/10/18
 # Time: 9:29
 import re
+from collections import Counter
 
 from datetime import datetime
 from django.core.management import BaseCommand
@@ -19,15 +20,19 @@ class Command(BaseCommand):
         parser.add_argument('-b', '--begin')
         parser.add_argument('-e', '--end')
         parser.add_argument('-g', '--group', type=int)
+        parser.add_argument('-i', '--interval')
 
     def handle(self, *args, **options):
 
         start = datetime.strptime(options['begin'], '%Y-%m-%d %H:%M:%S')
-        stop = datetime.strptime(options['end'], '%Y-%m-%d %H:%M:%S')
+        if options['end']:
+            stop = datetime.strptime(options['end'], '%Y-%m-%d %H:%M:%S')
+        else:
+            stop = datetime.now()
 
         print start, stop
 
-        index = {}
+        index = Counter()
         with open('logs/lineme.log') as f:
             for line in f:
                 if 'Reset' in line:
@@ -42,10 +47,7 @@ class Command(BaseCommand):
                 # print b
 
                 if start < t < stop:
-                    if int(b[0]) not in index:
-                        index[int(b[0])] = 0
-
-                    elif 'update_links' in line or 'link_confirm' in line:
+                    if 'update_links' in line or 'link_confirm' in line:
                         index[int(b[0])] += 1
 
         print len(index)
@@ -64,9 +66,13 @@ class Command(BaseCommand):
         for d in diff:
             print members.get(user__id=d).member_name, d
 
-        print 'No opration: '
+        print 'No operation: '
         for k, v in index.items():
             if v == 0 and members.filter(user__id=k).exists():
                 print members.get(user__id=k).member_name, k
 
-        print 'Operation count: ', sum(index.values())
+        # print 'Operation count: ', sum(index.values())
+
+        for m in members:
+            if m.user is not None:
+                print m.member_name, index[m.user.id]

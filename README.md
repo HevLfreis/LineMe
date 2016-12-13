@@ -14,6 +14,7 @@ Location: http://lime.seeleit.com/
 * three.js
 * iCheck
 * hint.css
+* animate.css
 * input-mask
 * Trip.js
 * select2
