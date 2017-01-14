@@ -11,6 +11,8 @@ from friendnet.methods.basic.group import get_user_groups, group_privacy_check
 from friendnet.methods.basic.user import get_user_msgs_count
 from friendnet.models import Group
 from iauth.methods.session import get_session_id
+from methods import Questionnaire
+from question.models import QuestionTemplate
 
 lang = DEPLOYED_LANGUAGE
 template_dir = get_template_dir('question')
@@ -28,6 +30,7 @@ def question(request, groupid=0):
     group = get_object_or_404(Group, id=groupid)
 
     group_privacy_check(user, group)
+    qt = QuestionTemplate.objects.get(group__id=groupid)
 
     context = {"project_name": PROJECT_NAME,
                "lang": lang,
@@ -35,6 +38,30 @@ def question(request, groupid=0):
                "group": group,
                "groups": groups,
                "rcmd_groups": rcmd_groups,
-               "msgs_count": msgs_count}
+               "msgs_count": msgs_count,
+               "authenticated": qt.authenticated,
+               "template": qt.template}
 
     return render(request, template_dir+'question.html', context)
+
+
+@login_required
+def question_handle(request, groupid):
+
+    user = request.user
+
+    if not Group.objects.filter(id=groupid, creator=user).exists():
+        return HttpResponse(status=403)
+
+    if request.is_ajax():
+        try:
+            qn = Questionnaire(groupid)
+            qn.proceeding(request)
+            qn.save()
+        except Exception, e:
+            print e
+
+        return HttpResponse(0, content_type='text/plain')
+
+    else:
+        return HttpResponse(status=403)

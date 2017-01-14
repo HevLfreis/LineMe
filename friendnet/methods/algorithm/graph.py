@@ -16,7 +16,7 @@ from friendnet.models import GroupMember
 from friendnet.models import Link
 
 
-class Graph:
+class LGraph:
     def __init__(self, group):
         """
         All nodes in networkx graph are member ids
@@ -68,7 +68,7 @@ class Graph:
                             link.target_member_id,
                             id=link.id,
                             status=link.status,
-                            weight=1)
+                            ks=1)
 
         for node in self.G.nodes():
             if node != self.me.id:
@@ -233,6 +233,9 @@ class Graph:
             for i in xrange(d['ks']+1):
                 layers[i].append((s, t))
 
+            # for i in xrange(max_weight+1-d['ks']):
+            #     layers[i].append((s, t))
+
         for k, layer in layers.items():
             nodes, links = set([]), []
 
@@ -302,7 +305,7 @@ class Graph:
                           'source': s,
                           'target': t,
                           'status': d['status'],
-                          'value': d['weight']})
+                          'value': d['ks']})
 
         return {"nodes": nodes, "links": links}
 

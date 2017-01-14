@@ -23,7 +23,7 @@ $(function() {
     var yScale = d3.scale.linear()
         .domain([0,height]).range([0, height]);
 
-    var charge = -1000;
+    var charge = -2000;
 
     var color = d3.scale.category10();
     //var color = function(i){
@@ -41,7 +41,7 @@ $(function() {
 
     var force = d3.layout.force()
         .charge(charge)
-        .linkDistance(400)
+        .linkDistance(1000)
         .size([width, height]);
 
 
@@ -166,7 +166,7 @@ $(function() {
             .attr("class", function(d){
                if(d.status) return "link link-created";
                else return "link link-unconfirmed";
-            });
+            }).on("mouseover", linkMouseover);
 
         node = node.data(nodes, function(d){return d.id;});
         node.enter().append("g")
@@ -222,6 +222,10 @@ $(function() {
         node.style("stroke", function(n) { return color(n.group); });
         link.classed("link-selected", false);
 
+    }
+
+    function linkMouseover(d) {
+       console.log(d.value);
     }
 
     function dragstarted(d) {

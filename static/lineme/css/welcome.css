@@ -1,0 +1,25 @@
+.view-panel {
+    z-index: 1;
+    position: absolute;
+}
+
+.swiper-describtion {
+    position: absolute;
+    margin: 28px;
+}
+
+.swiper-describtion .title {
+    font-size: 41px;
+    font-weight: 300;
+}
+
+.swiper-describtion .subtitle {
+    font-size: 21px;
+}
+
+.swiper-describtion .text {
+    font-size: 14px;
+    max-width: 400px;
+    line-height: 1.3;
+}
+

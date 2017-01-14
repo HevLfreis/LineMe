@@ -9,4 +9,5 @@ from question import views
 
 urlpatterns = [
     url(r'^question/(?P<groupid>[0-9]+)/$', views.question, name='question'),
+    url(r'^qhandle/(?P<groupid>[0-9]+)/$', views.question_handle, name='qHandle'),
 ]

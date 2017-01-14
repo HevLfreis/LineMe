@@ -5,7 +5,9 @@
 # Time: 16:11
 from django.core.management import BaseCommand
 
-from friendnet.models import Link
+from friendnet.models import Link, Group
+from question.methods import Questionnaire
+from question.models import QuestionTemplate
 
 
 class Command(BaseCommand):
@@ -16,3 +18,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         group = options['group']
+
+        for group in QuestionTemplate.objects.all():
+            print group

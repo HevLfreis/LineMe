@@ -51,7 +51,7 @@ def i_login(request):
 def i_logout(request):
     logger.info(logger_join('Logout', get_session_id(request)))
     logout(request)
-    return redirect('login')
+    return redirect('welcome')
 
 
 def i_register(request):

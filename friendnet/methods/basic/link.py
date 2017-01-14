@@ -29,7 +29,7 @@ def link_confirm(request, user, link):
     my_member = myself_member(user, link.group.id)
 
     # smu
-    if pt.smu(10003, link, 1):
+    if pt.smu(10008, link, 5):
         return -2
 
     now = timezone.now()

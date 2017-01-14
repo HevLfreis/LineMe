@@ -127,6 +127,11 @@ body {
     z-index: 820;
 }
 
+.content-wrapper.welcome{
+    margin-left: 0;
+    background-color: #202b2f;
+}
+
 .layout-top-nav .content-wrapper,
 .layout-top-nav .right-side,
 .layout-top-nav .main-footer {

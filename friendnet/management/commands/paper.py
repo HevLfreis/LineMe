@@ -22,11 +22,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Q, F
 
 from LineMe.constants import PROJECT_NAME
-# from friendnet.methods.algorithm.graph import Graph
-from LineMe.settings import BASE_DIR
-from friendnet.methods.algorithm.graph import Graph
-from friendnet.methods.basic.exp import global_core
-from friendnet.methods.basic.user import get_user_name
+
 from friendnet.models import Link, Group, GroupMember
 import numpy as np
 
@@ -50,7 +46,7 @@ class Command(BaseCommand):
 
     def analyzer(self, groupid):
         self.members = GroupMember.objects.filter(group__id=groupid)
-        self.member_user_index = {m.id: m.user.id for m in self.members if m.user is not None}
+        self.member_user_index = {m.id: m.user for m in self.members}
 
         male_count = self.members.filter(user__extra__gender=False).count()
         female_count = self.members.filter(user__extra__gender=True).count()
@@ -59,6 +55,9 @@ class Command(BaseCommand):
 
         links = Link.objects.filter(group__id=groupid)
         print 'total links: ', links.count()
+
+        friend_links = links.filter(Q(source_member__user=F('creator')) | Q(target_member__user=F('creator')))
+        print 'friend links: ', friend_links.count()
 
         links_confirmed = self.confirmed(links)
         print 'total links confirmed: ', links_confirmed.count()
@@ -72,16 +71,20 @@ class Command(BaseCommand):
         print 'both reject: ', links_b_rejected.count(), '\n'
 
         self.horizon = datetime.datetime(2016, 10, 27, 10, 0, 0)
+        # self.horizon = datetime.datetime(2016, 11, 29, 10, 0, 0)
         links_new = self.after_time(links, self.horizon)
         links_old = self.before_time(links, self.horizon)
         links_confirmed_old = self.before_time(links_confirmed, self.horizon)
         print 'new/old links count: ', links_new.count(), links_old.count(), '\n'
+        # print links_new.filter((Q(source_member__user=F('creator')) | Q(target_member__user=F('creator')))).count()
 
         # print self.single_rejected(links_old).count(), self.both_rejected(links_old).count()
 
-        G_all= self.build_graph_id(links)
+        G_all_confirmed = self.build_graph_id(links_confirmed)
         G_standard = self.build_graph_id(links_confirmed_old)
         G_new = self.build_graph_id(links_new)
+
+        # self.print_info(G_all_confirmed, 'all')
 
         G_final = G_standard.copy()
 
@@ -102,12 +105,17 @@ class Command(BaseCommand):
         for s, t, d in G_standard.edges(data=True):
             if d['weight'] - d['ks'] != 2:
                 G_double_confirmed.remove_edge(s, t)
+            #     print s, t, 0 + random.random() / 2
+            # else:
+            #     print s, t, 1 - random.random() / 2
 
         G_recovered = G_standard.copy()
         G_not_recovered = G_standard.copy()
         for s, t in G_new.edges():
             if G_standard.has_edge(s, t):
                 G_not_recovered.remove_edge(s, t)
+
+        self.print_info(G_not_recovered, 'double')
 
         G_not_recovered_double = G_double_confirmed.copy()
         for s, t in G_new.edges():
@@ -123,11 +131,114 @@ class Command(BaseCommand):
                 G_wrong.remove_edge(s, t)
         G_wrong.remove_node(10026)
 
-        print G_wrong.number_of_edges()
+        # m = [10135, 10042, 10078, 10134, 10076, 10071, 10171, 10120]
+        # mm = GroupMember.objects.filter(id__in=m)
+        # for a in mm:
+        #     print a.member_name, a.id
+
+        # i = 0
+        # for link in links_new:
+        #     if G_standard.has_edge(link.source_member_id, link.target_member_id):
+        #         i += 1
+        # print i
+        # print i / float(links_new.count())
+        # cnt = Counter()
+        # cnt2 = Counter()
+        # for m in self.members:
+        #     G_ego = self.build_graph_id(links_new.filter(creator=m.user))
+        #
+        #     mid = m.id
+        #     for s, t in G_ego.edges():
+        #         if s == mid or t == mid:
+        #             cnt[0] += 1
+        #         elif nx.has_path(G_standard, mid, t) and nx.has_path(G_standard, mid, s):
+        #             d1, d2 = nx.shortest_path_length(G_standard, mid, s), nx.shortest_path_length(G_standard, mid, t)
+        #             if d1 == d2 == 1:
+        #                 cnt[1] += 1
+        #             elif (d1 == 1 and d2 == 2) or (d1 == 2 and d2 == 1):
+        #                 cnt[1.5] += 1
+        #             elif d1 == 2 and d2 == 2:
+        #                 cnt[2] += 1
+        #             else:
+        #                 print d1, d2, GroupMember.objects.get(id=s), G_standard.degree(s), GroupMember.objects.get(id=t), G_standard.degree(t), m.member_name
+        #                 cnt[3] += 1
+        #
+        #                 cnt2[str({d1, d2})] += 1
+        #
+        #         else:
+        #             cnt[-1] += 1
+        # print [[k, v/float(links_new.count())] for k, v in cnt.items()]
+        # print [[k, v] for k, v in cnt.items()]
+        # print [[k, v] for k, v in cnt2.items()]
+        # print sum([v for k, v in cnt.items()])
+
+        # for s, t, d in G_final.edges(data=True):
+        #     if d['ks'] < -9:
+        #         print self.members.get(id=s), self.members.get(id=t), d['ks']
+
+        # print Counter([nx.shortest_path_length(G_standard, s, t) for s in G_standard.nodes() for t in G_standard.nodes()])
+
+        # cnt = Counter()
+        # cnta = Counter()
+        #
+        # x, m, f = 0, 0, 0
+        # for s, t, d in G_wrong.edges(data=True):
+        #     ks = d['ks']
+        #     cnta[ks] += 1
+        #
+        #     sm, tm = GroupMember.objects.get(id=s), GroupMember.objects.get(id=t)
+        #
+        #     if G_all_confirmed.has_edge(s, t):
+        #         cnt[ks] += 1
+        #         # print sm, tm, sm.user.extra.gender, tm.user.extra.gender
+        #
+        #         if sm.user.extra.gender != tm.user.extra.gender:
+        #             x += 1
+        #         elif sm.user.extra.gender == True == tm.user.extra.gender:
+        #             f += 1
+        #         else:
+        #             m += 1
+        #
+        # print x, f, m
+        # print [[k, cnt[k], v] for k, v in cnta.items()], k, G_wrong.number_of_edges()
+
+        # print G_not_recovered.number_of_edges()
+        #
+        # ego, between_ego, other = 0, 0, 0
+        # for m in self.members:
+        #     ego_links = links.filter(creator=m.user)
+        #     G_ego = self.build_graph_id(ego_links)
+        #
+        #     ego += len(list(G_ego.neighbors(m.id)))
+        #
+        #     between_ego += nx.ego_graph(G_ego, m.id).number_of_edges() - len(list(G_ego.neighbors(m.id)))
+        #
+        #     other += G_ego.number_of_edges() - nx.ego_graph(G_ego, m.id).number_of_edges()
+        #
+        # print ego, between_ego, other, ego+between_ego+other
+
+        # print G_wrong.number_of_edges()
 
         max_weight = max([d['ks'] for s, t, d in G_final.edges(data=True)])
         max_weight_wrong = max([d['ks'] for s, t, d in G_wrong.edges(data=True)])
-        print max_weight, max_weight_wrong
+
+        # for n in G_standard.nodes():
+        #     fs = G_standard.neighbors(n)
+        #     fd = G_double_confirmed.neighbors(n)
+        #
+        #     print G_standard.degree(n), len(set(fs) - set(fd))
+
+        # for s, t in G_standard.edges():
+        #     print s, t
+
+        # G_weight = G_final.copy()
+        # for s, t, d in G_final.edges(data=True):
+        #     if d['ks'] < 8:
+        #         G_weight.remove_edge(s, t)
+        #     else:
+        #         print s, t, G_final[s][t]['ks']
+        # print G_final[10071][10076]['ks']
+        # # print max_weight, max_weight_wrong
 
         # for i in xrange(3, 20):
         #     c = list(nx.k_clique_communities(G_standard, i))
@@ -135,7 +246,8 @@ class Command(BaseCommand):
 
         #############################################################################
         # ks vs betweenness, link prediction, embed, negative corr
-        # betweenness = nx.edge_betweenness_centrality(G_standard)
+        betweenness = nx.edge_betweenness_centrality(G_standard)
+
         #
         # b = {}
         # for st in betweenness:
@@ -148,23 +260,73 @@ class Command(BaseCommand):
         # print [[k, sum(v) / len(v), self.variance(v)] for k, v in b.items()]
         #
         # e = {}
-        # for s, t in G_final.edges():
+        # for s, t in G_standard.edges():
         #     ks = G_final[s][t]['ks']
         #     if ks in e:
         #         e[ks].append(self.embeddedness(G_standard, s, t))
         #     else:
         #         e[ks] = [self.embeddedness(G_standard, s, t)]
-        # print [[k, sum(v) / len(v), self.variance(v)] for k, v in e.items()]
-        #
-        # r = {}
+        # print [[k, sum(v) / len(v), self.variance(v), max(v), min(v)] for k, v in e.items()]
+
+        # e = {}
         # for s, t in G_final.edges():
+        #
+        #     ks = G_final[s][t]['ks']
+        #     if ks < 0:
+        #         if ks in e:
+        #             e[ks].append(self.embeddedness(G_standard, s, t))
+        #         else:
+        #             e[ks] = [self.embeddedness(G_standard, s, t)]
+        # # print len(e[0])
+        # print [[k, sum(v) / len(v), self.variance(v), max(v), min(v)] for k, v in e.items()]
+
+        # r = {}
+        # for s, t in G_standard.edges():
         #     ks = G_final[s][t]['ks']
         #     pred = sum(1.0 / G_standard.degree(w) for w in nx.common_neighbors(G_standard, s, t))
         #     if ks in r:
         #         r[ks].append(pred)
         #     else:
         #         r[ks] = [pred]
-        # print [[k, sum(v) / len(v), self.variance(v)] for k, v in r.items()]
+        # print [[k, sum(v) / len(v), self.variance(v), max(v), min(v)] for k, v in r.items()]
+
+        # #
+        # r = {}
+        # for s, t in G_final.edges():
+        #     ks = G_final[s][t]['ks']
+        #     if ks < 0:
+        #         pred = sum(1.0 / G_standard.degree(w) for w in nx.common_neighbors(G_standard, s, t))
+        #         if ks in r:
+        #             r[ks].append(pred)
+        #         else:
+        #             r[ks] = [pred]
+        # print [[k, sum(v) / len(v), self.variance(v), max(v), min(v)] for k, v in r.items()]
+
+        # mod = []
+        # for j in xrange(3, 16):
+        #     c = list(nx.k_clique_communities(G_standard, j))
+        #     m = self.modularity(G_standard, c)
+        #     mod.append(m)
+        #
+        # k = mod.index(max(mod))
+        # k = 10
+        #
+        # cliques = list(nx.k_clique_communities(G_standard, k))
+        # print len(cliques)
+        #
+        # cnts = Counter()
+        # cntc = Counter()
+        # for s, t, d in G_final.edges(data=True):
+        #     ks = d['ks']
+        #     cnts[ks] += 1
+        #
+        #     for cq in cliques:
+        #         if len({s, t} - set(cq)) == 0:
+        #             cntc[ks] += 1
+        #             break
+        #
+        # print [[k, (v - cntc[k]) / float(v)] for k, v in cnts.items()]
+        # print [[k, v, cntc[k]] for k, v in cnts.items()]
 
         #############################################################################
         # ks vs degree and cluster
@@ -185,48 +347,101 @@ class Command(BaseCommand):
         #############################################################################
         # ks distribution
         # print self.ks_distribution(G_final)
+        # print self.ks_distribution(G_wrong)
 
         #############################################################################
         # ks vs embed
-        e = []
-        v = []
+        # e = []
+        # v = []
+        # #
+        # for j in xrange(-max_weight_wrong, 0):
+        #     print j
+        #     G_weight = G_wrong.copy()
+        #     for s, t, d in G_new.edges(data=True):
+        #         if -d['ks'] < j and G_weight.has_edge(s, t):
+        #             G_weight.remove_edge(s, t)
+        #
+        #     G_weight = nx.compose(G_standard, G_weight)
+        #
+        #     embed_list = [self.embeddedness(G_weight, s, t) for s, t in G_weight.edges()]
+        #
+        #     embed = sum(embed_list) / float(G_weight.number_of_edges())
+        #     var = self.variance(embed_list)
+        #     ma = max(embed_list)
+        #     mi = min(embed_list)
+        #
+        #     e.append(embed)
+        #     v.append(var)
+        #     # de.append(self.average_degree(G_weight))
+        #     print embed, var, ma, mi
+        #
+        # for j in xrange(0, max_weight+1):
+        #     print j
+        #     G_weight = G_standard.copy()
+        #     for s, t, d in G_final.edges(data=True):
+        #         if d['ks'] < j and G_weight.has_edge(s, t):
+        #             G_weight.remove_edge(s, t)
+        #
+        #     embed_list = [self.embeddedness(G_weight, s, t) for s, t in G_weight.edges()]
+        #
+        #     embed = sum(embed_list) / float(G_weight.number_of_edges())
+        #     var = self.variance(embed_list)
+        #     e.append(embed)
+        #     v.append(var)
+        #     # de.append(self.average_degree(G_weight))
+        #     print embed, var, G_weight.number_of_edges()
+        #
+        # print e
+        # print v
 
-        for j in xrange(-max_weight_wrong, 0):
-            print j
-            G_weight = G_wrong.copy()
-            for s, t, d in G_new.edges(data=True):
-                if -d['ks'] < j and G_weight.has_edge(s, t):
-                    G_weight.remove_edge(s, t)
+        #############################################################################
+        # largest component
 
-            G_weight = nx.compose(G_standard, G_weight)
+        # def partition(lst, n):
+        #     q, r = divmod(len(lst), n)
+        #     indices = [q*i + min(i, r) for i in xrange(n+1)]
+        #     return [lst[indices[i]:indices[i+1]] for i in xrange(n)]
+        #
+        # sorted_links = sorted(G_standard.edges(), key=lambda (x, y): G_final[x][y]['ks'])
+        # sorted_reversed_links = sorted(G_standard.edges(), key=lambda (x, y): G_final[x][y]['ks'], reverse=True)
+        #
+        # c = []
+        # G = G_standard.copy()
+        #
+        # p = partition(sorted_reversed_links, 100)
+        # for j in xrange(0, 100):
+        #     print j
+        #     G.remove_edges_from(p[j])
+        #     largest_cc = max(nx.connected_components(G), key=len)
+        #     print [len(k) for k in nx.connected_components(G)]
+        #     c.append(nx.subgraph(G, largest_cc).number_of_nodes() / float(G_standard.number_of_nodes()))
+        #
+        # print c
 
-            embed_list = [self.embeddedness(G_weight, s, t) for s, t in G_weight.edges()]
-
-            embed = sum(embed_list) / float(G_weight.number_of_edges())
-            var = self.variance(embed_list)
-            e.append(embed)
-            v.append(var)
-            # de.append(self.average_degree(G_weight))
-            print embed, var
-
-        for j in xrange(0, max_weight+1):
-            print j
-            G_weight = G_standard.copy()
-            for s, t, d in G_final.edges(data=True):
-                if d['ks'] < j and G_weight.has_edge(s, t):
-                    G_weight.remove_edge(s, t)
-
-            embed_list = [self.embeddedness(G_weight, s, t) for s, t in G_weight.edges()]
-
-            embed = sum(embed_list) / float(G_weight.number_of_edges())
-            var = self.variance(embed_list)
-            e.append(embed)
-            v.append(var)
-            # de.append(self.average_degree(G_weight))
-            print embed, var, G_weight.number_of_edges()
-
-        print e
-        print v
+        # for j in xrange(0, max_weight+1):
+        #     print j
+        #     G_weight = G_standard.copy()
+        #     for s, t, d in G_final.edges(data=True):
+        #         if d['ks'] < j and G_weight.has_edge(s, t):
+        #             G_weight.remove_edge(s, t)
+        #
+        #     largest_cc = max(nx.connected_components(G_weight), key=len)
+        #     c.append(nx.subgraph(G_weight, largest_cc).number_of_edges() / float(G_standard.number_of_edges()))
+        #
+        # print c
+        #
+        # c = []
+        # for j in xrange(0, max_weight+1):
+        #     print j
+        #     G_weight = G_standard.copy()
+        #     for s, t, d in G_final.edges(data=True):
+        #         if d['ks'] > j and G_weight.has_edge(s, t):
+        #             G_weight.remove_edge(s, t)
+        #
+        #     largest_cc = max(nx.connected_components(G_weight), key=len)
+        #     c.append(nx.subgraph(G_weight, largest_cc).number_of_edges() / float(G_standard.number_of_edges()))
+        #
+        # print c
 
         #############################################################################
         # clear community
@@ -545,6 +760,27 @@ class Command(BaseCommand):
         #     self.groups[k] = new_list
         #
         # print 'total groups: ', len(self.groups)
+        # # #
+        # d_l, b_l, d_lg, b_lg = [], [], [], []
+        # betweenness = nx.betweenness_centrality(G_standard)
+        # for k, v in self.groups.items():
+        #     # print [links.filter(creator=m.user).count() for m in v]
+        #     d, b, lc = 0.0, 0.0, 0.0
+        #     for m in v:
+        #         d += G_standard.degree(m.id)
+        #         b += betweenness[m.id]
+        #         lc += links_new.filter(creator=m.user).count()
+        #         d_l.append([G_standard.degree(m.id), links_new.filter(creator=m.user).count()])
+        #         b_l.append([betweenness[m.id], links_new.filter(creator=m.user).count()])
+        #
+        #     d_lg.append([d/len(v), lc])
+        #     b_lg.append([b/len(v), lc])
+        #
+        # print d_l
+        # print b_l
+        # print d_lg
+        # print b_lg
+
 
         #############################################################################
         # crowdsourcing
@@ -671,7 +907,9 @@ class Command(BaseCommand):
                 G[s][t]['link'].append(link)
 
             su, tu = self.member_user_index[s], self.member_user_index[t]
-            if link.creator_id == su or link.creator_id == tu:
+            if not su or not tu:
+                continue
+            if link.creator_id == su.id or link.creator_id == tu.id:
                 pass
             else:
                 G[s][t]['ks'] += 1
@@ -720,15 +958,15 @@ class Command(BaseCommand):
             f.write('[')
             for i, n in enumerate(y):
 
-                if i % (end-1) == 0 and i != 0:
-                    f.write(str(c)+',\n')
-                    f.write(str(p)+',\n')
+                if i % (end - 1) == 0 and i != 0:
+                    f.write(str(c) + ',\n')
+                    f.write(str(p) + ',\n')
 
                     c, p = [], []
                 c.append(n[0])
                 p.append(n[1])
-            f.write(str(c)+',\n')
-            f.write(str(p)+',\n')
+            f.write(str(c) + ',\n')
+            f.write(str(p) + ',\n')
             f.write(']')
 
     def average_degree(self, G):
@@ -835,10 +1073,11 @@ class Command(BaseCommand):
         cnt = Counter()
         for s, t, d in G.edges(data=True):
             weight = d['ks']
-            cnt[weight] += 1
+            if weight >=0:
+                cnt[weight] += 1
         return [[k, v / float(G.number_of_edges())] for k, v in cnt.items()]
 
     def variance(self, seq):
         average = sum(seq) / float(len(seq))
-        var = sum([abs(average-s) ** 2 for s in seq]) / float(len(seq))
+        var = sum([abs(average - s) ** 2 for s in seq]) / float(len(seq))
         return var

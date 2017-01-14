@@ -93,15 +93,15 @@ def build_graph_id(links):
     return G
 
 
-def community_test(G, weight=27):
+def community_test(G, weight=8):
 
-    new_links = Link.objects.filter(group__id=10001, created_time__gt=datetime.datetime(2016, 10, 27, 10, 0, 0))
-
-    G_new = build_graph_id(new_links)
+    # new_links = Link.objects.filter(group__id=10001, created_time__gt=datetime.datetime(2016, 10, 27, 10, 0, 0))
+    #
+    # G_new = build_graph_id(new_links)
 
     for s, t, d in G.edges(data=True):
         if G.has_edge(s, t):
-            if d['ks'] + G_new[s][t]['ks'] < weight:
+            if d['ks'] < weight:
                 G.remove_edge(s, t)
 
     for n in G.nodes():

@@ -17,6 +17,7 @@ from friendnet.methods.basic.user import get_user_name
 from friendnet.models import Group, Credit, MemberRequest, Link
 from friendnet.models import GroupMember
 from iauth.methods.session import get_session_id
+from question.models import QuestionTemplate
 
 
 def create_group(request, user, name, identifier, gtype):
@@ -55,9 +56,13 @@ def create_group(request, user, name, identifier, gtype):
                    action=-GROUP_CREATED_CREDITS_COST,
                    timestamp=now)
 
+        q = QuestionTemplate(group=g,
+                             authenticated=False)
+
         m.save()
         user.extra.save()
         c.save()
+        q.save()
 
     except Exception, e:
         logger.error(logger_join('Create', get_session_id(request), 'failed', e=e))

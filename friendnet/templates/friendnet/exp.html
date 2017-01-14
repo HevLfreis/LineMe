@@ -4,8 +4,11 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Exp</title>
-    <link rel="stylesheet" href="/static/lineme/css/graph.css">
-    <link rel="stylesheet" href="/static/plugins/d3/css/d3-tip.css">
+      <link rel="stylesheet" href="/static/plugins/three/css/style.css">
+      <link rel="stylesheet" href="/static/lineme/css/graph.css">
+      <link rel="stylesheet" href="/static/lineme/css/loading.css">
+      <link rel="stylesheet" href="/static/lineme/css/animations.css">
+      <link rel="stylesheet" href="/static/plugins/d3/css/d3-tip.css">
     <style>
       html,body {
         margin:0;
@@ -25,15 +28,30 @@
     </style>
   </head>
   <body>
-    <div id="main-panel">
-      <div id="network" style="z-index: 1;position: absolute"></div>
+    <div id="main-panel" style="height: 750px">
+      <div id="three" style="z-index: 1;position: absolute"></div>
     </div>
     <script src="/static/plugins/jquery/jquery.min.js"></script>
     <script src="/static/plugins/d3/js/d3.js"></script>
     <script src="/static/plugins/d3/js/d3-tip.js"></script>
+    <script src="/static/plugins/three/js/three.js"></script>
+    <script src="/static/plugins/three/js/TrackballControls.js"></script>
+    <script src="/static/plugins/three/js/tween.js"></script>
+    <script src="/static/plugins/three/js/CSS3DRenderer.js"></script>
+    <script src="/static/plugins/three/js/viz.js"></script>
     <script>
       var url = "{% url 'expData' groupid %}";
+
+      d3.json('/gthree/10000', function (error, data) {
+                VIZ.drawElements(data);
+                window.addEventListener('resize', VIZ.onWindowResize, false);
+
+                    VIZ.transform('flow');
+                    VIZ.render();
+                    VIZ.animate();
+
+            });
     </script>
-    <script src="/static/lineme/js/exp.js"></script>
+{#    <script src="/static/lineme/js/exp.js"></script>#}
   </body>
 </html>

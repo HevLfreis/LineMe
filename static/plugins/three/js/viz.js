@@ -22,9 +22,9 @@
 
     camera.target = {x:xLookAt, y:yLookAt, z:zLookAt};
 
-    VIZ.drawElements = function (datas) {
+    VIZ.drawElements = function (layeredData) {
 
-        VIZ.count = datas.length;
+        VIZ.count = layeredData.length;
 
         if (VIZ.count == 1) lookAtPos.z = zLookAtOne;
 
@@ -36,7 +36,7 @@
         var color = d3.scale.ordinal()
             .range(['rgb(166,206,227)', 'rgb(31,120,180)', 'rgb(178,223,138)', 'rgb(51,160,44)', 'rgb(251,154,153)', 'rgb(227,26,28)', 'rgb(253,191,111)', 'rgb(255,127,0)']);
 
-        var vis = d3.selectAll(".element").data(datas).enter()
+        var vis = d3.selectAll(".element").data(layeredData).enter()
             .append('svg')
             .attr("width", visWidth)
             .attr("height", visHeight);
@@ -62,7 +62,7 @@
             $vis.append("text")
                 .attr("class", "legend")
                 .attr("vector-effect", "non-scaling-stroke")
-                .html('Knowable Strength: '+(i))
+                .html('Layer: '+(i+1))
                 .attr("x", visWidth - 20)
                 .attr("y", visHeight - 20);
 

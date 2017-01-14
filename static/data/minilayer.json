@@ -1,0 +1,91 @@
+[
+  {
+    "nodes": [
+      {"id": "A", "group": 1},
+      {"id": "B", "group": 2},
+      {"id": "C", "group": 3}
+  ],
+    "links": [
+       {"source": "A", "target": "B"},
+       {"source": "A", "target": "C"},
+       {"source": "B", "target": "C"}
+    ]
+  },
+  {
+    "nodes": [
+      {"id": "A", "group": 1},
+      {"id": "B", "group": 2},
+      {"id": "C", "group": 3},
+      {"id": "D", "group": 3}
+  ],
+    "links": [
+      {"source": "A", "target": "B"},
+      {"source": "B", "target": "C"},
+      {"source": "C", "target": "D"},
+      {"source": "A", "target": "D"}
+    ]
+  },
+  {
+    "nodes": [
+      {"id": "A", "group": 1},
+      {"id": "B", "group": 2},
+      {"id": "C", "group": 3},
+      {"id": "D", "group": 3},
+      {"id": "E", "group": 2}
+  ],
+    "links": [
+      {"source": "A", "target": "B"},
+      {"source": "A", "target": "C"},
+      {"source": "A", "target": "D"},
+      {"source": "A", "target": "E"},
+      {"source": "B", "target": "C"},
+      {"source": "B", "target": "D"},
+      {"source": "B", "target": "E"},
+      {"source": "C", "target": "D"},
+      {"source": "C", "target": "E"},
+      {"source": "D", "target": "E"}
+    ]
+  },
+  {
+    "nodes": [
+      {"id": "A", "group": 1},
+      {"id": "B", "group": 2},
+      {"id": "C", "group": 3},
+      {"id": "D", "group": 3},
+      {"id": "E", "group": 2},
+      {"id": "F", "group": 2}
+  ],
+    "links": [
+      {"source": "A", "target": "B"},
+      {"source": "B", "target": "C"},
+      {"source": "C", "target": "D"},
+      {"source": "A", "target": "D"},
+      {"source": "A", "target": "C"},
+      {"source": "B", "target": "D"},
+      {"source": "A", "target": "E"},
+      {"source": "B", "target": "F"},
+      {"source": "B", "target": "E"},
+      {"source": "A", "target": "F"},
+      {"source": "E", "target": "F"}
+    ]
+  },
+  {
+    "nodes": [
+      {"id": "A", "group": 1},
+      {"id": "B", "group": 2},
+      {"id": "C", "group": 3},
+      {"id": "D", "group": 3},
+      {"id": "E", "group": 2},
+      {"id": "F", "group": 2},
+      {"id": "G", "group": 4}
+  ],
+    "links": [
+      {"source": "A", "target": "B"},
+      {"source": "A", "target": "C"},
+      {"source": "A", "target": "D"},
+      {"source": "A", "target": "E"},
+      {"source": "A", "target": "F"},
+      {"source": "A", "target": "G"}
+    ]
+  }
+]

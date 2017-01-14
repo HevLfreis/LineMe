@@ -1,0 +1,13 @@
+{
+  "nodes": [
+    {"self": true, "name": "Shenyang", "value": [123.47, 41.68, 2, 1]},
+    {"self": false, "name": "Xi'an", "value": [108.95, 34.35, 7, 2]},
+    {"self": false, "name": "Shanghai", "value": [121.48, 31.24, 13, 3]},
+    {"self": false, "name": "Beijing", "value": [116.41, 39.91, 1, 0]},
+    {"self": false, "name": "Shenzhen", "value": [114.07, 22.55, 1, 0]}
+  ],
+  "links": [
+    {"source": "Shenyang", "target": "Shanghai"},
+    {"source": "Shanghai", "target": "Xi'an"}
+  ]
+}

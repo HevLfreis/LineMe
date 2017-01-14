@@ -54,6 +54,7 @@ INSTALLED_APPS = (
     'iauth',
     'friendnet',
     'question',
+    'welcome',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -117,12 +118,12 @@ if not DEPLOYMENT:
         }
     }
 
-    CACHES = {
-        'default': {
-            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-            'LOCATION': 'unique-snowflake',
-        }
-    }
+    # CACHES = {
+    #     'default': {
+    #         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    #         'LOCATION': 'unique-snowflake',
+    #     }
+    # }
 
 else:
     DATABASES = {
@@ -202,7 +203,7 @@ STATICFILES_FINDERS = (
 
 # HTML_MINIFY = True
 EXCLUDE_FROM_MINIFYING = ['^search/', '^egraph/', '^ggraph/',
-                          '^gmap/', '^gthree/', '^show/data/']
+                          '^gmap/', '^gthree/', '^exp/data/']
 
 # COMPRESS_ENABLED = True
 COMPRESS_OUTPUT_DIR = 'compressed'

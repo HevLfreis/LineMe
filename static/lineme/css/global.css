@@ -17,13 +17,6 @@
     visibility: hidden;
 }
 
-.legend {
-    position: absolute;
-    text-anchor: end;
-    font-size: 20px;
-    stroke: none;
-}
-
 .cl-effect .normal {
     color: #3e3e3e;
 }

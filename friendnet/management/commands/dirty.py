@@ -3,6 +3,7 @@
 # created by hevlhayt@foxmail.com 
 # Date: 2016/10/20
 # Time: 18:19
+import datetime
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
@@ -28,5 +29,11 @@ class Command(BaseCommand):
         # print [link.id for link in links]
         # print link.source_member.member_name, link.target_member.member_name, get_user_name(link.creator)
 
-        u = User.objects.get(id=10215)
-        u.delete()
+        # u = User.objects.get(id=10215)
+        # u.delete()
+        for m in GroupMember.objects.filter(group__id=10008):
+            print m.id, m.member_name
+
+
+
+

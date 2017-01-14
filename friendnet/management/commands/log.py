@@ -3,6 +3,7 @@
 # created by hevlhayt@foxmail.com 
 # Date: 2016/10/18
 # Time: 9:29
+import random
 import re
 from collections import Counter
 
@@ -33,6 +34,7 @@ class Command(BaseCommand):
         print start, stop
 
         index = Counter()
+        action = {}
         with open('logs/lineme.log') as f:
             for line in f:
                 if 'Reset' in line:
@@ -44,12 +46,19 @@ class Command(BaseCommand):
                     continue
 
                 b = a[1][1:-1].split(',')
+                mid = int(b[0])
                 # print b
 
                 if start < t < stop:
                     if 'update_links' in line or 'link_confirm' in line:
                         index[int(b[0])] += 1
+                    act = re.findall('<.*?>', line)
+                    if mid in action:
+                        action[mid].append(act[0][1:-1].split(' ')[1])
+                    else:
+                        action[mid] = [act[0][1:-1].split(' ')[1]]
 
+        # print random.sample(action.values(), 1)
         print len(index)
 
         members = GroupMember.objects.filter(group__id=options['group'])
@@ -76,3 +85,17 @@ class Command(BaseCommand):
         for m in members:
             if m.user is not None:
                 print m.member_name, index[m.user.id]
+
+        c = Counter()
+        for k, v in action.items():
+            pre = ''
+            for i, act in enumerate(v):
+                if i < len(v) - 2:
+                    if act == 'update_links' or act == 'link_confirm':
+                        if v[i+1] != 'update_links' and v[i+1] != 'link_confirm':
+                            c[v[i+1]] += 1
+
+        print c
+
+
+

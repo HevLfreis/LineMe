@@ -77,28 +77,121 @@
           <h3 class="box-title">问卷模板</h3>
         </div>
         <div class="box-body box-profile" id="template">
-          <div class="row">
-            <div class="col-md-5 border-right">
-              <div class="form-group has-feedback">
-                <label>普通输入框</label>
-                <input type="text" class="form-control" name="" placeholder="">
+          {% if not authenticated %}
+            <div class="row normal-question">
+              <div class="col-md-5 border-right">
+                <div class="form-group has-feedback">
+                  <label>普通输入框</label>
+                  <input type="text" class="form-control" name="" placeholder="">
+                </div>
+              </div>
+              <div class="col-md-7 edit-item">
+                <div class="form-group">
+                  <label>标题</label>
+                  <input type="text" class="form-control" name="title" placeholder="" oninput="titleInputListener(this)">
+                </div>
+                <div class="form-group">
+                  <label>提示文字</label>
+                  <input type="text" class="form-control" name="hint" placeholder="" oninput="hintInputListener(this)">
+                </div>
               </div>
             </div>
-            <div class="col-md-7">
-              <div class="form-group">
-                <label>标题</label>
-                <input type="text" class="form-control" name="title" placeholder="" oninput="titleInputListener(this)">
-              </div>
-              <div class="form-group">
-                <label>提示文字</label>
-                <input type="text" class="form-control" name="hint" placeholder="" oninput="hintInputListener(this)">
-              </div>
-            </div>
-          </div>
-          <hr>
+            <hr>
+          {% else %}
+            {% load filters %}
+            {% for i in template %}
+              {% if i|get_value:'type' == 'n' %}
+                <div class="row normal-question" id="{{ i|get_value:'id' }}">
+                  <div class="col-md-5 border-right">
+                    <div class="form-group has-feedback">
+                      <label>{{ i|get_value:'title' }}</label>
+                      <input type="text" class="form-control" name="" placeholder="{{ i|get_value:'placeholder' }}">
+                    </div>
+                    <div class="box-tools">
+                      <button class="btn btn-box-tool" onclick="removeItemClickListener(this)"><i class="fa fa-times"></i> 删除此项</button>
+                    </div>
+                  </div>
+                  <div></div>
+                  <div class="col-md-7 edit-item">
+                    <div class="form-group">
+                      <label>标题</label>
+                      <input type="text" class="form-control" name="title" placeholder="" oninput="titleInputListener(this)" value="{{ i|get_value:'title' }}">
+                    </div>
+                    <div class="form-group">
+                      <label>提示文字</label>
+                      <input type="text" class="form-control" name="placeholder" placeholder="" oninput="hintInputListener(this)" value="{{ i|get_value:'placeholder' }}">
+                    </div>
+                  </div>
+                </div>
+                <hr>
+              {% elif i|get_value:'type' == 's' %}
+                <div class="row single-question" id="{{ i|get_value:'id' }}">
+                  <div class="col-md-5 border-right">
+                    <div class="form-group">
+                      <label>{{ i|get_value:'title' }}</label>
+                      <select class="form-control select2" name="">
+                        {% for c in i|get_value:'choices' %}
+                          <option>{{ c }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="box-tools">
+                      <button class="btn btn-box-tool" onclick="removeItemClickListener(this)"><i class="fa fa-times"></i> 删除此项</button>
+                    </div>
+                  </div>
+                  <div class="col-md-7 edit-item">
+                    <div class="form-group">
+                      <label>标题</label>
+                      <input type="text" class="form-control" name="title" placeholder="" oninput="titleInputListener(this)" value="{{ i|get_value:'title' }}">
+                    </div>
+                    <div class="form-group">
+                      <label>选项</label>
+                      <textarea class="form-control selections" rows="3" placeholder="选项用分号或者空格隔开" oninput="selectionInputListener(this)">{% for c in i|get_value:'choices' %}{{ c }};{% endfor %}</textarea>
+                    </div>
+                  </div>
+                </div>
+                <hr>
+              {% elif i|get_value:'type' == 'm' %}
+                <div class="row multiple-question" id="{{ i|get_value:'id' }}">
+                  <div class="col-md-5 border-right">
+                    <div class="form-group">
+                      <label>{{ i|get_value:'title' }}</label>
+                      <select class="form-control select2" name="{{ i|get_value:'limit' }}" multiple="multiple">
+                        {% for c in i|get_value:'choices' %}
+                          <option>{{ c }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="box-tools">
+                      <button class="btn btn-box-tool" onclick="removeItemClickListener(this)"><i class="fa fa-times"></i> 删除此项</button>
+                    </div>
+                  </div>
+                  <div class="col-md-7 edit-item">
+                    <div class="form-group">
+                      <label>标题</label>
+                      <input type="text" class="form-control" name="title" placeholder="" oninput="titleInputListener(this)" value="{{ i|get_value:'title' }}">
+                    </div>
+                    <div class="form-group">
+                      <label>多选上限</label>
+                      <input type="number" class="form-control" name="limit" placeholder="0或者不填代表无上限" value="{{ i|get_value:'limit' }}">
+                    </div>
+                    <div class="form-group">
+                      <label>选项</label>
+                      <textarea class="form-control selections" rows="3" placeholder="选项用分号或者空格隔开" oninput="selectionInputListener(this)">{% for c in i|get_value:'choices' %}{{ c }};{% endfor %}</textarea>
+                    </div>
+                  </div>
+                </div>
+                <hr>
+              {% elif i|get_value:'type' == 'sm' %}
+                3
+              {% elif i|get_value:'type' == 'mm' %}
+                4
+              {% endif %}
+            {% endfor %}
+          {% endif %}
         </div>
         <div class="box-footer text-center clearfix">
-          <button type="button" class="btn bg-green">保存问卷</button>
+          <button type="button" class="btn bg-green" id="save">保存问卷</button>
         </div>
       </div>
     </div>
@@ -121,7 +214,7 @@
 
 {% block extra_js %}
   <script type="text/template" id="normal-template">
-    <div class="row">
+    <div class="row normal-question">
       <div class="col-md-5 border-right">
         <div class="form-group has-feedback">
           <label>普通输入框</label>
@@ -131,22 +224,21 @@
           <button class="btn btn-box-tool" onclick="removeItemClickListener(this)"><i class="fa fa-times"></i> 删除此项</button>
         </div>
       </div>
-      <div></div>
-      <div class="col-md-7">
+      <div class="col-md-7 edit-item">
         <div class="form-group">
           <label>标题</label>
           <input type="text" class="form-control" name="title" placeholder="" oninput="titleInputListener(this)">
         </div>
         <div class="form-group">
           <label>提示文字</label>
-          <input type="text" class="form-control" name="hint" placeholder="" oninput="hintInputListener(this)">
+          <input type="text" class="form-control" name="placeholder" placeholder="" oninput="hintInputListener(this)">
         </div>
       </div>
     </div>
     <hr>
   </script>
   <script type="text/template" id="single-template">
-    <div class="row">
+    <div class="row single-question">
       <div class="col-md-5 border-right">
         <div class="form-group">
           <label>单选框</label>
@@ -157,8 +249,7 @@
           <button class="btn btn-box-tool" onclick="removeItemClickListener(this)"><i class="fa fa-times"></i> 删除此项</button>
         </div>
       </div>
-      <div></div>
-      <div class="col-md-7">
+      <div class="col-md-7 edit-item">
         <div class="form-group">
           <label>标题</label>
           <input type="text" class="form-control" name="title" placeholder="" oninput="titleInputListener(this)">
@@ -172,7 +263,7 @@
     <hr>
   </script>
   <script type="text/template" id="multiple-template">
-    <div class="row">
+    <div class="row multiple-question">
       <div class="col-md-5 border-right">
         <div class="form-group">
           <label>多选框</label>
@@ -183,11 +274,14 @@
           <button class="btn btn-box-tool" onclick="removeItemClickListener(this)"><i class="fa fa-times"></i> 删除此项</button>
         </div>
       </div>
-      <div></div>
-      <div class="col-md-7">
+      <div class="col-md-7 edit-item">
         <div class="form-group">
           <label>标题</label>
           <input type="text" class="form-control" name="title" placeholder="" oninput="titleInputListener(this)">
+        </div>
+        <div class="form-group">
+          <label>多选上限</label>
+          <input type="number" class="form-control" name="limit" placeholder="0或者不填代表无上限">
         </div>
         <div class="form-group">
           <label>选项</label>
@@ -198,7 +292,7 @@
     <hr>
   </script>
   <script type="text/template" id="single-member-template">
-    <div class="row">
+    <div class="row single-member-question">
       <div class="col-md-5 border-right">
         <div class="form-group">
           <label>成员单选</label>
@@ -211,7 +305,7 @@
         </div>
       </div>
       <div></div>
-      <div class="col-md-7">
+      <div class="col-md-7 edit-item">
         <div class="form-group">
           <label>标题</label>
           <input type="text" class="form-control" name="title" placeholder="" oninput="titleInputListener(this)">
@@ -221,7 +315,7 @@
     <hr>
   </script>
   <script type="text/template" id="multiple-member-template">
-    <div class="row">
+    <div class="row multiple-member-question">
       <div class="col-md-5 border-right">
         <div class="form-group">
           <label>成员多选</label>
@@ -239,6 +333,10 @@
           <label>标题</label>
           <input type="text" class="form-control" name="title" placeholder="" oninput="titleInputListener(this)">
         </div>
+        <div class="form-group">
+          <label>多选上限</label>
+          <input type="number" class="form-control" name="limit" placeholder="0或者不填代表无上限">
+        </div>
       </div>
     </div>
     <hr>
@@ -247,8 +345,9 @@
   <script src="/static/plugins/select2/select2.full.min.js"></script>
   <script src="/static/plugins/icheck/icheck.min.js"></script>
   <script src="/static/lineme/js/zh_cn/trip/trip-none.js"></script>
-  <script src="/static/lineme/js/question.js"></script>
   <script type="text/javascript">
+
+    var qHandleUrl = "{% url 'qHandle' group.id %}";
 
     $('input[type="radio"].minimal').iCheck({
       radioClass: 'iradio_flat-green'
@@ -256,5 +355,13 @@
 
     $('#search').autocomplete();
 
+    $.each($('.select2'), function() {
+      $(this).select2({
+        minimumResultsForSearch: Infinity,
+        maximumSelectionLength: $(this).attr('name')
+      });
+    });
+
   </script>
+  <script src="/static/lineme/js/question.js"></script>
 {% endblock %}

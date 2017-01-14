@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{{ project_name }} | 简介</title>
+{#    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">#}
+    <link rel="shortcut icon" href="/media/favicon.ico">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css">
+
+    {% load compress %}
+    {% compress css %}
+      <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+      <link rel="stylesheet" href="/static/plugins/select2/select2.min.css">
+      <link rel="stylesheet" href="/static/dist/css/AdminLTE.css">
+      <link rel="stylesheet" href="/static/dist/css/skins/skin-black.css">
+      <link rel="stylesheet" href="/static/lineme/css/welcome.css">
+      <link rel="stylesheet" href="/static/plugins/three/css/style.css">
+      <link rel="stylesheet" href="/static/lineme/css/graph.css">
+      <link rel="stylesheet" href="/static/plugins/d3/css/d3-tip.css">
+      <link rel="stylesheet" href="/static/plugins/hint/css/hint.css">
+      <link rel="stylesheet" href="/static/plugins/swiper/css/swiper.css">
+
+    {% endcompress %}
+  </head>
+  <body class="hold-transition skin-black sidebar-mini">
+    <div class="wrapper">
+      <header class="main-header">
+        <a href="{% url 'home' %}" class="logo">
+          <span class="logo-lg"><b>{{ project_name }}</b></span>
+        </a>
+        <nav class="navbar navbar-static-top" role="navigation">
+          <div class="navbar-custom-menu">
+            <ul class="nav navbar-nav">
+              {% if login %}
+                <li class="notifications-menu hint--bottom hint--rounded hint--bounce" aria-label="主页">
+                  <a href={% url 'home' %}>
+                    <i class="fa fa-home"></i>
+                  </a>
+                </li>
+                <li class="dropdown user user-menu">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <img src="/media/images/avatars/{{ user.id }}.png" class="user-image" alt="User Image">
+                    <span class="hidden-xs">{{ user.username }}</span>
+                    <span class="caret"></span>
+                  </a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href={% url 'ego' %}>我的网络</a></li>
+                    <li><a href={% url 'global' %}>全局网络</a></li>
+                    <li><a href={% url 'profile' %}>个人信息</a></li>
+                    <li><a href={% url 'settings' %}>系统设置</a></li>
+                    <li class="divider"></li>
+                    <li><a href={% url 'logout' %}>登出</a></li>
+                  </ul>
+                </li>
+              {% else %}
+                <li class="notifications-menu">
+                  <a href={% url 'login' %}>
+                    登录
+                  </a>
+                </li>
+                <li class="notifications-menu">
+                  <a href={% url 'register' %}>
+                    注册
+                  </a>
+                </li>
+              {% endif %}
+            </ul>
+          </div>
+        </nav>
+      </header>
+
+      <div class="content-wrapper welcome" style="color: #f6f6f6">
+        <div id="swiper" class="swiper-container">
+          <div class="swiper-wrapper">
+            <div id="particle" class="swiper-slide"></div>
+            <div class="swiper-slide">
+              <div class="swiper-describtion">
+                <div class="title">LineMe</div>
+                <div class="subtitle">构建你的朋友网络</div>
+                <div class="text">
+                    <p>XXXXX</p>
+                </div>
+              </div>
+            </div>
+            <div class="swiper-slide">
+              <div class="swiper-describtion">
+                <div class="title">网络视图</div>
+                <div class="text">
+                    <p>通过动态可交互的模块，在小组中轻松地创建连边，构造自己的朋友网络 ！试试分别点击两个节点吧</p>
+                </div>
+              </div>
+              <div id="network" class="view-panel"></div>
+            </div>
+            <div class="swiper-slide">
+              <div class="swiper-describtion">
+                <div class="title">地理视图</div>
+                <div class="text">
+                    <p>你不但可以看到小组中成员的全局网络，而且可以在地图上查看好友的分布情况，我的朋友遍布大江南北 ！</p>
+                </div>
+              </div>
+              <div id="map" class="view-panel"></div>
+            </div>
+            <div id="layer-container" class="swiper-slide">
+              <div class="swiper-describtion">
+                <div class="title">层级视图</div>
+                <div class="text">
+                    <p>Filp3D效果进行层次化的网络视图，更清晰地了解网络结构，滑动鼠标！</p>
+                </div>
+              </div>
+              <div id="layer"></div>
+            </div>
+          </div>
+          <div class="swiper-button-next"></div>
+          <div class="swiper-button-prev"></div>
+        </div>
+      </div>
+    </div>
+
+    {% compress js %}
+      <script src="/static/plugins/jquery/jquery.min.js"></script>
+      <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+      <script src="/static/dist/js/app.min.js"></script>
+      <script src="/static/plugins/swiper/js/swiper.js"></script>
+      <script src="/static/lineme/js/regular.js"></script>
+      <script src="/static/plugins/d3/js/d3.js"></script>
+      <script src="/static/plugins/d3/js/d3-tip.js"></script>
+      <script src="/static/plugins/echart/js/echarts.min.js"></script>
+      <script src="/static/plugins/echart/js/roma.js"></script>
+      <script src="/static/plugins/echart/js/china.js"></script>
+      <script src="/static/plugins/three/js/three.min.js"></script>
+      <script src="/static/plugins/three/js/tween.js"></script>
+      <script src="/static/plugins/three/js/GPUParticleSystem.js" charset="utf-8"></script>
+      <script src="/static/plugins/three/js/CSS3DRenderer.js"></script>
+      <script src="/static/plugins/three/js/particle.js"></script>
+      <script src="/static/plugins/three/js/viz.demo.js"></script>
+      <script src="/static/lineme/js/welcome.js"></script>
+    {% endcompress %}
+  </body>
+</html>

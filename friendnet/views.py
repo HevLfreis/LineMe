@@ -23,7 +23,7 @@ from friendnet.methods.basic.link import *
 from friendnet.methods.basic.profile import Profile
 from friendnet.methods.basic.user import *
 from friendnet.methods.checking import check_groupid
-from friendnet.methods.utils import input_filter
+from LineMe.utils import input_filter
 from friendnet.models import Group, GroupMember, MemberRequest, Privacy
 from iauth.methods.session import get_session_consume
 
@@ -37,7 +37,10 @@ template_dir = get_template_dir('friendnet')
 
 
 def redirect2main(request):
-    return redirect('home')
+    if request.user.is_authenticated():
+        return redirect('home')
+    else:
+        return redirect('welcome')
 
 
 def view_404(request):
@@ -566,7 +569,7 @@ def manage_group(request, groupid=0):
 
             return render(request, template_dir+'group1.html', context)
 
-    elif request.method == 'POST':
+    elif request.method == 'POST' and user == group.creator:
         gf = GroupMemberCreateForm(request.POST)
 
         if gf.is_valid():
@@ -588,11 +591,12 @@ def manage_group(request, groupid=0):
         return HttpResponse(status=403)
 
 
+# Todo: reformat
 @login_required
 def upload_members(request, groupid):
     user = request.user
 
-    if Group.objects.filter(creator=user, id=groupid).exists():
+    if Group.objects.filter(id=groupid, creator=user).exists():
         group = Group.objects.get(id=groupid)
 
         if request.method == 'POST':
@@ -717,6 +721,7 @@ def join_request(request, groupid):
 
 # Todo: if the member is existed, sth is wrong
 # Todo: impl join decline
+# Todo: add member name correct
 @login_required
 def join_confirm(request, groupid, requestid):
 

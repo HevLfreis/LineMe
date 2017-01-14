@@ -7,7 +7,7 @@ import json
 
 import datetime
 
-from friendnet.methods.algorithm.graph import Graph, GraphAnalyzer
+from friendnet.methods.algorithm.graph import LGraph, GraphAnalyzer
 from friendnet.methods.basic import cache
 import friendnet.methods.basic.exp as exp
 from friendnet.models import Group
@@ -17,7 +17,7 @@ from friendnet.models import Group
 # when adding a new member, he will encounter a member not in exception
 # @cache.get_or_set('globalcore', 60 * 20)
 def get_user_global_core(groupid):
-    return Graph(Group.objects.get(id=groupid)).core_builder()
+    return LGraph(Group.objects.get(id=groupid)).core_builder()
     # return Graph(Group.objects.get(id=groupid)).exp_builder(datetime.datetime(2016, 10, 27, 10, 0, 0))
 
 
@@ -49,7 +49,9 @@ def get_user_global_info(user, groupid):
 
 def get_user_global_exp(user, groupid):
     func = exp.community_test
-    G = Graph(Group.objects.get(id=groupid)).core_builder().core(user).proceeding(func).color()
+    # G = LGraph(Group.objects.get(id=groupid)).exp_builder(datetime.datetime(2016, 10, 27, 10, 0, 0)).core(user).proceeding(func).color()
+    G = LGraph(Group.objects.get(id=groupid)).exp_builder(datetime.datetime(2016, 10, 27, 10, 0, 0)).core(user)
+
     return G.dictify()
 
 

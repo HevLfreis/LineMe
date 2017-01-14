@@ -21,9 +21,9 @@ IDENTIFIER = {0: 'Special Code', 1: 'Email', 2: 'No Validation'}
 
 # Todo: implement private group, pri group should be closed to anyone not in the member list
 GROUP_TYPE = {0: 'Public', 1: 'Private'}
-LINK_STATUS = {-3: 'Both Reject', -21: 'Target Reject Source Confirmed', -12: 'Source Reject Target Confirmed',
-               -2: 'Target Reject', -1: 'Source Reject', 0: 'Both Unconfirmed',
-               1: 'Source Confirmed', 2: 'Target Confirmed', 3: 'Both Confirmed'}
+LINK_STATUS = {-3: 'Both Reject', -21: 'Target Reject Source Confirm', -12: 'Source Reject Target Confirm',
+               -2: 'Target Reject', -1: 'Source Reject', 0: 'Both Unconfirm',
+               1: 'Source Confirm', 2: 'Target Confirm', 3: 'Both Confirm'}
 
 SOURCE_LINK_CONFIRM_STATUS_TRANSITION_TABLE = {-3: -21, -21: -21, -12: 3,
                                                -2: -21, -1: 1, 0: 1,
@@ -47,3 +47,9 @@ CITIES_TABLE = json.load(file(os.path.join(STATIC_FOLDER, 'data/cities2.json')))
 PRIVACIES = {'pri-'+str(i): (field, field.verbose_name.title())
              for i, field in enumerate(Privacy._meta.fields)
              if field.verbose_name.title() != 'User'}
+
+QUESTION_TEMPLATE_KEYS = {'normal': {'title', 'placeholder'},
+                          'single': {'title', 'choices'},
+                          'multiple': {'title', 'choices', 'limit'},
+                          'single_member': {'title'},
+                          'multiple_member': {'title', 'limit'}}

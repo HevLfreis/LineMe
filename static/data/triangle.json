@@ -1,0 +1,13 @@
+{
+  "nodes": [
+    {"id": "A", "group": 1},
+    {"id": "B", "group": 2},
+    {"id": "C", "group": 3},
+    {"id": "D", "group": 4}
+  ],
+  "links": [
+    {"source": "A", "target": "B", "value": 1},
+    {"source": "B", "target": "C", "value": 8},
+    {"source": "C", "target": "A", "value": 10}
+  ]
+}

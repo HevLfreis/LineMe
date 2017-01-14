@@ -65,6 +65,7 @@ def create_group_member_from_file(request, group):
                 members.append(kv)
 
     for m in members:
+        m = map(str.strip, m)
         if create_group_member(request, group, m[0], m[1]) != 0:
             logger.error(logger_join('File', get_session_id(request), 'failed', gid=group.id))
             return m[0]

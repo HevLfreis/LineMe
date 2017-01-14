@@ -20,7 +20,7 @@ from django.db.models import Q, F
 from LineMe.constants import PROJECT_NAME
 # from friendnet.methods.algorithm.graph import Graph
 from LineMe.settings import BASE_DIR
-from friendnet.methods.algorithm.graph import Graph
+from friendnet.methods.algorithm.graph import LGraph
 from friendnet.methods.basic.user import get_user_name
 from friendnet.models import Link, Group, GroupMember
 import numpy as np
@@ -95,6 +95,160 @@ class Command(BaseCommand):
 
         print self.single_rejected(links_old).count(), self.both_rejected(links_old).count()
 
+        # day = 27
+        # d, l, s, c = [], [], [], []
+        # for i in range(4):
+        #     horizon = datetime.datetime(2016, 10, day - i*7, 10, 0, 0)
+        #     G_e = self.build_graph_id(self.before_time(links_confirmed, horizon))
+        #
+        #     for s, t in G_e.edges():
+        #         print s, t
+        #
+        #     print '=========================='
+            # self.print_info(G_e, str(i))
+            # print [[k, v] for k, v in self.distribution(G_e).items()]
+        #     d.append(self.average_degree(G_e))
+        #     l.append(len(max(nx.connected_components(G_e), key=len)))
+        #     s.append(self.average_shortest_path_length(G_e))
+        #     c.append(nx.average_clustering(G_e))
+        #
+        # print d
+        # print l
+        # print s
+        # print c
+
+        horizon1 = datetime.datetime(2016, 10, 6, 10, 0, 0)
+        G_e1 = self.build_graph_id(self.before_time(links_confirmed, horizon1))
+        horizon2 = datetime.datetime(2016, 10, 13, 10, 0, 0)
+        G_e2 = self.build_graph_id(self.before_time(links_confirmed, horizon2))
+        horizon3 = datetime.datetime(2016, 10, 20, 10, 0, 0)
+        G_e3 = self.build_graph_id(self.before_time(links_confirmed, horizon3))
+        horizon4 = datetime.datetime(2016, 10, 27, 10, 0, 0)
+        G_e4 = self.build_graph_id(self.before_time(links_confirmed, horizon4))
+
+        embed1 = [self.embeddedness(G_e1, s, t) for s, t in G_e1.edges()]
+        a_e1 = sum(embed1) / len(embed1)
+
+        h, hh, l, ll = 0.0, 0.0, 0.0, 0.0
+        for s in G_e1.nodes():
+            for t in G_e1.nodes():
+                if s != t and not G_e1.has_edge(s, t):
+                    if self.embeddedness(G_e1, s, t) > a_e1:
+                        h += 1
+                        if G_e2.has_edge(s, t):
+                            hh += 1
+                    else:
+                        l += 1
+                        if G_e2.has_edge(s, t):
+                            ll += 1
+        print h, hh, l, ll, hh/h, ll/l, (hh/h)/(ll/l)
+
+        embed2 = [self.embeddedness(G_e2, s, t) for s, t in G_e2.edges()]
+        a_e2 = sum(embed2) / len(embed2)
+
+        h, hh, l, ll = 0.0, 0.0, 0.0, 0.0
+        for s in G_e1.nodes():
+            for t in G_e1.nodes():
+                if s != t and not G_e2.has_edge(s, t):
+                    if self.embeddedness(G_e2, s, t) > a_e2:
+                        h += 1
+                        if G_e3.has_edge(s, t):
+                            hh += 1
+                    else:
+                        l += 1
+                        if G_e3.has_edge(s, t):
+                            ll += 1
+        print h, hh, l, ll, hh/h, ll/l, (hh/h)/(ll/l)
+
+        embed3 = [self.embeddedness(G_e3, s, t) for s, t in G_e3.edges()]
+        a_e3 = sum(embed3) / len(embed3)
+
+        h, hh, l, ll = 0.0, 0.0, 0.0, 0.0
+        for s in G_e1.nodes():
+            for t in G_e1.nodes():
+                if s != t and not G_e3.has_edge(s, t):
+                    if self.embeddedness(G_e3, s, t) > a_e3:
+                        h += 1
+                        if G_e4.has_edge(s, t):
+                            hh += 1
+                    else:
+                        l += 1
+                        if G_e4.has_edge(s, t):
+                            ll += 1
+        print h, hh, l, ll, hh/h, ll/l, (hh/h)/(ll/l)
+
+        h, hh, l, ll = 0.0, 0.0, 0.0, 0.0
+        for s in G_e1.nodes():
+            for t in G_e1.nodes():
+                if s != t and not G_e1.has_edge(s, t):
+                    if self.embeddedness(G_e1, s, t) > a_e1:
+                        h += 1
+                        if G_e4.has_edge(s, t):
+                            hh += 1
+                    else:
+                        l += 1
+                        if G_e4.has_edge(s, t):
+                            ll += 1
+        print h, hh, l, ll, hh/h, ll/l, (hh/h)/(ll/l)
+
+
+
+
+
+
+
+        # horizon = datetime.datetime(2016, 10, 7, 10, 0, 0)
+        # G_e1 = self.build_graph_id(links_confirmed.filter(confirmed_time__lt=horizon))
+        #
+        # embed = [self.embeddedness(G_e1, s, t) for s, t in G_e1.edges()]
+        # a_e = sum(embed) / len(embed)
+        #
+        #
+        # horizon = datetime.datetime(2016, 10, 27, 10, 0, 0)
+        # G_e2 = self.build_graph_id(links_confirmed.filter(confirmed_time__lt=horizon))
+        #
+        # # i, j = 0, 0
+        # # for s, t in G_e2.edges():
+        # #     if not G_e1.has_edge(s, t):
+        # #         i += 1
+        # #         if self.embeddedness(G_e1, s, t) > a_e:
+        # #             j += 1
+        # # print i, j
+        # #
+        # i, j, k, l = 0, 0, 0, 0
+        # for m in G_e1.nodes():
+        #     for n in G_e1.nodes():
+        #         if m != n and not G_e1.has_edge(m, n):
+        #             if self.embeddedness(G_e1, m, n) > a_e:
+        #                 i += 1
+        #                 if G_e2.has_edge(m, n) and (not G_e1.has_edge(m, n)):
+        #                     j += 1
+        #             else:
+        #                 k += 1
+        #                 if G_e2.has_edge(m, n) and (not G_e1.has_edge(m, n)):
+        #                     l += 1
+        #
+        # print i/2, j/2, k/2, l/2
+
+        #
+        # e = []
+        # for n in G_e2.nodes():
+        #     e.append([G_e1.degree(n), G_e2.degree(n)-G_e1.degree(n)])
+        #
+        # print e
+
+        # comms = list(nx.k_clique_communities(G_e2, 10))
+        #
+        # strong_tie = 0
+        # for s, t in G_e2.edges():
+        #     if not G_e1.has_edge(s, t):
+        #         for comm in comms:
+        #             if len({s, t} - set(comm)) == 0:
+        #                 strong_tie += 1
+        #                 break
+        #
+        # print float(strong_tie) / (G_e2.number_of_edges() - G_e1.number_of_edges())
+
         # G_all = self.build_graph_id(links)
         # G_friend = self.build_graph(friend_links)
         # G_other = self.build_graph(other_links)
@@ -107,9 +261,9 @@ class Command(BaseCommand):
         # G_friend_unconfirmed = self.build_graph(friend_links_unconfirmed)
         # G_other_unconfirmed = self.build_graph(other_links_unconfirmed)
 
-        self.print_info(G_all_confirmed, 'confirmed')
-
-        print sum([self.embeddedness(G_all_confirmed, s, t) for s, t in G_all_confirmed.edges()]) / float(G_all_confirmed.number_of_edges())
+        # self.print_info(G_all_confirmed, 'confirmed')
+        #
+        # print sum([self.embeddedness(G_all_confirmed, s, t) for s, t in G_all_confirmed.edges()]) / float(G_all_confirmed.number_of_edges())
 
         # for i in xrange(3, 20):
         #     c = list(nx.k_clique_communities(G_all_confirmed, i))
@@ -143,29 +297,29 @@ class Command(BaseCommand):
         # print self.variance([1 for i in xrange(100)])
         # print self.variance([i for i in xrange(100)])
 
-        max_weight = max([d['ks'] for s, t, d in G_all_confirmed.edges(data=True)])
+        # max_weight = max([d['ks'] for s, t, d in G_all_confirmed.edges(data=True)])
+        # # #
+        # # e = []
+        # # v = []
+        # # for j in xrange(0, max_weight):
+        # #     G_weight = G_all_confirmed.copy()
+        # #     for s, t, d in G_all_confirmed.edges(data=True):
+        # #         if d['ks'] < j:
+        # #             G_weight.remove_edge(s, t)
         # #
-        # e = []
-        # v = []
-        # for j in xrange(0, max_weight):
-        #     G_weight = G_all_confirmed.copy()
-        #     for s, t, d in G_all_confirmed.edges(data=True):
-        #         if d['ks'] < j:
-        #             G_weight.remove_edge(s, t)
-        #
-        #     embed_list = [self.embeddedness(G_weight, s, t) for s, t, d in G_weight.edges(data=True)]
-        #
-        #     embed = sum(embed_list) / float(G_weight.number_of_edges())
-        #     var = self.variance(embed_list)
-        #     e.append(embed)
-        #     v.append(var)
-        #     print embed, var
-        #
-        # print e
-        # print v
-
+        # #     embed_list = [self.embeddedness(G_weight, s, t) for s, t, d in G_weight.edges(data=True)]
         # #
-        all_module = []
+        # #     embed = sum(embed_list) / float(G_weight.number_of_edges())
+        # #     var = self.variance(embed_list)
+        # #     e.append(embed)
+        # #     v.append(var)
+        # #     print embed, var
+        # #
+        # # print e
+        # # print v
+        #
+        # # #
+        # all_module = []
 
         # for i in [k for k in xrange(15)][2::3]:
         # for i in [k for k in xrange(15)][2:]:
@@ -404,12 +558,12 @@ class Command(BaseCommand):
         #############################################################################
         # crowdsourcing
 
-        links_confirmed_old = self.before_time(links_confirmed, self.horizon)
-        #
-        # print links_confirmed_old.count()
-        #
-        G_standard = self.build_graph_id(links_confirmed_old)
-        G_new = self.build_graph_id(links_new)
+        # links_confirmed_old = self.before_time(links_confirmed, self.horizon)
+        # #
+        # # print links_confirmed_old.count()
+        # #
+        # G_standard = self.build_graph_id(links_confirmed_old)
+        # G_new = self.build_graph_id(links_new)
         # #
         # self.print_info(G_standard, 'standard')
         # self.print_info(G_new, 'new')
@@ -571,14 +725,14 @@ class Command(BaseCommand):
 
         # self.result_recorder(self.y, end)
         #
-        G_wrong = G_new.copy()
-        for s, t in G_wrong.edges():
-            if G_standard.has_edge(s, t):
-                G_wrong.remove_edge(s, t)
+        # G_wrong = G_new.copy()
+        # for s, t in G_wrong.edges():
+        #     if G_standard.has_edge(s, t):
+        #         G_wrong.remove_edge(s, t)
+        # #
+        # G_wrong.remove_node(10026)
         #
-        G_wrong.remove_node(10026)
-
-        print sum([self.embeddedness(G_all_confirmed, s, t) for s, t in G_wrong.edges()]) / float(G_wrong.number_of_edges())
+        # print sum([self.embeddedness(G_all_confirmed, s, t) for s, t in G_wrong.edges()]) / float(G_wrong.number_of_edges())
 
         #
         # a, b, c = 0, 0, 0
@@ -721,23 +875,23 @@ class Command(BaseCommand):
 
 
         # not recovered
-        G_recovered = G_standard.copy()
-        G_not_recovered = G_standard.copy()
-        for s, t in G_new.edges():
-            if G_not_recovered.has_edge(s, t):
-                G_not_recovered.remove_edge(s, t)
-
-        for s, t in G_not_recovered.edges():
-            G_recovered.remove_edge(s, t)
-
-        print sum([self.embeddedness(G_all_confirmed, s, t) for s, t in G_recovered.edges()]) / float(G_recovered.number_of_edges())
-        print sum([self.embeddedness(G_all_confirmed, s, t) for s, t in G_not_recovered.edges()]) / float(G_not_recovered.number_of_edges())
-
+        # G_recovered = G_standard.copy()
+        # G_not_recovered = G_standard.copy()
+        # for s, t in G_new.edges():
+        #     if G_not_recovered.has_edge(s, t):
+        #         G_not_recovered.remove_edge(s, t)
         #
-        for s, t, d in G_standard.edges(data=True):
-            if not G_standard.has_edge(s, t):
-                if d['ks'] > 0:
-                    print s, t, d['weight']
+        # for s, t in G_not_recovered.edges():
+        #     G_recovered.remove_edge(s, t)
+        #
+        # print sum([self.embeddedness(G_all_confirmed, s, t) for s, t in G_recovered.edges()]) / float(G_recovered.number_of_edges())
+        # print sum([self.embeddedness(G_all_confirmed, s, t) for s, t in G_not_recovered.edges()]) / float(G_not_recovered.number_of_edges())
+        #
+        # #
+        # for s, t, d in G_standard.edges(data=True):
+        #     if not G_standard.has_edge(s, t):
+        #         if d['ks'] > 0:
+        #             print s, t, d['weight']
         #
         # clique_index = {}
         # for i, c in enumerate(c_15):
@@ -1224,6 +1378,9 @@ class Command(BaseCommand):
         # my_friends.add(a)
         # your_friends.add(b)
 
+        if len(your_friends | my_friends) == 0:
+            return 0
+
         embeddedness = len(your_friends & my_friends) / float(len(your_friends | my_friends))
 
         return embeddedness
@@ -1262,6 +1419,9 @@ class Command(BaseCommand):
         average = sum(seq) / float(len(seq))
         var = sum([abs(average-s) ** 2 for s in seq]) / float(len(seq))
         return var
+
+    def distribution(self, G):
+        return {k: v / float(G.number_of_nodes()) for k, v in dict(Counter(G.degree().values())).items()}
 
 
 

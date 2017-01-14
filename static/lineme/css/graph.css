@@ -8,6 +8,13 @@ circle {
     stroke-width: 8px;
 }
 
+.legend {
+    position: absolute;
+    text-anchor: end;
+    font-size: 20px;
+    stroke: none;
+}
+
 .small-circle {
     stroke-width: 2px;
 }
@@ -22,6 +29,11 @@ circle {
 .link-thin {
     stroke-width: 1px;
     stroke-opacity: 0.2;
+}
+
+.link-demo {
+    stroke: rgba(255, 249, 88, 0.6);
+    stroke-width: 5px;
 }
 
 .link-unconfirmed {
